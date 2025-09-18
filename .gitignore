@@ -1,0 +1,15 @@
+/MDAI-Final/.gitattributes
+/MDAI-Final/.gitignore
+/MDAI-Final/src/main/resources/application.properties
+/.idea/copilot.data.migration.agent.xml
+/.idea/copilot.data.migration.ask.xml
+/.idea/copilot.data.migration.ask2agent.xml
+/.idea/copilot.data.migration.edit.xml
+/MDAI-Final/.mvn/wrapper/maven-wrapper.properties
+/MDAI-Final/src/main/java/com/example/MDAI_Proyecto/MdaiProyectoApplication.java
+/MDAI-Final/src/test/java/com/example/MDAI_Proyecto/MdaiProyectoApplicationTests.java
+/MDAI-Final/mvnw
+/MDAI-Final/mvnw.cmd
+/MDAI-Final/pom.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
