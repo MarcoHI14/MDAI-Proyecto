@@ -2,7 +2,7 @@
 
 ## LOGO
 
-![Logo de TunedHive](https://github.com/MarcoHI14/MDAI-Proyecto/raw/main/MDAI-Final/src/images/TunedHiveLite.png)
+![Logo de TunedHive](https://github.com/MarcoHI14/MDAI-Proyecto/raw/main/MDAI-Final/src/images/TunedHive.png)
 
 ## Integrantes
 
