@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="46bcd30f-8637-4f7f-b334-d7322e7b3d11" name="Changes" comment="Agregar DOC en format .md + directorio imagenes">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,6 +34,9 @@
     &quot;accountId&quot;: &quot;33ea5197-9414-429a-bee5-b73a56871d2d&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -143,7 +146,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1758646114139</updated>
-      <workItem from="1759479369143" duration="323000" />
+      <workItem from="1759479369143" duration="953000" />
     </task>
     <task id="LOCAL-00001" summary="Agregar documento inicial con contenido de ejemplo">
       <option name="closed" value="true" />
@@ -217,7 +220,31 @@
       <option name="project" value="LOCAL" />
       <updated>1759479687233</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Agregar DOC en format .md + directorio imagenes">
+      <option name="closed" value="true" />
+      <created>1759479714849</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1759479714849</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Agregar DOC en format .md + directorio imagenes">
+      <option name="closed" value="true" />
+      <created>1759479834316</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1759479834316</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Agregar DOC en format .md + directorio imagenes">
+      <option name="closed" value="true" />
+      <created>1759479906449</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1759479906449</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
