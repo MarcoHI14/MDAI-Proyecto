@@ -1,0 +1,233 @@
+/* Aquí irá el CSS de la página de inicio y futuros estilos globales */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #f6e27a;
+  /* Fondo honeycomb con degradado caramelizado */
+  background-image:
+    linear-gradient(135deg, rgba(255, 230, 150, 0.7) 0%, rgba(191, 120, 36, 0.7) 100%),
+    url('data:image/svg+xml;utf8,<svg width="60" height="52" viewBox="0 0 60 52" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="30,2 58,17 58,45 30,60 2,45 2,17" fill="%23e2a84a" fill-opacity="0.38"/><polygon points="30,2 58,17 58,45 30,60 2,45 2,17" fill="none" stroke="%23bfa14a" stroke-width="1.5"/></svg>');
+  background-size: cover, 52px 45px;
+  background-repeat: no-repeat, repeat;
+  background-position: center, 0 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #2d2d2d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-colmena {
+  width: 180px;
+  max-width: 80vw;
+  margin: 40px auto 18px auto;
+  display: block;
+  object-fit: contain;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px #0007;
+  background: #fff8e3cc;
+  transition: box-shadow 0.3s, filter 0.3s;
+  cursor: pointer;
+}
+
+.logo-colmena:hover {
+  box-shadow: 0 0 40px 10px #ffe082, 0 8px 32px #0007;
+  filter: brightness(1.15) saturate(1.2);
+}
+
+h1 {
+  font-size: 2.7rem;
+  color: #2d2d2d;
+  text-shadow: 1px 1px 12px #f6c24499, 0 2px 8px #0002;
+  margin-bottom: 0.3em;
+  letter-spacing: 1px;
+}
+
+.icono-musica {
+  font-size: 2.7rem;
+  color: #3a2a13;
+  margin-bottom: 0.7em;
+  text-shadow: 0 2px 8px #0002;
+  transition: transform 0.4s cubic-bezier(.68,-0.55,.27,1.55), color 0.3s;
+  cursor: pointer;
+}
+
+.icono-musica:hover {
+  transform: rotate(-18deg) scale(1.18);
+  color: #6b3e13;
+}
+
+.subtitulo {
+  color: #2d2d2d;
+  background: #f6c244e6;
+  padding: 0.7em 2em;
+  border-radius: 22px;
+  box-shadow: 0 2px 12px #0001;
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 1.2em;
+}
+
+.eslogan {
+  font-size: 1.5em;
+  color: #2d2d2d;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  text-shadow: 1px 1px 8px #f6c24477;
+  margin-bottom: 2em;
+  position: relative;
+  cursor: pointer;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.eslogan-top-right {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  margin-bottom: 0;
+  z-index: 101;
+}
+
+.eslogan.eslogan-top-right:hover::after {
+  content: '¡Haz que tu música brille como la miel!';
+  position: absolute;
+  right: 0;
+  top: 120%;
+  left: auto;
+  background: #fffbe6;
+  color: #3a2a13;
+  padding: 0.5em 1em;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #0002;
+  font-size: 0.95em;
+  white-space: nowrap;
+  z-index: 110;
+  opacity: 0.97;
+  pointer-events: none;
+  animation: fadeInTooltip 0.3s;
+  transform: translateX(0);
+  margin-left: 0;
+  margin-right: 0;
+  text-align: right;
+}
+
+@keyframes fadeInTooltip {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 0.97; transform: translateY(0); }
+}
+
+.botones-colmena {
+  display: flex;
+  gap: 1.2em;
+  margin-bottom: 2.5em;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-colmena {
+  background: linear-gradient(135deg, #e2a84a 60%, #f6e27a 100%);
+  color: #3a2a13;
+  border: none;
+  border-radius: 16px;
+  padding: 0.7em 1.7em;
+  font-size: 1.1em;
+  font-weight: 600;
+  box-shadow: 0 2px 12px #0002;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+  outline: none;
+  letter-spacing: 0.5px;
+}
+
+.btn-colmena.info,
+.btn-colmena.info.info-top-left {
+  background: linear-gradient(135deg, #ffe082 60%, #e2a84a 100%);
+  color: #6b3e13;
+  border: 2px solid #e2a84a;
+}
+
+.btn-colmena.login {
+  background: linear-gradient(135deg, #fffbe6 60%, #bfa14a 100%);
+  color: #6b3e13;
+  border: 2px solid #bfa14a;
+}
+
+.btn-colmena.registro {
+  background: linear-gradient(135deg, #fffbe6 60%, #bfa14a 100%);
+  color: #6b3e13;
+  border: 2px solid #bfa14a;
+}
+
+.btn-colmena:hover, .btn-colmena:focus {
+  background: linear-gradient(135deg, #fffbe6 60%, #e2a84a 100%);
+  color: #3a2a13;
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 4px 18px #bfa14a55;
+  border-color: #e2a84a;
+}
+
+.btn-colmena.info.info-top-left {
+  position: absolute;
+  top: 32px;
+  left: 32px;
+  z-index: 100;
+  font-size: 1em;
+  padding: 0.6em 1.3em;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px #0001;
+}
+
+.abeja-voladora {
+  position: absolute;
+  left: 50%;
+  top: 30px; /* Más abajo del logo */
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 2;
+  transition: top 0.2s;
+}
+
+.abeja-voladora.volando {
+  animation: vuelo-abeja 1.2s cubic-bezier(.4,1.6,.6,1) 1;
+}
+
+@keyframes vuelo-abeja {
+  0%   { top: 30px; transform: translateX(-50%) rotate(-8deg); }
+  20%  { top: 10px; transform: translateX(-50%) rotate(8deg); }
+  40%  { top: 0px;  transform: translateX(-50%) rotate(-8deg); }
+  60%  { top: 10px; transform: translateX(-50%) rotate(8deg); }
+  80%  { top: 30px; transform: translateX(-50%) rotate(-8deg); }
+  100% { top: 30px; transform: translateX(-50%) rotate(0deg); }
+}
+
+@media (max-width: 600px) {
+  .logo-colmena { width: 120px; }
+  h1 { font-size: 1.5rem; }
+  .subtitulo, .eslogan { font-size: 1em; padding: 0.5em 1em; }
+  .botones-colmena { gap: 0.5em; }
+  .btn-colmena { font-size: 0.95em; padding: 0.5em 1em; }
+  .btn-colmena.info.info-top-left {
+    top: 10px;
+    left: 10px;
+    font-size: 0.9em;
+    padding: 0.4em 0.8em;
+  }
+  .eslogan-top-right {
+    top: 10px;
+    right: 10px;
+    font-size: 0.95em;
+    padding: 0;
+  }
+  .abeja-voladora {
+    width: 32px;
+    height: 32px;
+  }
+  .abeja-voladora.volando {
+    animation-duration: 1.3s;
+  }
+}

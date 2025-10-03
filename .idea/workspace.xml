@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="46bcd30f-8637-4f7f-b334-d7322e7b3d11" name="Changes" comment="Merge remote-tracking branch 'origin/main'">
-      <change beforePath="$PROJECT_DIR$/documento.md" beforeDir="false" afterPath="$PROJECT_DIR$/Requisitos TunedHive.md" afterDir="false" />
+    <list default="true" id="46bcd30f-8637-4f7f-b334-d7322e7b3d11" name="Changes" comment="Cambio de nombre Documento.md por Requisitos_TunedHive.md">
+      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/Información.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/Inicio.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/css/estilos.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +62,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "configurable.group.tools",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -149,7 +152,9 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1758646114139</updated>
-      <workItem from="1759479369143" duration="2255000" />
+      <workItem from="1759479369143" duration="5391000" />
+      <workItem from="1759738311897" duration="2668000" />
+      <workItem from="1759743064721" duration="2294000" />
     </task>
     <task id="LOCAL-00001" summary="Agregar documento inicial con contenido de ejemplo">
       <option name="closed" value="true" />
@@ -295,7 +300,23 @@
       <option name="project" value="LOCAL" />
       <updated>1759481467644</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Merge remote-tracking branch 'origin/main'">
+      <option name="closed" value="true" />
+      <created>1759481645354</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1759481645354</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Cambio de nombre Documento.md por Requisitos_TunedHive.md">
+      <option name="closed" value="true" />
+      <created>1759481688130</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1759481688130</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -323,7 +344,8 @@
     <MESSAGE value="Agregar imagenLite" />
     <MESSAGE value="Última modificación Documento.md" />
     <MESSAGE value="Merge remote-tracking branch 'origin/main'" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/main'" />
+    <MESSAGE value="Cambio de nombre Documento.md por Requisitos_TunedHive.md" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cambio de nombre Documento.md por Requisitos_TunedHive.md" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
