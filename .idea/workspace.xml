@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="46bcd30f-8637-4f7f-b334-d7322e7b3d11" name="Changes" comment="Agregar imagenLite" />
+    <list default="true" id="46bcd30f-8637-4f7f-b334-d7322e7b3d11" name="Changes" comment="Agregar imagenLite">
+      <change beforePath="$PROJECT_DIR$/documento.md" beforeDir="false" afterPath="$PROJECT_DIR$/documento.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -147,7 +149,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1758646114139</updated>
-      <workItem from="1759479369143" duration="1342000" />
+      <workItem from="1759479369143" duration="1938000" />
     </task>
     <task id="LOCAL-00001" summary="Agregar documento inicial con contenido de ejemplo">
       <option name="closed" value="true" />
@@ -253,7 +255,31 @@
       <option name="project" value="LOCAL" />
       <updated>1759480611699</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Agregar imagenLite">
+      <option name="closed" value="true" />
+      <created>1759480724142</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1759480724142</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Agregar imagenLite">
+      <option name="closed" value="true" />
+      <created>1759480753705</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1759480753705</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Agregar imagenLite">
+      <option name="closed" value="true" />
+      <created>1759480915799</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1759480915799</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -277,6 +303,7 @@
     <MESSAGE value="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;documento.md" />
     <MESSAGE value="Agregar archivos de configuración y estructura inicial del proyecto MDAI" />
     <MESSAGE value="Agregar DOC en format .md + directorio imagenes" />
+    <MESSAGE value="Agregar imagen Redimensionada" />
     <MESSAGE value="Agregar imagenLite" />
     <option name="LAST_COMMIT_MESSAGE" value="Agregar imagenLite" />
   </component>

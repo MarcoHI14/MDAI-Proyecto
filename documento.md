@@ -25,6 +25,29 @@ El sistema se basa en funcionalidades CRUD intuitivas con datos de usuarios, art
 
 ## Funcionalidades, Requisitos, “Pliego de condiciones”
 
-- El administrador debe poder dar de alta/baja/modificar a cualquier usuario o artista.
-- El administrador debe poder añadir/eliminar/modificar canciones a la base de datos.
-- El administrador debe poder verificar un usuario como
+### Administrador
+
+- Dar de alta/baja/modificar a cualquier usuario o artista.
+- Añadir/eliminar/modificar canciones en la base de datos.
+- Verificar un usuario como artista.
+
+### Usuario/Artista
+
+- Registrarse/loguearse en la app para guardar sus datos.
+- Dar de baja su cuenta si así lo desea.
+- Acceder al servicio de búsqueda y filtro de canciones, artistas y álbumes.
+- Ordenar y/o filtrar los resultados de búsqueda.
+- Guardar canciones en favoritos o crear playlists.
+- Cambiar las características de sus listas.
+- Crear/eliminar listas.
+
+### Artista
+
+- Subir/retirar/modificar contenido en la plataforma (previa verificación como artista).
+
+## Funcionalidades opcionales, recomendables o futuribles
+
+- Cambiar el orden de sus listas.
+- Descargar contenido.
+- Mandar mensajes limitados al buzón de su artista favorito.
+- Compartir contenido de la app fuera de la misma.
