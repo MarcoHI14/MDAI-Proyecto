@@ -2,7 +2,7 @@
 
 ## LOGO
 
-*![Logo de TunedHive](![Logo de TunedHive](./source/images/TunedHive.png))*
+![Logo de TunedHive](./source/images/TunedHive.png)
 
 ## Integrantes
 
