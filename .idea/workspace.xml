@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="46bcd30f-8637-4f7f-b334-d7322e7b3d11" name="Changes" comment="Cambio de nombre Documento.md por Requisitos_TunedHive.md">
-      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/Bienvenida.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/InicioSesion.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/Registro.html" afterDir="false" />
+    <list default="true" id="46bcd30f-8637-4f7f-b334-d7322e7b3d11" name="Changes" comment="Add new HTML pages for user login, registration, and welcome; update workspace configuration">
+      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/AdminSolicitudes.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/BienvenidaAdmin.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MDAI-Final/src/html/Inicio.html" beforeDir="false" afterPath="$PROJECT_DIR$/MDAI-Final/src/html/Inicio.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MDAI-Final/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MDAI-Final/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +38,7 @@
   }
 }</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
@@ -56,15 +55,24 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Marco/Desktop/UEx/4º Cuarto/MDAI/MDAI-Proyecto/MDAI-Final/src/images",
+    "last_opened_file_path": "C:/Users/Marco/Desktop/UEx/4º Cuarto/MDAI/MDAI-Proyecto",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Facets",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "DockerIgnore"
+    ]
   }
 }]]></component>
   <component name="RecentsManager">
@@ -141,8 +149,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26199.169" />
-        <option value="bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-IU-252.26199.169" />
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
       </set>
     </attachedChunks>
   </component>
@@ -155,7 +163,26 @@
       <updated>1758646114139</updated>
       <workItem from="1759479369143" duration="5391000" />
       <workItem from="1759738311897" duration="2668000" />
-      <workItem from="1759743064721" duration="5296000" />
+      <workItem from="1759743064721" duration="6270000" />
+      <workItem from="1759749414711" duration="1706000" />
+      <workItem from="1759761865102" duration="2144000" />
+      <workItem from="1759847700079" duration="2199000" />
+      <workItem from="1759850564703" duration="51000" />
+      <workItem from="1759855162400" duration="248000" />
+      <workItem from="1759855426892" duration="15000" />
+      <workItem from="1759855453968" duration="268000" />
+      <workItem from="1759855764047" duration="328000" />
+      <workItem from="1759856146882" duration="50000" />
+      <workItem from="1759856224990" duration="348000" />
+      <workItem from="1759856640754" duration="722000" />
+      <workItem from="1759862898861" duration="162000" />
+      <workItem from="1759863078864" duration="7000" />
+      <workItem from="1759863109847" duration="8000" />
+      <workItem from="1759863137520" duration="144000" />
+      <workItem from="1759911230683" duration="601000" />
+      <workItem from="1759911840860" duration="4000" />
+      <workItem from="1759911855324" duration="21000" />
+      <workItem from="1759911885780" duration="611000" />
     </task>
     <task id="LOCAL-00001" summary="Agregar documento inicial con contenido de ejemplo">
       <option name="closed" value="true" />
@@ -333,7 +360,31 @@
       <option name="project" value="LOCAL" />
       <updated>1759745647327</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="Add new HTML pages for user login, registration, and welcome; update workspace configuration">
+      <option name="closed" value="true" />
+      <created>1759748426966</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1759748426966</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Add new HTML pages for user login, registration, and welcome; update workspace configuration">
+      <option name="closed" value="true" />
+      <created>1759748439654</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1759748439654</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Add new HTML pages for user login, registration, and welcome; update workspace configuration">
+      <option name="closed" value="true" />
+      <created>1759849419808</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1759849419808</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -360,9 +411,11 @@
     <MESSAGE value="Agregar imagen Redimensionada" />
     <MESSAGE value="Agregar imagenLite" />
     <MESSAGE value="Última modificación Documento.md" />
-    <MESSAGE value="Merge remote-tracking branch 'origin/main'" />
     <MESSAGE value="Cambio de nombre Documento.md por Requisitos_TunedHive.md" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cambio de nombre Documento.md por Requisitos_TunedHive.md" />
+    <MESSAGE value="Merge remote-tracking branch 'origin/main'" />
+    <MESSAGE value="Add new HTML pages for user authentication and update workspace configuration" />
+    <MESSAGE value="Add new HTML pages for user login, registration, and welcome; update workspace configuration" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add new HTML pages for user login, registration, and welcome; update workspace configuration" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
