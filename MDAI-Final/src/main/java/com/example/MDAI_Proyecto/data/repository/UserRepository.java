@@ -1,9 +1,9 @@
-package package com.example.MDAI_Proyecto.data.repository;
+package com.example.MDAI_Proyecto.data.repository;
 
-import com.example.MDAI_PROYECTO.data.model.Usuario;
+import com.example.MDAI_Proyecto.data.model.Usuario;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface UserRepository extends CrudRepository<Usuario, Long> {
 }
