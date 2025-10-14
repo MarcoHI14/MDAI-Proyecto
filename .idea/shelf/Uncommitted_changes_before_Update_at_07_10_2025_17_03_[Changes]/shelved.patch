@@ -1,0 +1,233 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"46bcd30f-8637-4f7f-b334-d7322e7b3d11\" name=\"Changes\" comment=\"Cambio de nombre Documento.md por Requisitos_TunedHive.md\">\r\n      <change afterPath=\"$PROJECT_DIR$/MDAI-Final/src/html/Bienvenida.html\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/MDAI-Final/src/html/InicioSesion.html\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/MDAI-Final/src/html/Registro.html\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/MDAI-Final/src/html/Inicio.html\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/MDAI-Final/src/html/Inicio.html\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"ChangesViewManager\">\r\n    <option name=\"groupingKeys\">\r\n      <option value=\"directory\" />\r\n      <option value=\"repository\" />\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"PUSH_AUTO_UPDATE\" value=\"true\" />\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;MarcoHI14&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/MarcoHI14/MDAI-Proyecto&quot;,\r\n    &quot;accountId&quot;: &quot;33ea5197-9414-429a-bee5-b73a56871d2d&quot;\r\n  }\r\n}</component>\r\n  <component name=\"ProblemsViewState\">\r\n    <option name=\"selectedTabId\" value=\"DEPENDENCY_CHECKER_PROBLEMS_TAB\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 5\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"336mtvhKwqvox1u4nkduRVXY4h1\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252\": \"true\",\r\n    \"RunOnceActivity.git.unshallow\": \"true\",\r\n    \"git-widget-placeholder\": \"main\",\r\n    \"kotlin-language-version-configured\": \"true\",\r\n    \"last_opened_file_path\": \"C:/Users/Marco/Desktop/UEx/4º Cuarto/MDAI/MDAI-Proyecto/MDAI-Final/src/images\",\r\n    \"node.js.detected.package.eslint\": \"true\",\r\n    \"node.js.detected.package.tslint\": \"true\",\r\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\r\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\r\n    \"nodejs_package_manager_path\": \"npm\",\r\n    \"settings.editor.selected.configurable\": \"preferences.pluginManager\",\r\n    \"vue.rearranger.settings.migration\": \"true\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\Marco\\Desktop\\UEx\\4º Cuarto\\MDAI\\MDAI-Proyecto\\MDAI-Final\\src\\images\" />\r\n    </key>\r\n    <key name=\"MoveFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\Marco\\Desktop\\UEx\\4º Cuarto\\MDAI\\MDAI-Proyecto\\MDAI-Final\\src\\images\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\">\r\n    <configuration default=\"true\" type=\"JetRunConfigurationType\">\r\n      <module name=\"MDAI-Proyecto\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration default=\"true\" type=\"KotlinStandaloneScriptRunConfigurationType\">\r\n      <module name=\"MDAI-Proyecto\" />\r\n      <option name=\"filePath\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration default=\"true\" type=\"PythonConfigurationType\" factoryName=\"Python\">\r\n      <module name=\"MDAI-Proyecto\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration default=\"true\" type=\"Python.FlaskServer\">\r\n      <module name=\"MDAI-Proyecto\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"launchJavascriptDebuger\" value=\"false\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration default=\"true\" type=\"Tox\" factoryName=\"Tox\">\r\n      <module name=\"MDAI-Proyecto\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26199.169\" />\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-IU-252.26199.169\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"46bcd30f-8637-4f7f-b334-d7322e7b3d11\" name=\"Changes\" comment=\"\" />\r\n      <created>1758646114139</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1758646114139</updated>\r\n      <workItem from=\"1759479369143\" duration=\"5391000\" />\r\n      <workItem from=\"1759738311897\" duration=\"2668000\" />\r\n      <workItem from=\"1759743064721\" duration=\"5296000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Agregar documento inicial con contenido de ejemplo\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1758650831269</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1758650831269</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Agregar documento inicial con contenido de ejemplo\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1758651250898</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1758651250898</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Agregar documento inicial con contenido de ejemplo\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1758651283135</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1758651283135</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Agregar documento inicial con contenido de ejemplo\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1758651856471</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1758651856471</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"Eliminar enlace a Google en documento.md\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1758652966504</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1758652966504</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;documento.md\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1758653008625</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1758653008625</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00007\" summary=\"Agregar archivos de configuración y estructura inicial del proyecto MDAI\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1758657095570</created>\r\n      <option name=\"number\" value=\"00007\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1758657095570</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00008\" summary=\"Agregar DOC en format .md + directorio imagenes\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759479669841</created>\r\n      <option name=\"number\" value=\"00008\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759479669841</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00009\" summary=\"Agregar DOC en format .md + directorio imagenes\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759479687233</created>\r\n      <option name=\"number\" value=\"00009\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759479687233</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00010\" summary=\"Agregar DOC en format .md + directorio imagenes\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759479714849</created>\r\n      <option name=\"number\" value=\"00010\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00010\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759479714849</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00011\" summary=\"Agregar DOC en format .md + directorio imagenes\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759479834316</created>\r\n      <option name=\"number\" value=\"00011\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00011\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759479834316</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00012\" summary=\"Agregar DOC en format .md + directorio imagenes\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759479906449</created>\r\n      <option name=\"number\" value=\"00012\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00012\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759479906449</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00013\" summary=\"Agregar imagenLite\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759480611699</created>\r\n      <option name=\"number\" value=\"00013\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00013\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759480611699</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00014\" summary=\"Agregar imagenLite\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759480724142</created>\r\n      <option name=\"number\" value=\"00014\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00014\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759480724142</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00015\" summary=\"Agregar imagenLite\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759480753705</created>\r\n      <option name=\"number\" value=\"00015\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00015\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759480753705</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00016\" summary=\"Agregar imagenLite\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759480915799</created>\r\n      <option name=\"number\" value=\"00016\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00016\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759480915799</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00017\" summary=\"Merge remote-tracking branch 'origin/main'\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759481455532</created>\r\n      <option name=\"number\" value=\"00017\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00017\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759481455532</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00018\" summary=\"Merge remote-tracking branch 'origin/main'\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759481467644</created>\r\n      <option name=\"number\" value=\"00018\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00018\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759481467644</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00019\" summary=\"Merge remote-tracking branch 'origin/main'\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759481645354</created>\r\n      <option name=\"number\" value=\"00019\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00019\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759481645354</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00020\" summary=\"Cambio de nombre Documento.md por Requisitos_TunedHive.md\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759481688130</created>\r\n      <option name=\"number\" value=\"00020\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00020\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759481688130</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00021\" summary=\"Cambio de nombre Documento.md por Requisitos_TunedHive.md\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759745547860</created>\r\n      <option name=\"number\" value=\"00021\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00021\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759745547860</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00022\" summary=\"Cambio de nombre Documento.md por Requisitos_TunedHive.md\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1759745647327</created>\r\n      <option name=\"number\" value=\"00022\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00022\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1759745647327</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"23\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Proyecto Base al Completo\" />\r\n    <MESSAGE value=\"Agregar documento inicial con contenido de ejemplo\" />\r\n    <MESSAGE value=\"Eliminar enlace a Google en documento.md\" />\r\n    <MESSAGE value=\"Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;documento.md\" />\r\n    <MESSAGE value=\"Agregar archivos de configuración y estructura inicial del proyecto MDAI\" />\r\n    <MESSAGE value=\"Agregar DOC en format .md + directorio imagenes\" />\r\n    <MESSAGE value=\"Agregar imagen Redimensionada\" />\r\n    <MESSAGE value=\"Agregar imagenLite\" />\r\n    <MESSAGE value=\"Última modificación Documento.md\" />\r\n    <MESSAGE value=\"Merge remote-tracking branch 'origin/main'\" />\r\n    <MESSAGE value=\"Cambio de nombre Documento.md por Requisitos_TunedHive.md\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Cambio de nombre Documento.md por Requisitos_TunedHive.md\" />\r\n  </component>\r\n  <component name=\"XSLT-Support.FileAssociations.UIState\">\r\n    <expand />\r\n    <select />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 2a897e8850c5cc04e120e5f4f9e4c71f91ffa098)
++++ b/.idea/workspace.xml	(date 1759849389064)
+@@ -4,12 +4,10 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="46bcd30f-8637-4f7f-b334-d7322e7b3d11" name="Changes" comment="Cambio de nombre Documento.md por Requisitos_TunedHive.md">
+-      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/Bienvenida.html" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/InicioSesion.html" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/Registro.html" afterDir="false" />
++    <list default="true" id="46bcd30f-8637-4f7f-b334-d7322e7b3d11" name="Changes" comment="Add new HTML pages for user login, registration, and welcome; update workspace configuration">
++      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/AdminSolicitudes.html" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/MDAI-Final/src/html/BienvenidaAdmin.html" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/MDAI-Final/src/html/Inicio.html" beforeDir="false" afterPath="$PROJECT_DIR$/MDAI-Final/src/html/Inicio.html" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -49,24 +47,24 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "ModuleVcsDetector.initialDetectionPerformed": "true",
+-    "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+-    "RunOnceActivity.git.unshallow": "true",
+-    "git-widget-placeholder": "main",
+-    "kotlin-language-version-configured": "true",
+-    "last_opened_file_path": "C:/Users/Marco/Desktop/UEx/4º Cuarto/MDAI/MDAI-Proyecto/MDAI-Final/src/images",
+-    "node.js.detected.package.eslint": "true",
+-    "node.js.detected.package.tslint": "true",
+-    "node.js.selected.package.eslint": "(autodetect)",
+-    "node.js.selected.package.tslint": "(autodetect)",
+-    "nodejs_package_manager_path": "npm",
+-    "settings.editor.selected.configurable": "preferences.pluginManager",
+-    "vue.rearranger.settings.migration": "true"
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
++    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
++    &quot;last_opened_file_path&quot;: &quot;C:/Users/Marco/Desktop/UEx/4º Cuarto/MDAI/MDAI-Proyecto/MDAI-Final/src/images&quot;,
++    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
++    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
++    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
++    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
++    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
++    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
++    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="RecentsManager">
+     <key name="CopyFile.RECENT_KEYS">
+       <recent name="C:\Users\Marco\Desktop\UEx\4º Cuarto\MDAI\MDAI-Proyecto\MDAI-Final\src\images" />
+@@ -141,8 +139,8 @@
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26199.169" />
+-        <option value="bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-IU-252.26199.169" />
++        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
++        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
+       </set>
+     </attachedChunks>
+   </component>
+@@ -155,7 +153,10 @@
+       <updated>1758646114139</updated>
+       <workItem from="1759479369143" duration="5391000" />
+       <workItem from="1759738311897" duration="2668000" />
+-      <workItem from="1759743064721" duration="5296000" />
++      <workItem from="1759743064721" duration="6270000" />
++      <workItem from="1759749414711" duration="1706000" />
++      <workItem from="1759761865102" duration="2144000" />
++      <workItem from="1759847700079" duration="1226000" />
+     </task>
+     <task id="LOCAL-00001" summary="Agregar documento inicial con contenido de ejemplo">
+       <option name="closed" value="true" />
+@@ -333,7 +334,23 @@
+       <option name="project" value="LOCAL" />
+       <updated>1759745647327</updated>
+     </task>
+-    <option name="localTasksCounter" value="23" />
++    <task id="LOCAL-00023" summary="Add new HTML pages for user login, registration, and welcome; update workspace configuration">
++      <option name="closed" value="true" />
++      <created>1759748426966</created>
++      <option name="number" value="00023" />
++      <option name="presentableId" value="LOCAL-00023" />
++      <option name="project" value="LOCAL" />
++      <updated>1759748426966</updated>
++    </task>
++    <task id="LOCAL-00024" summary="Add new HTML pages for user login, registration, and welcome; update workspace configuration">
++      <option name="closed" value="true" />
++      <created>1759748439654</created>
++      <option name="number" value="00024" />
++      <option name="presentableId" value="LOCAL-00024" />
++      <option name="project" value="LOCAL" />
++      <updated>1759748439654</updated>
++    </task>
++    <option name="localTasksCounter" value="25" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -360,9 +377,11 @@
+     <MESSAGE value="Agregar imagen Redimensionada" />
+     <MESSAGE value="Agregar imagenLite" />
+     <MESSAGE value="Última modificación Documento.md" />
+-    <MESSAGE value="Merge remote-tracking branch 'origin/main'" />
+     <MESSAGE value="Cambio de nombre Documento.md por Requisitos_TunedHive.md" />
+-    <option name="LAST_COMMIT_MESSAGE" value="Cambio de nombre Documento.md por Requisitos_TunedHive.md" />
++    <MESSAGE value="Merge remote-tracking branch 'origin/main'" />
++    <MESSAGE value="Add new HTML pages for user authentication and update workspace configuration" />
++    <MESSAGE value="Add new HTML pages for user login, registration, and welcome; update workspace configuration" />
++    <option name="LAST_COMMIT_MESSAGE" value="Add new HTML pages for user login, registration, and welcome; update workspace configuration" />
+   </component>
+   <component name="XSLT-Support.FileAssociations.UIState">
+     <expand />
+Index: MDAI-Final/src/html/BienvenidaAdmin.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/MDAI-Final/src/html/BienvenidaAdmin.html b/MDAI-Final/src/html/BienvenidaAdmin.html
+new file mode 100644
+--- /dev/null	(date 1759848668740)
++++ b/MDAI-Final/src/html/BienvenidaAdmin.html	(date 1759848668740)
+@@ -0,0 +1,50 @@
++<!DOCTYPE html>
++<html lang="es">
++<head>
++  <meta charset="UTF-8">
++  <title>Bienvenida Administrador | Tuned Hive</title>
++  <link rel="stylesheet" href="css/estilos.css">
++  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
++  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
++</head>
++<body>
++  <header style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; align-items: center; justify-content: space-between; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; padding: 0.5em 2em 0.5em 1.5em; border-radius: 0; margin: 0; position: fixed; top: 0; left: 0; z-index: 100;">
++    <img src="../images/TunedHive.png" alt="Logo TunedHive" class="logo-colmena" style="width: 60px; height: auto; margin: 0;">
++    <div class="eslogan eslogan-top-right" style="pointer-events: none; position: static; margin: 0; font-size: 1.3em; font-weight: bold; color: #2d2d2d; letter-spacing: 1px;">¡Bienvenido/a Administrador!</div>
++    <button class="btn-colmena info" style="margin: 0; position: static;" onclick="window.location.href='Inicio.html'">Cerrar Sesión</button>
++  </header>
++  <nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
++    <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
++      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Panel de Control</a></li>
++      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Usuarios</a></li>
++      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Estadísticas</a></li>
++      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mi Cuenta</a></li>
++    </ul>
++  </nav>
++  <div class="main-flex" style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; width: 100vw; max-width: 100vw; margin-top: 7.5em; min-height: 60vh;">
++    <!-- Lateral Izquierdo -->
++    <aside style="flex: 1 1 22%; max-width: 22%; padding: 2em 1em 0 2em; min-width: 180px;">
++      <div style="background: #fffbe6; border-radius: 16px; box-shadow: 0 2px 12px #0001; padding: 1.2em 1em; margin-bottom: 2em; text-align: center;">
++        <h3 style="color: #bfa14a; margin-top: 0;">Accesos rápidos</h3>
++        <p style="color: #3a2a13; font-size: 1.08em; margin-bottom: 1.2em;">Gestiona usuarios, revisa estadísticas y administra la plataforma.</p>
++        <!-- Aquí puedes añadir botones o enlaces a funciones de admin -->
++      </div>
++    </aside>
++    <!-- Centro -->
++    <main style="flex: 2 1 56%; max-width: 56%; padding: 2em 1em 0 1em; min-width: 260px; text-align: center;">
++      <h1 style="margin-top: 0;">¡Has iniciado sesión como administrador!</h1>
++      <div class="subtitulo" style="max-width: 600px; margin: 0 auto 2em auto;">
++        Ahora puedes gestionar la comunidad Tuned Hive, revisar estadísticas, administrar usuarios y mantener la plataforma en funcionamiento.
++      </div>
++    </main>
++    <!-- Lateral Derecho -->
++    <aside style="flex: 1 1 22%; max-width: 22%; padding: 2em 2em 0 1em; min-width: 180px;">
++      <div style="background: #fffbe6; border-radius: 16px; box-shadow: 0 2px 12px #0001; padding: 1.2em 1em; margin-bottom: 2em; text-align: center;">
++        <h3 style="color: #bfa14a; margin-top: 0;">Solicitudes de Verificación</h3>
++        <p style="color: #3a2a13; font-size: 1.08em; margin-bottom: 1.2em;">Revisa y gestiona las solicitudes de verificación de artistas y usuarios.</p>
++        <button onclick="window.location.href='AdminSolicitudes.html'" style="background: #bfa14a; color: #fff; border: none; border-radius: 8px; padding: 0.7em 1.5em; font-size: 1em; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 0.5em;">Ver Solicitudes</button>
++      </div>
++    </aside>
++  </div>
++</body>
++</html>
+Index: MDAI-Final/src/html/AdminSolicitudes.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/MDAI-Final/src/html/AdminSolicitudes.html b/MDAI-Final/src/html/AdminSolicitudes.html
+new file mode 100644
+--- /dev/null	(date 1759848739105)
++++ b/MDAI-Final/src/html/AdminSolicitudes.html	(date 1759848739105)
+@@ -0,0 +1,33 @@
++<!DOCTYPE html>
++<html lang="es">
++<head>
++  <meta charset="UTF-8">
++  <title>Solicitudes de Verificación | Tuned Hive</title>
++  <link rel="stylesheet" href="css/estilos.css">
++  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
++</head>
++<body>
++  <header style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; align-items: center; justify-content: space-between; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; padding: 0.5em 2em 0.5em 1.5em; border-radius: 0; margin: 0; position: fixed; top: 0; left: 0; z-index: 100;">
++    <img src="../images/TunedHive.png" alt="Logo TunedHive" class="logo-colmena" style="width: 60px; height: auto; margin: 0;">
++    <div class="eslogan eslogan-top-right" style="pointer-events: none; position: static; margin: 0; font-size: 1.3em; font-weight: bold; color: #2d2d2d; letter-spacing: 1px;">Panel de Verificación</div>
++    <button class="btn-colmena info" style="margin: 0; position: static;" onclick="window.location.href='BienvenidaAdmin.html'">Volver</button>
++  </header>
++  <nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
++    <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
++      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Panel de Control</a></li>
++      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Usuarios</a></li>
++      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Estadísticas</a></li>
++      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mi Cuenta</a></li>
++    </ul>
++  </nav>
++  <main style="margin-top: 8.5em; padding: 2em 2em 2em 2em; min-height: 60vh; max-width: 900px; margin-left: auto; margin-right: auto;">
++    <h1 style="color: #6b3e13; text-shadow: 1px 1px 6px #fffbe6, 0 1px 0 #bfa14a;">Solicitudes de Verificación</h1>
++    <p style="font-size: 1.15em; color: #3a2a13;">Aquí podrás revisar, aceptar o rechazar las solicitudes de verificación de artistas y usuarios en Tuned Hive.</p>
++    <div style="margin-top: 2em; background: #fffbe6; border-radius: 16px; box-shadow: 0 2px 12px #0001; padding: 2em; min-height: 200px; text-align: center;">
++      <i class="fa-solid fa-user-check" style="font-size: 2.5em; color: #bfa14a; margin-bottom: 0.5em;"></i>
++      <p style="color: #bfa14a; font-weight: bold;">No hay solicitudes pendientes en este momento.</p>
++      <!-- Aquí se mostrarán las solicitudes cuando existan -->
++    </div>
++  </main>
++</body>
++</html>
