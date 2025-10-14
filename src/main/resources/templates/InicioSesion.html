@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar sesión | Tuned Hive</title>
+  <link rel="stylesheet" href="../static/estilos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <button class="btn-colmena info info-top-left" onclick="window.location.href='Inicio.html'">Volver al inicio</button>
+  <h1 style="margin-top: 80px;">Inicia sesión en Tuned Hive</h1>
+  <div class="subtitulo" style="max-width: 600px; margin: 0 auto 2em auto;">
+    Accede a tu cuenta y sigue compartiendo tu música con la comunidad.
+  </div>
+  <form style="max-width: 400px; margin: 0 auto; background: #fffbe6cc; padding: 2em 2em 1.5em 2em; border-radius: 18px; box-shadow: 0 2px 12px #0001; display: flex; flex-direction: column; gap: 1.2em;">
+    <label for="email" style="font-weight: 500; color: #3a2a13;">Correo electrónico</label>
+    <input type="email" id="email" name="email" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
+
+    <label for="password" style="font-weight: 500; color: #3a2a13;">Contraseña</label>
+    <input type="password" id="password" name="password" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
+
+    <button type="submit" class="btn-colmena login" style="margin-top: 0.5em;">Iniciar sesión</button>
+  </form>
+  <div style="text-align: center; margin-top: 1.5em;">
+    ¿No tienes cuenta? <a href="Registro.html" style="color: #6b3e13; font-weight: bold; text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#bfa14a'" onmouseout="this.style.color='#6b3e13'">Regístrate</a>
+  </div>
+</body>
+</html>
+
