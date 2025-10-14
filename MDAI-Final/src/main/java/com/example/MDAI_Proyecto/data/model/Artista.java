@@ -10,7 +10,7 @@ public class Artista {
     private Integer idUsuario;
 
     @OneToOne
-    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     private Usuario usuario;
 
     @Column(name = "biografia")
