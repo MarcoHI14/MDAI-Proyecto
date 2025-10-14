@@ -12,7 +12,7 @@ public class SolicitudVerificacion {
     private Integer idSolicitud;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     private Usuario usuario;
 
     @Column(name = "mensaje_verificacion", nullable = false)

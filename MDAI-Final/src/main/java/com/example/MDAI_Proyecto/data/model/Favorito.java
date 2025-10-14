@@ -11,7 +11,7 @@ public class Favorito {
 
     @ManyToOne
     @MapsId("idUsuario")
-    @JoinColumn(name = "id_usuario")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     private Usuario usuario;
 
     @ManyToOne
@@ -32,4 +32,3 @@ public class Favorito {
     public LocalDateTime getFechaAgregado() { return fechaAgregado; }
     public void setFechaAgregado(LocalDateTime fechaAgregado) { this.fechaAgregado = fechaAgregado; }
 }
-

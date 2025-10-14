@@ -20,7 +20,7 @@ public class Playlist {
     private LocalDateTime fechaCreacion;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     private Usuario usuario;
 
     // Getters y setters
@@ -35,5 +35,3 @@ public class Playlist {
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 }
-
-
