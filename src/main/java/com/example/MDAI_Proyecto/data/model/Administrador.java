@@ -1,9 +1,20 @@
-package com.example.MDAI_Proyecto.data.model;// No se requieren cambios funcionales, solo advertencias de métodos no usados y nombre de archivo correcto.
+package com.example.MDAI_Proyecto.data.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "administrador")
 public class Administrador {
-    // Atributos de la clase Administrador
-    private String nombre;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_admin")
     private String id;
+
+    @Column(nullable = false)
+    private String nombre;
+
+    @Column(nullable = false)
     private String contrasena;
 
     // Constructor de la clase Administrador
@@ -11,23 +22,6 @@ public class Administrador {
         this.nombre = nombre;
         this.id = id;
         this.contrasena = contrasena;
-    }
-
-    // Métodos de la clase Administrador
-    public void agregarUsuario() {
-        // Lógica para agregar un usuario
-    }
-
-    public void eliminarUsuario() {
-        // Lógica para eliminar un usuario
-    }
-
-    public void modificarUsuario() {
-        // Lógica para modificar un usuario
-    }
-
-    public void listarUsuarios() {
-        // Lógica para listar usuarios
     }
 
     // Getters y Setters
