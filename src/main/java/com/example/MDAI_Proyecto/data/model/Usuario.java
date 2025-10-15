@@ -50,4 +50,9 @@ public class Usuario {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public boolean comprobarPassword(String password) {
+        return this.password != null && this.password.equals(password);
+    }
+
 }
