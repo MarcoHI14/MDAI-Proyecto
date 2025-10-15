@@ -6,7 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UsuarioTest {
@@ -15,7 +19,7 @@ class UsuarioTest {
     private UserRepository userRepository;
 
     @Test
-    void crearUsuarios() {
+    void crearUsuariosTest() {
         Usuario usuario = new Usuario();
         usuario.setUsername("Testeador1");
         usuario.setPassword("1234");
@@ -33,6 +37,53 @@ class UsuarioTest {
 
         Usuario usuario2 = new Usuario();
         Usuario usuario3 = new Usuario();
+        Usuario usuario4 = new Usuario();
+
+        usuario2.setUsername("Testeador2");
+        usuario2.setPassword("2345");
+        usuario2.setEmail("testeador2@email.com");
+
+        usuario3.setUsername("Testeador3");
+        usuario3.setPassword("3456");
+        usuario3.setEmail("testeador3@email.com");
+
+        usuario4.setUsername("Testeador4");
+        usuario4.setPassword("4567");
+        usuario4.setEmail("testeador4@email.com");
+
+        List<Usuario> usuarios = new ArrayList<>();
+        usuarios.add(usuario2);
+        usuarios.add(usuario3);
+        usuarios.add(usuario4);
+        List<Usuario> guardados = new ArrayList<>();
+        userRepository.saveAll(usuarios).forEach(guardados::add);
+        assertThat(guardados).hasSize(3);
+
+        List<Usuario> users = (List<Usuario>) userRepository.findAll();
+        assertThat(users).hasSizeGreaterThanOrEqualTo(3);
+        assertEquals(3, users.size());
+
+        Usuario Testeador2 = userRepository.findByUsername("Testeador2").orElse(null);
+        assertThat(Testeador2).isNotNull();
+        assertThat(Testeador2.getUsername()).isEqualTo("Testeador2");
+        assertThat(Testeador2.getPassword()).isEqualTo("2345");
+        assertThat(Testeador2.getEmail()).isEqualTo("testeador2@email.com");
+
+        Usuario Testeador3 = userRepository.findByUsername("Testeador3").orElse(null);
+        assertThat(Testeador3).isNotNull();
+        assertThat(Testeador3.getUsername()).isEqualTo("Testeador3");
+        assertThat(Testeador3.getPassword()).isEqualTo("3456");
+        assertThat(Testeador3.getEmail()).isEqualTo("testeador3@email.com");
+
+        userRepository.deleteAll(guardados);
+        assertThat(userRepository.findByUsername("Testeador2")).isEmpty();
+        assertThat(userRepository.findByUsername("Testeador3")).isEmpty();
+        assertThat(userRepository.findByUsername("Testeador4")).isEmpty();
+    }
+
+    @Test
+    void findByUsernameTest() {
+        assertThat(userRepository).isNotNull();
     }
 
 }
