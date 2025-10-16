@@ -1,0 +1,16 @@
+version: '3.1'
+services:
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: mdai_db
+      MYSQL_USER: mdai_user
+      MYSQL_PASSWORD: mdai_pass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+volumes:
+  mysql_data:
