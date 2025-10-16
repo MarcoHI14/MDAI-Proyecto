@@ -9,7 +9,7 @@ public class Cancion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cancion")
-    private Integer idCancion;
+    private Long idCancion;
 
     //monfongo
 
@@ -30,8 +30,8 @@ public class Cancion {
     private Artista artista;
 
     // Getters y setters
-    public Integer getIdCancion() { return idCancion; }
-    public void setIdCancion(Integer idCancion) { this.idCancion = idCancion; }
+    public Long getIdCancion() { return idCancion; }
+    public void setIdCancion(Long idCancion) { this.idCancion = idCancion; }
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
     public String getGenero() { return genero; }
