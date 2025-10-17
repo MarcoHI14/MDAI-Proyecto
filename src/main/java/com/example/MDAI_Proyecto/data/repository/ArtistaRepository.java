@@ -20,9 +20,8 @@ package com.example.MDAI_Proyecto.data.repository;
 import com.example.MDAI_Proyecto.data.model.Artista;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import java.util.*;
 
 @Repository
-public interface ArtistRepository extends CrudRepository<Artista, Long> {
+public interface ArtistaRepository extends CrudRepository<Artista, Long> {
 
 }

@@ -1,7 +1,7 @@
 package com.example.MDAI_Proyecto;
 
 import com.example.MDAI_Proyecto.data.model.Usuario;
-import com.example.MDAI_Proyecto.data.repository.UserRepository;
+import com.example.MDAI_Proyecto.data.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UsuarioTest {
 
     @Autowired
-    private UserRepository userRepository;
+    private UsuarioRepository usuarioRepository;
 
     @Test
     void crearUsuariosTest() {
@@ -26,14 +26,14 @@ class UsuarioTest {
         usuario.setPassword("1234");
         usuario.setEmail("testeador1@email.com");
 
-        Usuario guardado = userRepository.save(usuario);//prueba
+        Usuario guardado = usuarioRepository.save(usuario);//prueba
         assertThat(guardado.getId()).isNotNull();
         assertThat(guardado.getUsername()).isEqualTo("Testeador1");
         assertThat(guardado.getPassword()).isEqualTo("1234");
         assertThat(guardado.getEmail()).isEqualTo("testeador1@email.com");
 
-        userRepository.delete(guardado);
-        boolean existe = userRepository.findById(guardado.getId()).isPresent();
+        usuarioRepository.delete(guardado);
+        boolean existe = usuarioRepository.findById(guardado.getId()).isPresent();
         assertThat(existe).isFalse();
 
         Usuario usuario2 = new Usuario();
@@ -57,29 +57,29 @@ class UsuarioTest {
         usuarios.add(usuario3);
         usuarios.add(usuario4);
         List<Usuario> guardados = new ArrayList<>();
-        userRepository.saveAll(usuarios).forEach(guardados::add);
+        usuarioRepository.saveAll(usuarios).forEach(guardados::add);
         assertThat(guardados).hasSize(3);
 
-        List<Usuario> users = (List<Usuario>) userRepository.findAll();
+        List<Usuario> users = (List<Usuario>) usuarioRepository.findAll();
         assertThat(users).hasSizeGreaterThanOrEqualTo(3);
         assertEquals(3, users.size());
 
-        Usuario Testeador2 = userRepository.findByUsername("Testeador2").orElse(null);
+        Usuario Testeador2 = usuarioRepository.findByUsername("Testeador2").orElse(null);
         assertThat(Testeador2).isNotNull();
         assertThat(Testeador2.getUsername()).isEqualTo("Testeador2");
         assertThat(Testeador2.getPassword()).isEqualTo("2345");
         assertThat(Testeador2.getEmail()).isEqualTo("testeador2@email.com");
 
-        Usuario Testeador3 = userRepository.findByUsername("Testeador3").orElse(null);
+        Usuario Testeador3 = usuarioRepository.findByUsername("Testeador3").orElse(null);
         assertThat(Testeador3).isNotNull();
         assertThat(Testeador3.getUsername()).isEqualTo("Testeador3");
         assertThat(Testeador3.getPassword()).isEqualTo("3456");
         assertThat(Testeador3.getEmail()).isEqualTo("testeador3@email.com");
 
-        userRepository.deleteAll(guardados); // ësto elimina los usuarios en BD, pero mantienen en memoria
-        assertThat(userRepository.findByUsername("Testeador2")).isEmpty();
-        assertThat(userRepository.findByUsername("Testeador3")).isEmpty();
-        assertThat(userRepository.findByUsername("Testeador4")).isEmpty();
+        usuarioRepository.deleteAll(guardados); // ësto elimina los usuarios en BD, pero mantienen en memoria
+        assertThat(usuarioRepository.findByUsername("Testeador2")).isEmpty();
+        assertThat(usuarioRepository.findByUsername("Testeador3")).isEmpty();
+        assertThat(usuarioRepository.findByUsername("Testeador4")).isEmpty();
     }
 
     @Test
@@ -100,20 +100,20 @@ class UsuarioTest {
         usuario4.setPassword("4567");
         usuario4.setEmail("testeador4@email.com");
 
-        userRepository.saveAll(List.of(usuario2, usuario3, usuario4));
+        usuarioRepository.saveAll(List.of(usuario2, usuario3, usuario4));
 
-        Usuario Testeador2 = userRepository.findByUsername("Testeador2").orElse(null);
+        Usuario Testeador2 = usuarioRepository.findByUsername("Testeador2").orElse(null);
         assertThat(Testeador2).isNotNull();
         assertThat(Testeador2.getUsername()).isEqualTo("Testeador2");
         assertThat(Testeador2.getPassword()).isEqualTo("2345");
 
-        Usuario Testeador3 = userRepository.findByUsername("Testeador3").orElse(null);
+        Usuario Testeador3 = usuarioRepository.findByUsername("Testeador3").orElse(null);
         assertThat(Testeador3).isNotNull();
         assertThat(Testeador3.getUsername()).isEqualTo("Testeador3");
         assertThat(Testeador3.getPassword()).isEqualTo("3456");
 
-        userRepository.deleteAll(List.of(usuario2, usuario3, usuario4));
-        assertThat(userRepository.findByUsername("Testeador4")).isEmpty();
+        usuarioRepository.deleteAll(List.of(usuario2, usuario3, usuario4));
+        assertThat(usuarioRepository.findByUsername("Testeador4")).isEmpty();
     }
 
     @Test
@@ -129,13 +129,13 @@ class UsuarioTest {
         usuario3.setPassword("2345");
         usuario3.setEmail("testeador3@gmail.com");
 
-        userRepository.saveAll(List.of(usuario2, usuario3));
-        Optional<Usuario> Testeador2 = userRepository.findByEmail("testeador2@gmail.com");
+        usuarioRepository.saveAll(List.of(usuario2, usuario3));
+        Optional<Usuario> Testeador2 = usuarioRepository.findByEmail("testeador2@gmail.com");
         assertThat(Testeador2).isPresent();
         assertThat(Testeador2.get().getUsername()).isEqualTo("Testeador2");
         assertThat(Testeador2.get().getPassword()).isEqualTo("2345");
         assertThat(Testeador2.get().getEmail()).isEqualTo("testeador2@gmail.com");
-        userRepository.deleteAll(List.of(usuario2, usuario3));
+        usuarioRepository.deleteAll(List.of(usuario2, usuario3));
     }
 
     @Test
@@ -144,11 +144,11 @@ class UsuarioTest {
         usuario.setUsername("Testeador1");
         usuario.setPassword("1234");
         usuario.setEmail("testeador1@gmail.com");
-        userRepository.save(usuario);
+        usuarioRepository.save(usuario);
 
         assertTrue(usuario.comprobarPassword("1234"));
         assertFalse(usuario.comprobarPassword("wrongPassword"));
-        userRepository.delete(usuario);
+        usuarioRepository.delete(usuario);
     }
 
     @Test
@@ -157,22 +157,22 @@ class UsuarioTest {
         usuario.setUsername("Testeador1");
         usuario.setPassword("1234");
         usuario.setEmail("testeador1@gmail.com");
-        userRepository.save(usuario);
+        usuarioRepository.save(usuario);
 
         usuario.setUsername("TesteadorModificado");
         usuario.setPassword("4321");
         usuario.setEmail("eltester@hotmail.com");
-        userRepository.save(usuario);
+        usuarioRepository.save(usuario);
 
-        assertTrue(userRepository.findByUsername("TesteadorModificado").isPresent());
-        Usuario modificado = userRepository.findByUsername("TesteadorModificado").orElse(null);
+        assertTrue(usuarioRepository.findByUsername("TesteadorModificado").isPresent());
+        Usuario modificado = usuarioRepository.findByUsername("TesteadorModificado").orElse(null);
         assertThat(modificado).isNotNull();
         assertThat(modificado.getUsername()).isEqualTo("TesteadorModificado");
         assertThat(modificado.getPassword()).isEqualTo("4321");
         assertThat(modificado.getEmail()).isEqualTo("eltester@hotmail.com");
-        assertThat(userRepository.count()).isEqualTo(1);
+        assertThat(usuarioRepository.count()).isEqualTo(1);
 
-        userRepository.delete(modificado);
-        assertThat(userRepository.findByUsername("TesteadorModificado")).isEmpty();
+        usuarioRepository.delete(modificado);
+        assertThat(usuarioRepository.findByUsername("TesteadorModificado")).isEmpty();
     }
 }
