@@ -67,5 +67,17 @@ class CancionTest {
         List<Cancion> guardadas = new ArrayList<>();
         cancionRepository.saveAll(canciones).forEach(guardadas::add);
         assertThat(guardadas).hasSize(3);
+
+        List<Cancion> allCanciones = (List<Cancion>) cancionRepository.findAll();
+        assertThat(allCanciones).hasSizeGreaterThanOrEqualTo(3);
+        assertThat(allCanciones.size()).isGreaterThanOrEqualTo(3);
+
+        Cancion cancionTest2 = cancionRepository.findByTitulo("Cancion 2").orElse(null);
+        assertThat(cancionTest2).isNotNull();
+        assertThat(cancionTest2.getTitulo()).isEqualTo("Cancion 2");
+        assertThat(cancionTest2.getGenero()).isEqualTo("Rock");
+        assertThat(cancionTest2.getArchivoAudio()).isEqualTo("ruta/a/archivo2.mp3");
+        assertThat(cancionTest2.getDuracion()).isEqualTo("04:00");
+        assertThat(cancionTest2.getFechaSubida()).isNotNull();
     }
 }
