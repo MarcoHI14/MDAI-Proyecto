@@ -11,8 +11,6 @@ public class Cancion {
     @Column(name = "id_cancion")
     private Long idCancion;
 
-    //monfongo
-
     @Column(nullable = false)
     private String titulo;
 
