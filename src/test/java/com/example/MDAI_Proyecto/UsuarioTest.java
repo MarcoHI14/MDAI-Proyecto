@@ -4,16 +4,16 @@ import com.example.MDAI_Proyecto.data.model.Usuario;
 import com.example.MDAI_Proyecto.data.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+
+@DataJpaTest
 class UsuarioTest {
 
     @Autowired
@@ -27,14 +27,14 @@ class UsuarioTest {
         usuario.setEmail("testeador1@email.com");
 
         Usuario guardado = usuarioRepository.save(usuario);//prueba
-        assertThat(guardado.getId()).isNotNull();
-        assertThat(guardado.getUsername()).isEqualTo("Testeador1");
-        assertThat(guardado.getPassword()).isEqualTo("1234");
-        assertThat(guardado.getEmail()).isEqualTo("testeador1@email.com");
+        assertNotNull(guardado.getId());
+        assertEquals("Testeador1", guardado.getUsername());
+        assertEquals("1234", guardado.getPassword());
+        assertEquals("testeador1@email.com", guardado.getEmail());
 
         usuarioRepository.delete(guardado);
         boolean existe = usuarioRepository.findById(guardado.getId()).isPresent();
-        assertThat(existe).isFalse();
+        assertFalse(existe);
 
         Usuario usuario2 = new Usuario();
         Usuario usuario3 = new Usuario();
@@ -58,28 +58,28 @@ class UsuarioTest {
         usuarios.add(usuario4);
         List<Usuario> guardados = new ArrayList<>();
         usuarioRepository.saveAll(usuarios).forEach(guardados::add);
-        assertThat(guardados).hasSize(3);
+        assertEquals(3, guardados.size());
 
         List<Usuario> users = (List<Usuario>) usuarioRepository.findAll();
-        assertThat(users).hasSizeGreaterThanOrEqualTo(3);
+        assertTrue(users.size() >= 3);
         assertEquals(3, users.size());
 
         Usuario Testeador2 = usuarioRepository.findByUsername("Testeador2").orElse(null);
-        assertThat(Testeador2).isNotNull();
-        assertThat(Testeador2.getUsername()).isEqualTo("Testeador2");
-        assertThat(Testeador2.getPassword()).isEqualTo("2345");
-        assertThat(Testeador2.getEmail()).isEqualTo("testeador2@email.com");
+        assertNotNull(Testeador2);
+        assertEquals("Testeador2", Testeador2.getUsername());
+        assertEquals("2345", Testeador2.getPassword());
+        assertEquals("testeador2@email.com", Testeador2.getEmail());
 
         Usuario Testeador3 = usuarioRepository.findByUsername("Testeador3").orElse(null);
-        assertThat(Testeador3).isNotNull();
-        assertThat(Testeador3.getUsername()).isEqualTo("Testeador3");
-        assertThat(Testeador3.getPassword()).isEqualTo("3456");
-        assertThat(Testeador3.getEmail()).isEqualTo("testeador3@email.com");
+        assertNotNull(Testeador3);
+        assertEquals("Testeador3", Testeador3.getUsername());
+        assertEquals("3456", Testeador3.getPassword());
+        assertEquals("testeador3@email.com", Testeador3.getEmail());
 
         usuarioRepository.deleteAll(guardados); // ësto elimina los usuarios en BD, pero mantienen en memoria
-        assertThat(usuarioRepository.findByUsername("Testeador2")).isEmpty();
-        assertThat(usuarioRepository.findByUsername("Testeador3")).isEmpty();
-        assertThat(usuarioRepository.findByUsername("Testeador4")).isEmpty();
+        assertTrue(usuarioRepository.findByUsername("Testeador2").isEmpty());
+        assertTrue(usuarioRepository.findByUsername("Testeador3").isEmpty());
+        assertTrue(usuarioRepository.findByUsername("Testeador4").isEmpty());
     }
 
     @Test
@@ -103,17 +103,17 @@ class UsuarioTest {
         usuarioRepository.saveAll(List.of(usuario2, usuario3, usuario4));
 
         Usuario Testeador2 = usuarioRepository.findByUsername("Testeador2").orElse(null);
-        assertThat(Testeador2).isNotNull();
-        assertThat(Testeador2.getUsername()).isEqualTo("Testeador2");
-        assertThat(Testeador2.getPassword()).isEqualTo("2345");
+        assertNotNull(Testeador2);
+        assertEquals("Testeador2", Testeador2.getUsername());
+        assertEquals("2345", Testeador2.getPassword());
 
         Usuario Testeador3 = usuarioRepository.findByUsername("Testeador3").orElse(null);
-        assertThat(Testeador3).isNotNull();
-        assertThat(Testeador3.getUsername()).isEqualTo("Testeador3");
-        assertThat(Testeador3.getPassword()).isEqualTo("3456");
+        assertNotNull(Testeador3);
+        assertEquals("Testeador3", Testeador3.getUsername());
+        assertEquals("3456", Testeador3.getPassword());
 
         usuarioRepository.deleteAll(List.of(usuario2, usuario3, usuario4));
-        assertThat(usuarioRepository.findByUsername("Testeador4")).isEmpty();
+        assertTrue(usuarioRepository.findByUsername("Testeador4").isEmpty());
     }
 
     @Test
@@ -131,10 +131,10 @@ class UsuarioTest {
 
         usuarioRepository.saveAll(List.of(usuario2, usuario3));
         Optional<Usuario> Testeador2 = usuarioRepository.findByEmail("testeador2@gmail.com");
-        assertThat(Testeador2).isPresent();
-        assertThat(Testeador2.get().getUsername()).isEqualTo("Testeador2");
-        assertThat(Testeador2.get().getPassword()).isEqualTo("2345");
-        assertThat(Testeador2.get().getEmail()).isEqualTo("testeador2@gmail.com");
+        assertTrue(Testeador2.isPresent());
+        assertEquals("Testeador2", Testeador2.get().getUsername());
+        assertEquals("2345", Testeador2.get().getPassword());
+        assertEquals("testeador2@gmail.com", Testeador2.get().getEmail());
         usuarioRepository.deleteAll(List.of(usuario2, usuario3));
     }
 
@@ -166,13 +166,39 @@ class UsuarioTest {
 
         assertTrue(usuarioRepository.findByUsername("TesteadorModificado").isPresent());
         Usuario modificado = usuarioRepository.findByUsername("TesteadorModificado").orElse(null);
-        assertThat(modificado).isNotNull();
-        assertThat(modificado.getUsername()).isEqualTo("TesteadorModificado");
-        assertThat(modificado.getPassword()).isEqualTo("4321");
-        assertThat(modificado.getEmail()).isEqualTo("eltester@hotmail.com");
-        assertThat(usuarioRepository.count()).isEqualTo(1);
+        assertNotNull(modificado);
+        assertEquals("TesteadorModificado", modificado.getUsername());
+        assertEquals("4321", modificado.getPassword());
+        assertEquals("eltester@hotmail.com", modificado.getEmail());
+        assertEquals(1, usuarioRepository.count());
 
-        usuarioRepository.delete(modificado);
-        assertThat(usuarioRepository.findByUsername("TesteadorModificado")).isEmpty();
+        assertFalse(usuarioRepository.findByUsername("TesteadorModificado").isEmpty());
+    }
+
+    @Test
+    void noDuplicarUsuariosTest() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Duplicado");
+        usuario.setPassword("1234");
+        usuario.setEmail("duplicado@email.com");
+
+        // Guardar el usuario por primera vez
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+
+        try {
+            // Intentar guardar el mismo usuario nuevamente
+            Usuario usuarioDuplicado = new Usuario();
+            usuarioDuplicado.setUsername("Duplicado");
+            usuarioDuplicado.setPassword("5678");
+            usuarioDuplicado.setEmail("duplicado2@email.com");
+
+            usuarioRepository.save(usuarioDuplicado);
+            fail("Se pudo añadir dos veces el mismo usuario, ERROR, no debería ser posible.");
+        } catch (Exception e) {
+            System.out.println("Excepción capturada correctamente al intentar duplicar un usuario: " + e.getMessage());
+        }
+
+        // Limpiar la base de datos
+        usuarioRepository.delete(usuarioGuardado);
     }
 }

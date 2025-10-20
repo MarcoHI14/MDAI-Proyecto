@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
@@ -66,21 +67,20 @@ class CancionTest {
         canciones.add(cancion4);
         List<Cancion> guardadas = new ArrayList<>();
         cancionRepository.saveAll(canciones).forEach(guardadas::add);
-        assertThat(guardadas).hasSize(3);
+        assertEquals(3, guardadas.size());
 
         List<Cancion> allCanciones = (List<Cancion>) cancionRepository.findAll();
-        assertThat(allCanciones).hasSizeGreaterThanOrEqualTo(3);
-        assertThat(allCanciones.size()).isGreaterThanOrEqualTo(3);
+        assertTrue(allCanciones.size() >= 3);
 
         // TODO: Corregir  Nota a Juanjo de Marco: Linea 78 Da fallo en los test;
         // TODO: Posiblre fallo; el método definido devuelve Optional<Cancion>
         // TODO: (es decir un posible conjunto de resultado)
         Cancion cancionTest2 = cancionRepository.findByTitulo("Cancion 2").orElse(null);
-        assertThat(cancionTest2).isNotNull();
-        assertThat(cancionTest2.getTitulo()).isEqualTo("Cancion 2");
-        assertThat(cancionTest2.getGenero()).isEqualTo("Rock");
-        assertThat(cancionTest2.getArchivoAudio()).isEqualTo("ruta/a/archivo2.mp3");
-        assertThat(cancionTest2.getDuracion()).isEqualTo("04:00");
-        assertThat(cancionTest2.getFechaSubida()).isNotNull();
+        assertNotNull(cancionTest2);
+        assertEquals("Cancion 2", cancionTest2.getTitulo());
+        assertEquals("Rock", cancionTest2.getGenero());
+        assertEquals("ruta/a/archivo2.mp3", cancionTest2.getArchivoAudio());
+        assertEquals("04:00", cancionTest2.getDuracion());
+        assertNotNull(cancionTest2.getFechaSubida());
     }
 }
