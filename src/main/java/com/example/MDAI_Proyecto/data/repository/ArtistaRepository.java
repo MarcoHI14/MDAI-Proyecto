@@ -20,8 +20,19 @@ package com.example.MDAI_Proyecto.data.repository;
 import com.example.MDAI_Proyecto.data.model.Artista;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
 @Repository
 public interface ArtistaRepository extends CrudRepository<Artista, Long> {
 
+    /**
+     * Busca un atista por el email del usuario asociado.
+     * Ya que en la entidad Artista hay una relación @OneToOne con Usuario (campo `usuario`),
+     * Spring Data JPA permite derivar la consulta por la propiedad anidada `usuario.email`.
+     *
+     * @param email el email del usuario asociado
+     * @return Optional con el Artista si existe, vacío en caso contrario
+     */
+    Optional<Artista> findByUsuarioEmail(String email);
+    Optional<Artista> findByUsuarioUsername(String username);
 }
