@@ -21,6 +21,8 @@ class UsuarioTest {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+
+
     @Test
     void crearUsuariosTest() {
         Usuario usuario = new Usuario();
@@ -218,5 +220,41 @@ class UsuarioTest {
 
         // Limpiar la base de datos
         usuarioRepository.delete(usuarioGuardado);
+    }
+
+    @Test // CRUD Test Especificado
+    void CRUDtest() {
+        // Create
+        Usuario usuarioCreate = new Usuario();
+        usuarioCreate.setUsername("CRUDUser");
+        usuarioCreate.setPassword("crudpass");
+        usuarioCreate.setEmail("crusaders@dio.com");
+
+        Usuario savedUser = usuarioRepository.save(usuarioCreate);
+        assertNotNull(savedUser.getId());
+
+        // Read
+        Optional<Usuario> usuarioLeer = usuarioRepository.findById(savedUser.getId());
+        assertTrue(usuarioLeer.isPresent());
+        assertEquals("CRUDUser", usuarioLeer.get().getUsername());
+        assertEquals("crudpass", usuarioLeer.get().getPassword());
+        assertEquals("crusaders@dio.com", usuarioLeer.get().getEmail());
+
+        // Update
+        Usuario usuarioUpdate = usuarioLeer.get();
+        usuarioUpdate.setUsername("UPDATEUser");
+        usuarioUpdate.setPassword("crudpass2");
+        usuarioUpdate.setEmail("stardust@jojo.com");
+
+        Usuario updatedUser = usuarioRepository.save(usuarioUpdate);
+        assertEquals("UPDATEUser", updatedUser.getUsername());
+        assertEquals("crudpass2", updatedUser.getPassword());
+        assertEquals("stardust@jojo.com", updatedUser.getEmail());
+
+        // Delete
+        usuarioRepository.delete(updatedUser);
+        Optional<Usuario> usuarioDeleted = usuarioRepository.findById(updatedUser.getId());
+        assertFalse(usuarioDeleted.isPresent());
+
     }
 }
