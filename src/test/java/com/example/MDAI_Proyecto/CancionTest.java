@@ -4,6 +4,7 @@ import com.example.MDAI_Proyecto.data.model.Cancion;
 import com.example.MDAI_Proyecto.data.repository.CancionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.*;
 
@@ -11,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CancionTest {
 
     @Autowired

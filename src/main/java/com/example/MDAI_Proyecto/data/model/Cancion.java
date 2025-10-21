@@ -24,7 +24,7 @@ public class Cancion {
     private LocalDateTime fechaSubida;
 
     @ManyToOne
-    @JoinColumn(name = "id_artista", referencedColumnName = "id_usuario")
+        @JoinColumn(name = "id_artista", referencedColumnName = "id_usuario")
     private Artista artista;
 
     // Getters y setters
