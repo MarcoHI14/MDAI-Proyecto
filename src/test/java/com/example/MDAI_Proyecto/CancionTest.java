@@ -1,6 +1,7 @@
 package com.example.MDAI_Proyecto;
 
 import com.example.MDAI_Proyecto.data.model.Cancion;
+import com.example.MDAI_Proyecto.data.repository.ArtistaRepository;
 import com.example.MDAI_Proyecto.data.repository.CancionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ class CancionTest {
 
     @Autowired
     private CancionRepository cancionRepository;
+
+    @Autowired
+    private ArtistaRepository artistaRepository;
 
     @Test
     void crearCancionTest() {
@@ -178,4 +182,8 @@ class CancionTest {
         assertThat(cancionTestClassical).isPresent();
         assertThat(cancionTestClassical.get().getGenero()).isEqualTo("Classical");
     }
+
+    //TODO
+    /*@Test
+    void eliminarCancionTest(){}*/
 }
