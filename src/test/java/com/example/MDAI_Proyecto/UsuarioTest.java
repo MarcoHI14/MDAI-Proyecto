@@ -1,6 +1,8 @@
 package com.example.MDAI_Proyecto;
 
+import com.example.MDAI_Proyecto.data.model.Artista;
 import com.example.MDAI_Proyecto.data.model.Usuario;
+import com.example.MDAI_Proyecto.data.repository.ArtistaRepository;
 import com.example.MDAI_Proyecto.data.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UsuarioTest {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-
+    @Autowired
+    private ArtistaRepository artistaRepository;
 
     @Test
     void crearUsuariosTest() {
@@ -257,4 +260,34 @@ class UsuarioTest {
         assertFalse(usuarioDeleted.isPresent());
 
     }
+
+    @Test
+    void  eliminarUsuarioyArtistaCascadaTest() {
+        // Crear y guardar un usuario
+        Usuario usuario = new Usuario();
+        usuario.setUsername("ArtistaUsuario");
+        usuario.setPassword("artistapass");
+        usuario.setEmail("usuarti@gmail.com");
+        Artista artista = new Artista();
+        artista.setBiografia("Biografia del artista");
+        artista.setUsuario(usuario);
+        usuario.setArtista(artista);
+
+        Usuario guardado = usuarioRepository.save(usuario);
+        Artista artistaguardado = artistaRepository.save(artista);
+
+
+        // Verificar que el artista se ha guardado correctamente
+        assertNotNull(artistaguardado.getIdArtista());
+        assertEquals("Biografia del artista", artistaguardado.getBiografia());
+        assertEquals(guardado.getId(), artistaguardado.getUsuario().getId());
+
+        // Eliminar el usuario
+        usuarioRepository.delete(guardado);
+        // Verificar que el artista asociado también se ha eliminado
+        Optional<Artista> artistaEliminado = artistaRepository.findById(artistaguardado.getIdArtista());
+        assertFalse(artistaEliminado.isPresent());
+
+    }
 }
+
