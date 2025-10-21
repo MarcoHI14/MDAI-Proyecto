@@ -178,6 +178,22 @@ class UsuarioTest {
     }
 
     @Test
+    void findByIdTest() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Testeador1");
+        usuario.setPassword("1234");
+        usuario.setEmail("eltester@hotmail.com");
+        Usuario guardado = usuarioRepository.save(usuario);
+        Long id = guardado.getId();
+        Optional<Usuario> usuarioEncontrado = usuarioRepository.findById(id);
+        assertTrue(usuarioEncontrado.isPresent());
+        assertEquals("Testeador1", usuarioEncontrado.get().getUsername());
+        assertEquals("1234", usuarioEncontrado.get().getPassword());
+        assertEquals("eltester@hotmail.com", usuarioEncontrado.get().getEmail());
+        usuarioRepository.delete(guardado);
+    }
+
+    @Test
     void noDuplicarUsuariosTest() {
         Usuario usuario = new Usuario();
         usuario.setUsername("Duplicado");
