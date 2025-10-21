@@ -1,15 +1,15 @@
 package com.example.MDAI_Proyecto;
 
-import com.example.MDAI_Proyecto.data.model.Cancion;
-import com.example.MDAI_Proyecto.data.repository.ArtistaRepository;
-import com.example.MDAI_Proyecto.data.repository.CancionRepository;
+import com.example.MDAI_Proyecto.data.model.*;
+import com.example.MDAI_Proyecto.data.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -20,6 +20,9 @@ class CancionTest {
 
     @Autowired
     private ArtistaRepository artistaRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Test
     void crearCancionTest() {
@@ -183,7 +186,59 @@ class CancionTest {
         assertThat(cancionTestClassical.get().getGenero()).isEqualTo("Classical");
     }
 
-    //TODO
-    /*@Test
-    void eliminarCancionTest(){}*/
+    @Test
+    void findByArtistaTest() {
+
+        Usuario user = new Usuario();
+        user.setUsername("ArtistaCancion");
+        user.setPassword("pass123");
+        user.setEmail("artista@gmail.com");
+        Usuario guardadoUser = usuarioRepository.save(user);
+        Artista artista = new Artista();
+        artista.setUsuario(guardadoUser);
+        artista.setBiografia("Biografía del artista");
+        Artista guardadoArtista = artistaRepository.save(artista);
+
+        Usuario user2 = new Usuario();
+        user2.setUsername("ArtistaMarginado");
+        user2.setPassword("pass123");
+        user2.setEmail("artistaaaaaa@gmail.com");
+        Usuario guardadoUser2 = usuarioRepository.save(user2);
+        Artista artista2 = new Artista();
+        artista2.setUsuario(guardadoUser2);
+        artista2.setBiografia("Biografía del artista");
+        Artista guardadoArtista2 = artistaRepository.save(artista2);
+
+        Cancion cancion2 = new Cancion();
+        Cancion cancion3 = new Cancion();
+        Cancion cancion4 = new Cancion();
+
+        cancion2.setTitulo("Cancion 2");
+        cancion2.setGenero("Rock");
+        cancion2.setArchivoAudio("ruta/a/archivo2.mp3");
+        cancion2.setDuracion("04:00");
+        cancion2.setFechaSubida(java.time.LocalDateTime.now());
+        cancion2.setArtista(guardadoArtista);
+
+        cancion3.setTitulo("Cancion 3");
+        cancion3.setGenero("Jazz");
+        cancion3.setArchivoAudio("ruta/a/archivo3.mp3");
+        cancion3.setDuracion("05:15");
+        cancion3.setFechaSubida(java.time.LocalDateTime.now());
+        cancion3.setArtista(guardadoArtista2);
+
+        cancion4.setTitulo("Cancion 4");
+        cancion4.setGenero("Classical");
+        cancion4.setArchivoAudio("ruta/a/archivo4.mp3");
+        cancion4.setDuracion("02:45");
+        cancion4.setFechaSubida(java.time.LocalDateTime.now());
+        cancion4.setArtista(guardadoArtista2);
+
+        cancionRepository.saveAll(List.of(cancion2, cancion3, cancion4));
+        Cancion encontrada = cancionRepository.findByArtista_Usuario_Username("ArtistaCancion").orElse(null);
+        assertNotNull(encontrada);
+        assertEquals("Cancion 2", encontrada.getTitulo());
+        assertEquals("Rock", encontrada.getGenero());
+        assertEquals("ArtistaCancion", encontrada.getArtista().getUsuario().getUsername());
+    }
 }
