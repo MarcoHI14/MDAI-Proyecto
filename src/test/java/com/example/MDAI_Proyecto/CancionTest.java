@@ -241,4 +241,32 @@ class CancionTest {
         assertEquals("Rock", encontrada.getGenero());
         assertEquals("ArtistaCancion", encontrada.getArtista().getUsuario().getUsername());
     }
+
+    @Test
+    void CRUDTest () {
+        //CREATE
+        Cancion cancionCreated = new Cancion();
+        cancionCreated.setTitulo("Cancion CRUD");
+        cancionCreated.setGenero("Pop");
+        cancionCreated.setArchivoAudio("ruta/a/archivoCRUD.mp3");
+        cancionCreated.setDuracion("03:45");
+        cancionCreated.setFechaSubida(java.time.LocalDateTime.now());
+        Cancion savedCancion = cancionRepository.save(cancionCreated);
+        assertNotNull(savedCancion.getIdCancion());
+
+        //READ
+        Optional<Cancion> readCancion = cancionRepository.findById(savedCancion.getIdCancion());
+        assertTrue(readCancion.isPresent());
+        assertEquals("Cancion CRUD", readCancion.get().getTitulo());
+
+        //UPDATE
+        readCancion.get().setGenero("Rock");
+        Cancion updatedCancion = cancionRepository.save(readCancion.get());
+        assertEquals("Rock", updatedCancion.getGenero());
+
+        //DELETE
+        cancionRepository.delete(updatedCancion);
+        Optional<Cancion> deletedCancion = cancionRepository.findById(updatedCancion.getIdCancion());
+        assertFalse(deletedCancion.isPresent());
+    }
 }

@@ -27,7 +27,6 @@ import java.util.Optional;
 public interface CancionRepository extends CrudRepository<Cancion, Long> {
     Optional<Cancion> findByTitulo(String titulo);
     Optional<Cancion> findByGenero(String genero);
-
     //Artista.getUsuario().getUsername()
     Optional<Cancion> findByArtista_Usuario_Username(String artista);
 }

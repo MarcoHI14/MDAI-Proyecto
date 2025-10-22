@@ -9,7 +9,7 @@ public class Playlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_playlist")
-    private Integer idPlaylist;
+    private Long idPlaylist;
 
     @Column(nullable = false)
     private String nombre;
@@ -24,8 +24,8 @@ public class Playlist {
     private Usuario usuario;
 
     // Getters y setters
-    public Integer getIdPlaylist() { return idPlaylist; }
-    public void setIdPlaylist(Integer idPlaylist) { this.idPlaylist = idPlaylist; }
+    public Long getIdPlaylist() { return idPlaylist; }
+    public void setIdPlaylist(Long idPlaylist) { this.idPlaylist = idPlaylist; }
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getDescripcion() { return descripcion; }

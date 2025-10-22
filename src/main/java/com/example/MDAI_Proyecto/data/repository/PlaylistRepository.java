@@ -26,4 +26,5 @@ import java.util.Optional;
 public interface PlaylistRepository extends CrudRepository<Playlist, Long> {
 
     Optional<Playlist> findByNombre(String nombre);
+    Optional<Playlist> findByUsuario_Username(String nombre);
 }

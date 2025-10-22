@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -93,5 +95,97 @@ public class PlaylistTest {
         assertEquals("Cuarta Playlist", encontrada4.getNombre());
 
         playlistRepository.deleteAll(List.of(playlist2, playlist3, playlist4));
+    }
+
+    @Test
+    void findByUsuario_Username() {
+        Usuario usuarioCreate = new Usuario();
+        usuarioCreate.setUsername("User");
+        usuarioCreate.setPassword("userpass");
+        usuarioCreate.setEmail("user@dio.com");
+        Usuario savedUser = usuarioRepository.save(usuarioCreate);
+        assertNotNull(savedUser.getId());
+
+        Usuario usuarioCreate2 = new Usuario();
+        usuarioCreate2.setUsername("Edward");
+        usuarioCreate2.setPassword("fma2003");
+        usuarioCreate2.setEmail("brother@alchemist.com");
+        Usuario savedUser2 = usuarioRepository.save(usuarioCreate2);
+        assertNotNull(savedUser2.getId());
+
+        Usuario usuarioCreate3 = new Usuario();
+        usuarioCreate3.setUsername("Goodman");
+        usuarioCreate3.setPassword("brba_btcasa");
+        usuarioCreate3.setEmail("bettercall@saul.com");
+        Usuario savedUser3 = usuarioRepository.save(usuarioCreate3);
+
+        Playlist playlistCreate = new Playlist();
+        playlistCreate.setNombre("Playlist1");
+        playlistCreate.setDescripcion("Playlist creada para asignar artista");
+        playlistCreate.setFechaCreacion(LocalDateTime.now());
+        playlistCreate.setUsuario(savedUser);
+
+        Playlist playlistCreate1 = new Playlist();
+        playlistCreate1.setNombre("Playlist2");
+        playlistCreate1.setDescripcion("Playlist creada para funcionamiento");
+        playlistCreate1.setFechaCreacion(LocalDateTime.now());
+        playlistCreate1.setUsuario(savedUser2);
+
+        Playlist playlistCreate2 = new Playlist();
+        playlistCreate2.setNombre("Playlist3");
+        playlistCreate2.setDescripcion("Playlist creada para comprobar funcionamiento");
+        playlistCreate2.setFechaCreacion(LocalDateTime.now());
+        playlistCreate2.setUsuario(savedUser3);
+
+        playlistRepository.saveAll(List.of(playlistCreate, playlistCreate1, playlistCreate2));
+
+        Playlist encontrada = playlistRepository.findByUsuario_Username("User").orElse(null);
+        assertNotNull(encontrada);
+        assertEquals("User", encontrada.getUsuario().getUsername());
+
+        Playlist encontrada1 = playlistRepository.findByUsuario_Username("Edward").orElse(null);
+        assertNotNull(encontrada1);
+        assertEquals("Edward", encontrada1.getUsuario().getUsername());
+
+        Playlist encontrada2 = playlistRepository.findByUsuario_Username("Goodman").orElse(null);
+        assertNotNull(encontrada2);
+        assertEquals("Goodman", encontrada2.getUsuario().getUsername());
+
+    }
+
+    @Test
+    void CRUDTest () {
+
+        //CREATE
+        Playlist playlistCreate = new Playlist();
+        playlistCreate.setNombre("PlaylistCRUD");
+        playlistCreate.setDescripcion("Playlist creada para comprobar funcionamiento CRUD");
+        playlistCreate.setFechaCreacion(LocalDateTime.now());
+        Playlist savedPlaylist = playlistRepository.save(playlistCreate);
+        assertNotNull(savedPlaylist);
+
+        //READ
+        Optional<Playlist> readPlaylist = playlistRepository.findById(savedPlaylist.getIdPlaylist());
+        assertTrue(readPlaylist.isPresent());
+        assertEquals("PlaylistCRUD", readPlaylist.get().getNombre());
+
+
+        Usuario usuarioCreate = new Usuario();
+        usuarioCreate.setUsername("CRUDUser");
+        usuarioCreate.setPassword("crudpass");
+        usuarioCreate.setEmail("crusaders@dio.com");
+        Usuario savedUser = usuarioRepository.save(usuarioCreate);
+        assertNotNull(savedUser.getId());
+        //UPDATE
+        readPlaylist.get().setUsuario(savedUser);
+        readPlaylist.get().setDescripcion("Playlist Modificada");
+        assertEquals(savedUser, readPlaylist.get().getUsuario());
+        assertEquals("Playlist Modificada", readPlaylist.get().getDescripcion());
+
+        //DELETE
+        playlistRepository.delete(savedPlaylist);
+        Optional<Playlist> deletedPlaylist = playlistRepository.findById(savedPlaylist.getIdPlaylist());
+        assertFalse(deletedPlaylist.isPresent());
+        assertNotNull(savedUser); //Comprobamos que el usuario asignado a la playlist no se borre
     }
 }
