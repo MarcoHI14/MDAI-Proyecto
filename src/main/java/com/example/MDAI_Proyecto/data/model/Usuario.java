@@ -18,6 +18,21 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String email;
 
+    // Relación bidireccional con Artista: opcional, permite cascada de borrado desde Usuario
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private com.example.MDAI_Proyecto.data.model.Artista artista;
+
+    public com.example.MDAI_Proyecto.data.model.Artista getArtista() {
+        return artista;
+    }
+
+    public void setArtista(com.example.MDAI_Proyecto.data.model.Artista artista) {
+        this.artista = artista;
+        if (artista != null && artista.getUsuario() != this) {
+            artista.setUsuario(this);
+        }
+    }
+
     // Getters y setters
     public Long getId() {
         return id;
