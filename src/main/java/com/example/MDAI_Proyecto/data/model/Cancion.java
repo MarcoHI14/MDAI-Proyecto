@@ -23,8 +23,8 @@ public class Cancion {
     @Column(name = "fecha_subida")
     private LocalDateTime fechaSubida;
 
-    @ManyToOne
-        @JoinColumn(name = "id_artista", referencedColumnName = "id_usuario")
+    @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "id_artista", nullable = false)
     private Artista artista;
 
     // Getters y setters
@@ -43,4 +43,3 @@ public class Cancion {
     public Artista getArtista() { return artista; }
     public void setArtista(Artista artista) { this.artista = artista; }
 }
-

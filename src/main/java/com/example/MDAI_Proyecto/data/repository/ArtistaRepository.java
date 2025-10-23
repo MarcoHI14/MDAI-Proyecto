@@ -34,5 +34,14 @@ public interface ArtistaRepository extends CrudRepository<Artista, Long> {
      * @return Optional con el Artista si existe, vacío en caso contrario
      */
     Optional<Artista> findByUsuarioEmail(String email);
+
+    /**
+     * Busca un artista por el nombre de usuario del usuario asociado.
+     * Utiliza la relación @OneToOne con Usuario (campo `usuario`) para derivar la consulta
+     * por la propiedad anidada `usuario.username`.
+     *
+     * @param username el nombre de usuario del usuario asociado
+     * @return Optional con el Artista si existe, vacío en caso contrario
+     */
     Optional<Artista> findByUsuarioUsername(String username);
 }

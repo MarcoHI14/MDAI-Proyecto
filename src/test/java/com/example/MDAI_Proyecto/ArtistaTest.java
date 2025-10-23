@@ -5,6 +5,7 @@ import com.example.MDAI_Proyecto.data.model.Cancion;
 import com.example.MDAI_Proyecto.data.model.Usuario;
 import com.example.MDAI_Proyecto.data.repository.ArtistaRepository;
 import com.example.MDAI_Proyecto.data.repository.UsuarioRepository;
+import com.example.MDAI_Proyecto.data.repository.CancionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -24,6 +25,14 @@ public class ArtistaTest {
     @Autowired
     private UsuarioRepository userRepository;
 
+    @Autowired
+    private CancionRepository cancionRepository;
+
+    /**
+     * Test para crear artistas asociados a usuarios.
+     * Verifica que se puedan crear múltiples artistas con usuarios distintos,
+     * y que no se pueda crear un artista duplicado para el mismo usuario.
+     */
     @Test
     void crearArtistaComoUsuarioTest() {
         // Por errores pasados...
@@ -79,6 +88,11 @@ public class ArtistaTest {
         assertEquals(0, userRepository.count());
     }
 
+    /**
+     * Test para buscar artistas por el email del usuario asociado.
+     * Verifica que se puedan encontrar artistas por email y que no se encuentren
+     * artistas inexistentes.
+     */
     @Test
     void findByUsuarioEmailTest() {
         Usuario usuario = new Usuario();
@@ -122,6 +136,11 @@ public class ArtistaTest {
 
     }
 
+    /**
+     * Test para buscar artistas por el nombre de usuario del usuario asociado.
+     * Verifica que se puedan encontrar artistas por nombre de usuario y que no se encuentren
+     * artistas inexistentes.
+     */
     @Test
     void findByUsuarioUsernameTest() {
         Usuario usuario = new Usuario();
@@ -165,6 +184,10 @@ public class ArtistaTest {
 
     }
 
+    /**
+     * Test para verificar que no se pueda crear un artista sin un usuario asociado.
+     * Intenta guardar un artista sin asignar un usuario y verifica que se lance una excepción.
+     */
     @Test
     void artistaSinUsuarioNoSeCreaTest() {
         Artista artista = new Artista();
@@ -180,6 +203,11 @@ public class ArtistaTest {
         assertEquals(0, artistaRepository.count());
     }
 
+    /**
+     * Test para verificar la relación entre Artista y Cancion.
+     * Crea artistas y canciones, asigna canciones a artistas,
+     * y verifica que no se pueda asignar la misma canción a dos artistas distintos.
+     */
     @Test
     void artistaCancionesTest() {
         Usuario usuario = new Usuario();
@@ -247,5 +275,126 @@ public class ArtistaTest {
         assertEquals(0, artistaRepository.count());
         assertEquals(0, userRepository.count());
 
+    }
+
+    /**
+     * Test para verificar las operaciones CRUD básicas en la entidad Artista.
+     * Crea, lee, actualiza y elimina un artista, verificando cada operación.
+     */
+    @Test
+    void CRUDArtistaTest() {
+        // Crear usuario
+        Usuario usuario = new Usuario();
+        usuario.setUsername("ArdeBogotá");
+        usuario.setEmail("bogotaprendida@usu.com");
+        usuario.setPassword("rockandroll");
+        Usuario usuarioGuardado = userRepository.save(usuario);
+
+        // Crear artista asociado al usuario
+        Artista artista = new Artista();
+        artista.setUsuario(usuarioGuardado);
+        artista.setBiografia("Banda española de rock alternativo.");
+        Artista artistaGuardado = artistaRepository.save(artista);
+        assertNotNull(artistaGuardado.getIdArtista());
+        assertEquals("Banda española de rock alternativo.", artistaGuardado.getBiografia());
+
+        // Leer artista
+        Artista artistaLeido = artistaRepository.findById(artistaGuardado.getIdArtista()).orElse(null);
+        assertNotNull(artistaLeido);
+        assertEquals("ArdeBogotá", artistaLeido.getUsuario().getUsername());
+
+        // Actualizar artista
+        artistaLeido.setBiografia("Banda española de rock alternativo y pop.");
+        Artista artistaActualizado = artistaRepository.save(artistaLeido);
+        assertEquals("Banda española de rock alternativo y pop.", artistaActualizado.getBiografia());
+        artistaLeido.setUsuario(usuarioGuardado);
+        assertEquals("ArdeBogotá", artistaLeido.getUsuario().getUsername());
+
+        // Eliminar artista
+        artistaRepository.delete(artistaLeido);
+        Artista artistaEliminado = artistaRepository.findById(artistaLeido.getIdArtista()).orElse(null);
+        assertNull(artistaEliminado);
+    }
+
+    /**
+     * Test para verificar que el ID del artista coincide con el ID del usuario asociado.
+     * Crea un usuario y un artista, y verifica que los IDs sean iguales.
+     */
+    @Test
+    void artistaIdEqualsUsuarioIdTest() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("VivaSuecia");
+        usuario.setEmail("vivasuecia@gamil.com");
+        usuario.setPassword("dulcecanto");
+        Usuario usuarioGuardado = userRepository.save(usuario);
+
+        Artista artista = new Artista();
+        artista.setUsuario(usuarioGuardado);
+        artista.setBiografia("Banda española de indie rock.");
+        Artista artistaGuardado = artistaRepository.save(artista);
+        assertNotNull(artistaGuardado.getIdArtista());
+
+        assertEquals(usuarioGuardado.getId(), artistaGuardado.getIdArtista());
+
+        artistaRepository.delete(artistaGuardado);
+        userRepository.delete(usuarioGuardado);
+
+        assertEquals(0, artistaRepository.count());
+        assertEquals(0, userRepository.count());
+    }
+
+    @Test
+    void eliminarArtistaEliminaCancionesTest() {
+        // Limpiar datos previos para aislamiento
+        cancionRepository.deleteAll();
+        artistaRepository.deleteAll();
+        userRepository.deleteAll();
+
+        // Crear y guardar usuario
+        Usuario usuario = new Usuario();
+        usuario.setUsername("TestArtistUser");
+        usuario.setEmail("testartist@example.com");
+        usuario.setPassword("pass");
+        Usuario usuarioGuardado = userRepository.save(usuario);
+
+        // Crear artista asociado
+        Artista artista = new Artista();
+        artista.setUsuario(usuarioGuardado);
+        artista.setBiografia("Artista para test de cascada.");
+
+        // Crear dos canciones y añadirlas al artista (la relación bidireccional se mantiene por addCancion)
+        Cancion cancion1 = new Cancion();
+        cancion1.setTitulo("Carretera-Test");
+        cancion1.setGenero("Indie");
+        cancion1.setArchivoAudio("/tmp/carretera.mp3");
+        cancion1.setDuracion("04:00");
+        cancion1.setFechaSubida(java.time.LocalDateTime.now());
+        artista.addCancion(cancion1);
+
+        Cancion cancion2 = new Cancion();
+        cancion2.setTitulo("Azul-Test");
+        cancion2.setGenero("Indie");
+        cancion2.setArchivoAudio("/tmp/azul.mp3");
+        cancion2.setDuracion("03:30");
+        cancion2.setFechaSubida(java.time.LocalDateTime.now());
+        artista.addCancion(cancion2);
+
+        // Guardar artista; cascade = ALL en Artista debería persistir las canciones también
+        artistaRepository.save(artista);
+
+        // Comprobaciones: las canciones deben existir (consulta por título)
+        assertTrue(cancionRepository.findByTitulo("Carretera-Test").isPresent(), "La canción Carretera-Test debe existir tras persistir el artista");
+        assertTrue(cancionRepository.findByTitulo("Azul-Test").isPresent(), "La canción Azul-Test debe existir tras persistir el artista");
+
+        // Borrar el artista
+        artistaRepository.delete(artista);
+
+        // Tras eliminar el artista, las canciones deben haber desaparecido por cascade
+        assertFalse(cancionRepository.findByTitulo("Carretera-Test").isPresent(), "La canción Carretera-Test debe borrarse tras eliminar el artista");
+        assertFalse(cancionRepository.findByTitulo("Azul-Test").isPresent(), "La canción Azul-Test debe borrarse tras eliminar el artista");
+
+        // Comprobación final: no debe quedar el artista ni canciones
+        assertEquals(0, artistaRepository.count(), "No deben quedar artistas");
+        assertEquals(0, cancionRepository.count(), "No deben quedar canciones");
     }
 }
