@@ -19,7 +19,7 @@ public class Artista {
     @Column(name = "biografia")
     private String biografia;
 
-    // Relación OneToMany con Cancion (lado inverso: Cancion.artista es el owning side)
+    // Relación OneToMany con Cancion (lado inverso: Cancion.artista es el owning side) CASCADA
     @OneToMany(mappedBy = "artista", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cancion> canciones = new ArrayList<>();
 
