@@ -80,9 +80,6 @@ class CancionTest {
         assertThat(allCanciones).hasSizeGreaterThanOrEqualTo(3);
         assertThat(allCanciones.size()).isGreaterThanOrEqualTo(3);
 
-        // TODO: Corregir  Nota a Juanjo de Marco: Linea 78 Da fallo en los test;
-        // TODO: Posiblre fallo; el método definido devuelve Optional<Cancion>
-        // TODO: (es decir un posible conjunto de resultado)
         Optional<Cancion> cancionTest2 = Optional.ofNullable(cancionRepository.findByTitulo("Cancion 2").orElse(null));
         assertThat(cancionTest2).isNotNull();
     }
