@@ -26,6 +26,7 @@ class UsuarioTest {
     @Autowired
     private ArtistaRepository artistaRepository;
 
+    /** Test para crear, leer, actualizar y eliminar usuarios en la base de datos. **/
     @Test
     void crearUsuariosTest() {
         Usuario usuario = new Usuario();
@@ -89,6 +90,7 @@ class UsuarioTest {
         assertTrue(usuarioRepository.findByUsername("Testeador4").isEmpty());
     }
 
+    /** Test para buscar usuarios por su nombre de usuario. Usando findByUsernameTest. **/
     @Test
     void findByUsernameTest() {
         Usuario usuario2 = new Usuario();
@@ -123,6 +125,7 @@ class UsuarioTest {
         assertTrue(usuarioRepository.findByUsername("Testeador4").isEmpty());
     }
 
+    /** Test para buscar usuarios por su email. Usando findByEmailTest. **/
     @Test
     void findByEmailTest() {
         Usuario usuario2 = new Usuario();
@@ -145,6 +148,7 @@ class UsuarioTest {
         usuarioRepository.deleteAll(List.of(usuario2, usuario3));
     }
 
+    /** Test para comprobar el método comprobarPassword de la clase Usuario. **/
     @Test
     void comprobarPasswordTest() {
         Usuario usuario = new Usuario();
@@ -158,6 +162,7 @@ class UsuarioTest {
         usuarioRepository.delete(usuario);
     }
 
+    /** Test para cambiar los atributos de un usuario existente. **/
     @Test
     void cambiarAtributosTest() {
         Usuario usuario = new Usuario();
@@ -182,6 +187,7 @@ class UsuarioTest {
         assertFalse(usuarioRepository.findByUsername("TesteadorModificado").isEmpty());
     }
 
+    /** Test para buscar un usuario por su ID. Usando findById. **/
     @Test
     void findByIdTest() {
         Usuario usuario = new Usuario();
@@ -198,6 +204,7 @@ class UsuarioTest {
         usuarioRepository.delete(guardado);
     }
 
+    /** Test para comprobar que no se pueden duplicar usuarios en la base de datos. **/
     @Test
     void noDuplicarUsuariosTest() {
         Usuario usuario = new Usuario();
@@ -225,7 +232,9 @@ class UsuarioTest {
         usuarioRepository.delete(usuarioGuardado);
     }
 
-    @Test // CRUD Test Especificado
+    /** Test CRUD completo para la entidad Usuario. **/
+    @Test
+        // CRUD Test Especificado
     void CRUDtest() {
         // Create
         Usuario usuarioCreate = new Usuario();
@@ -261,8 +270,9 @@ class UsuarioTest {
 
     }
 
+    /** Test para comprobar la eliminación en cascada de un artista al eliminar su usuario asociado. **/
     @Test
-    void  eliminarUsuarioyArtistaCascadaTest() {
+    void eliminarUsuarioyArtistaCascadaTest() {
         // Crear y guardar un usuario
         Usuario usuario = new Usuario();
         usuario.setUsername("ArtistaUsuario");
@@ -288,6 +298,103 @@ class UsuarioTest {
         Optional<Artista> artistaEliminado = artistaRepository.findById(artistaguardado.getIdArtista());
         assertFalse(artistaEliminado.isPresent());
 
+    }
+
+    /**Test para comprobar que el username no puede repetirse entre usuarios.**/
+    @Test
+    void usuarioUsernameUnique() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Marco");
+        usuario.setPassword("M14");
+        usuario.setEmail("marco@unex.es");
+        usuarioRepository.save(usuario);
+
+        Usuario usuario1 = new Usuario();
+        usuario1.setUsername("Marco");
+        usuario1.setPassword("M15");
+        usuario1.setEmail("marco2@uex.com");
+        try {
+            usuarioRepository.save(usuario1);
+            fail("Se pudo añadir dos veces el mismo username, ERROR, no debería ser posible.");
+            usuarioRepository.delete(usuario1);
+        } catch (Exception e) {
+            System.out.println("Excepción capturada correctamente al intentar duplicar un username: " + e.getMessage());
+        }
+
+        usuarioRepository.delete(usuario);
+    }
+
+    /**Test para comprobar que el username de un usuario no puede ser nulo.**/
+    @Test
+    void usuarioUsernameNullable() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername(null);
+        usuario.setPassword("M14");
+        usuario.setEmail("m14@gamil.org");
+        try {
+            usuarioRepository.save(usuario);
+            fail("Se pudo añadir un usuario con username nulo, ERROR, no debería ser posible.");
+            usuarioRepository.delete(usuario);
+        } catch (Exception e) {
+            System.out.println("Excepción capturada correctamente al intentar añadir un usuario con username nulo: " + e.getMessage());
+        }
+
+    }
+
+    /**Test para comprobar que el password de un usuario no puede ser nulo.**/
+    @Test
+    void usuarioPasswordNullable() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Marco");
+        usuario.setPassword(null);
+        usuario.setEmail("marc0@dub.com");
+        try {
+            usuarioRepository.save(usuario);
+            fail("Se pudo añadir un usuario con password nulo, ERROR, no debería ser posible.");
+            usuarioRepository.delete(usuario);
+        } catch (Exception e) {
+            System.out.println("Excepción capturada correctamente al intentar añadir un usuario con password nulo: " + e.getMessage());
+        }
+    }
+
+    /**Test para comprobar que el email no puede repetirse entre usuarios.**/
+    @Test
+    void usuarioEmailUnique() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Marco1");
+        usuario.setPassword("M14");
+        usuario.setEmail("original@mail.com");
+        usuarioRepository.save(usuario);
+
+        Usuario usuario1 = new Usuario();
+        usuario1.setUsername("Marco2");
+        usuario1.setPassword("M15");
+        usuario1.setEmail("original@mail.com");
+
+        try {
+            usuarioRepository.save(usuario1);
+            fail("Se pudo añadir dos veces el mismo email, ERROR, no debería ser posible.");
+            usuarioRepository.delete(usuario1);
+        } catch (Exception e) {
+            System.out.println("Excepción capturada correctamente al intentar duplicar un email: " + e.getMessage());
+        }
+        usuarioRepository.delete(usuario);
+    }
+
+    /**Test para comprobar que el email de un usuario no puede ser nulo.**/
+    @Test
+    void usuarioEmailNullable() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Marco");
+        usuario.setPassword("M14");
+        usuario.setEmail(null);
+        try {
+            usuarioRepository.save(usuario);
+            fail("Se pudo añadir un usuario con email nulo, ERROR, no debería ser posible.");
+            usuarioRepository.delete(usuario);
+        } catch (Exception e) {
+            System.out.println("Excepción capturada correctamente al intentar añadir un usuario con email nulo: " + e.getMessage());
+        }
     }
 }
 

@@ -23,8 +23,28 @@ import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends CrudRepository<Usuario, Long> {
+    /**
+     * Busca un usuario por su nombre de usuario.
+     *
+     * @param username El nombre de usuario a buscar.
+     * @return Un Optional que contiene el usuario si se encuentra, o vacío si no.
+     */
     Optional<Usuario> findByUsername(String username);
+
+    /**
+     * Busca un usuario por su correo electrónico.
+     *
+     * @param email El correo electrónico a buscar.
+     * @return Un Optional que contiene el usuario si se encuentra, o vacío si no.
+     */
     Optional<Usuario> findByEmail(String email);
+
+    /**
+     * Busca un usuario por su ID.
+     *
+     * @param id El ID del usuario a buscar.
+     * @return Un Optional que contiene el usuario si se encuentra, o vacío si no.
+     */
     Optional<Usuario> findById(Long id);
 
 
