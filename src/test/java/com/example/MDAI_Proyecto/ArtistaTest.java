@@ -343,6 +343,10 @@ public class ArtistaTest {
         assertEquals(0, userRepository.count());
     }
 
+    /**
+     * Test para verificar que al eliminar un artista se eliminan también sus canciones asociadas.
+     * Crea un artista con dos canciones, elimina el artista y verifica que las canciones también se eliminen.
+     */
     @Test
     void eliminarArtistaEliminaCancionesTest() {
         // Limpiar datos previos para aislamiento
@@ -396,5 +400,61 @@ public class ArtistaTest {
         // Comprobación final: no debe quedar el artista ni canciones
         assertEquals(0, artistaRepository.count(), "No deben quedar artistas");
         assertEquals(0, cancionRepository.count(), "No deben quedar canciones");
+    }
+
+    @Test
+    void eliminarUsuarioEliminaArtistaYCancionesTest() {
+        cancionRepository.deleteAll();
+        artistaRepository.deleteAll();
+        userRepository.deleteAll();
+
+        // Crear y guardar usuario
+        Usuario usuario = new Usuario();
+        usuario.setUsername("LaMODA");
+        usuario.setEmail("moda@gmail.com");
+        usuario.setPassword("LaMODA123");
+        Usuario usuarioGuardado = userRepository.save(usuario);
+
+        // Crear artista asociado
+        Artista artista = new Artista();
+        artista.setUsuario(usuarioGuardado);
+        artista.setBiografia("La Maravillosa Orquesta del Alcohol");
+        // Para que la cascada funcione al borrar el usuario -> asignar artista al usuario también ¡IMPORTANTE!
+        usuario.setArtista(artista);
+
+        // Crear dos canciones y añadirlas al artista
+        Cancion cancion1 = new Cancion();
+        cancion1.setTitulo("Los hijos de Jhonny Cash");
+        cancion1.setGenero("Folk Rock");
+        cancion1.setArchivoAudio("/tmp/johnnycash.mp3");
+        cancion1.setDuracion("05:00");
+        cancion1.setFechaSubida(java.time.LocalDateTime.now());
+        artista.addCancion(cancion1);
+
+        Cancion cancion2 = new Cancion();
+        cancion2.setTitulo("Nómadas");
+        cancion2.setGenero("Folk Rock");
+        cancion2.setArchivoAudio("/tmp/nomadas.mp3");
+        cancion2.setDuracion("04:30");
+        cancion2.setFechaSubida(java.time.LocalDateTime.now());
+        artista.addCancion(cancion2);
+
+        // Guardar artista; cascade = ALL en Artista debería persistir las canciones también
+        artistaRepository.save(artista);
+        // Comprobaciones: las canciones deben existir
+        assertTrue(cancionRepository.findByTitulo("Los hijos de Jhonny Cash").isPresent());
+        assertTrue(cancionRepository.findByTitulo("Nómadas").isPresent());
+
+        // Borrar el usuario
+        userRepository.delete(usuarioGuardado);
+        // Tras eliminar el usuario, el artista y las canciones deben haber desaparecido
+        assertFalse(artistaRepository.findById(artista.getIdArtista()).isPresent());
+        assertFalse(cancionRepository.findByTitulo("Los hijos de Jhonny Cash").isPresent());
+        assertFalse(cancionRepository.findByTitulo("Nómadas").isPresent());
+
+        // Comprobación final: no debe quedar el artista ni canciones ni usuario
+        assertEquals(0, artistaRepository.count());
+        assertEquals(0, cancionRepository.count());
+        assertEquals(0, userRepository.count());
     }
 }
