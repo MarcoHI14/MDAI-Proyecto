@@ -402,6 +402,10 @@ public class ArtistaTest {
         assertEquals(0, cancionRepository.count(), "No deben quedar canciones");
     }
 
+    /**
+     * Test para verificar que al eliminar un usuario se eliminan también el artista y las canciones asociadas.
+     * Crea un usuario con un artista y dos canciones, elimina el usuario y verifica que el artista y las canciones también se eliminen.
+     */
     @Test
     void eliminarUsuarioEliminaArtistaYCancionesTest() {
         cancionRepository.deleteAll();

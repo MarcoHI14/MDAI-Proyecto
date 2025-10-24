@@ -20,13 +20,18 @@ public class Usuario {
 
     // Relación bidireccional con Artista: opcional, permite cascada de borrado desde Usuario
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private com.example.MDAI_Proyecto.data.model.Artista artista;
+    private Artista artista;
 
-    public com.example.MDAI_Proyecto.data.model.Artista getArtista() {
+    Artista getArtista() {
         return artista;
     }
 
-    public void setArtista(com.example.MDAI_Proyecto.data.model.Artista artista) {
+    /** Establece el artista asociado a este usuario.
+     * Mantiene la consistencia de la relación bidireccional.
+     *
+     * @param artista el artista a asociar
+     */
+    public void setArtista(Artista artista) {
         this.artista = artista;
         if (artista != null && artista.getUsuario() != this) {
             artista.setUsuario(this);
@@ -66,6 +71,12 @@ public class Usuario {
         this.email = email;
     }
 
+    /**
+     * Comprueba si la contraseña proporcionada coincide con la del usuario.
+     *
+     * @param password la contraseña a comprobar
+     * @return true si coinciden, false en caso contrario
+     */
     public boolean comprobarPassword(String password) {
         return this.password != null && this.password.equals(password);
     }
