@@ -651,7 +651,10 @@ public class CancionPlaylistTest {
 
     }
 
-
+    /** Test para verificar que findByPlaylistIdPlaylist
+     * devuelve una lista vacía cuando no hay canciones
+     * asociadas a la playlist.
+     */
     @Test
     void findByPlaylistId_EmptyTest() {
         Usuario usuario = new Usuario();
