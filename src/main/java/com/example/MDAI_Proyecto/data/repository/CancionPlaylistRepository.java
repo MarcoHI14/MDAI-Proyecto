@@ -50,4 +50,16 @@ public interface CancionPlaylistRepository extends CrudRepository<CancionPlaylis
     @Query("SELECT cp FROM CancionPlaylist cp WHERE cp.playlist.idPlaylist = :playlistId ORDER BY cp.orden DESC")
     Optional<List<CancionPlaylist>> findByPlaylistIdPlaylistOrderByOrdenDesc(@Param("playlistId") Long playlistId);
 
+    /**
+     * Busca todas las entradas de CancionPlaylist asociadas a una playlist específica y
+     * a una lista de géneros de canción, ordenadas por el campo 'orden' en orden ascendente.
+     *
+     * @param playlistId El ID de la playlist.
+     * @param genres     Una lista de géneros de canción.
+     * @return Una lista opcional de CancionPlaylist asociadas a la playlist y géneros dados,
+     * ordenadas por 'orden'.
+     */
+    @Query("SELECT cp FROM CancionPlaylist cp WHERE cp.playlist.idPlaylist = :playlistId AND cp.cancion.genero IN :genres ORDER BY cp.orden ASC")
+    Optional<List<CancionPlaylist>> findByPlaylistIdAndCancionGeneroInOrderByOrdenAsc(@Param("playlistId") Long playlistId, @Param("genres") List<String> genres);
+
 }

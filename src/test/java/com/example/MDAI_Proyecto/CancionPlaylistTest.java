@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -770,6 +772,16 @@ public class CancionPlaylistTest {
         usuarioRepository.delete(usuario);
     }
 
+    /** Test para verificar que findByCancionId
+     * devuelve un Optional vacío cuando no existe
+     * una CancionPlaylist asociada a la canción dada.
+     */
+    @Test
+    void findByCancionId_NonExistenteTest() {
+        Optional<CancionPlaylist> resultadoOpt = cancionPlaylistRepository.findByCancionId(9999L);
+        assertFalse(resultadoOpt.isPresent());
+    }
+
     /** Test para verificar que findByPlaylistIdPlaylistOrderByOrdenAsc
      * devuelve las canciones en el orden correcto (ascendente) según
      * el campo 'orden' en la entidad CancionPlaylist.
@@ -852,6 +864,10 @@ public class CancionPlaylistTest {
         usuarioRepository.delete(usuario);
     }
 
+    /** Test para verificar que findByPlaylistIdPlaylistOrderByOrdenDesc
+     * devuelve las canciones en el orden correcto (descendente) según
+     * el campo 'orden' en la entidad CancionPlaylist.
+     */
     @Test
     void findByPlaylistIdPlaylistOrderByOrdenDesc_Test() {
         Usuario usuario = new Usuario();
@@ -928,4 +944,92 @@ public class CancionPlaylistTest {
         artistaRepository.delete(artista);
         usuarioRepository.delete(usuario);
     }
+
+    /** Test para verificar la correcta recuperación
+     * de las canciones asociadas a una playlist específica
+     * filtradas por género utilizando el metodo
+     * findByPlaylistIdAndCancionGeneroInOrderByOrdenAsc.
+     */
+    @Test
+    void findByCancionGeneroInPlaylistTest() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Hombre G");
+        usuario.setEmail("hombres@gmail.com");
+        usuario.setPassword("devuelvemeaMiChica");
+        usuario = usuarioRepository.save(usuario);
+        Artista artista = new Artista();
+        artista.setBiografia("Banda española de pop rock.");
+        artista.setUsuario(usuario);
+        artista = artistaRepository.save(artista);
+        usuario.setArtista(artista);
+        usuarioRepository.save(usuario);
+
+        Playlist playlist = new Playlist();
+        playlist.setNombre("Pop Rock Español");
+        playlist.setDescripcion("Las mejores canciones de pop rock español.");
+        playlist.setUsuario(usuario);
+        playlist.setFechaCreacion(java.time.LocalDateTime.now());
+        playlist = playlistRepository.save(playlist);
+
+        Cancion cancion1 = new Cancion();
+        cancion1.setTitulo("Devuélveme a mi chica");
+        cancion1.setArtista(artista);
+        cancion1.setGenero("Pop");
+        cancion1.setDuracion("3:30");
+        cancion1.setFechaSubida(java.time.LocalDateTime.now());
+        cancion1 = cancionRepository.save(cancion1);
+        CancionPlaylist cancionPlaylist1 = new CancionPlaylist();
+        cancionPlaylist1.setCancion(cancion1);
+        cancionPlaylist1.setPlaylist(playlist);
+        cancionPlaylist1.setOrden(1);
+        cancionPlaylist1 = cancionPlaylistRepository.save(cancionPlaylist1);
+
+        Cancion cancion2 = new Cancion();
+        cancion2.setTitulo("Sueltate el pelo");
+        cancion2.setArtista(artista);
+        cancion2.setGenero("Rock");
+        cancion2.setDuracion("4:00");
+        cancion2.setFechaSubida(java.time.LocalDateTime.now());
+        cancion2 = cancionRepository.save(cancion2);
+        CancionPlaylist cancionPlaylist2 = new CancionPlaylist();
+        cancionPlaylist2.setCancion(cancion2);
+        cancionPlaylist2.setPlaylist(playlist);
+        cancionPlaylist2.setOrden(2);
+        cancionPlaylist2 = cancionPlaylistRepository.save(cancionPlaylist2);
+
+        // Por Genero Pop
+        List<String> generosBuscados = Arrays.asList("Pop");
+        var cancionesEnPlaylistOpt = cancionPlaylistRepository.findByPlaylistIdAndCancionGeneroInOrderByOrdenAsc(playlist.getIdPlaylist(), generosBuscados);
+        var cancionesEnPlaylist = cancionesEnPlaylistOpt.orElse(Collections.emptyList());
+        assertEquals(1, cancionesEnPlaylist.size());
+        assertEquals("Devuélveme a mi chica", cancionesEnPlaylist.get(0).getCancion().getTitulo());
+
+        // Por Genero Rock
+        List<String> generosBuscados2 = Arrays.asList("Rock");
+        var cancionesEnPlaylistOpt2 = cancionPlaylistRepository.findByPlaylistIdAndCancionGeneroInOrderByOrdenAsc(playlist.getIdPlaylist(), generosBuscados2);
+        var cancionesEnPlaylist2 = cancionesEnPlaylistOpt2.orElse(Collections.emptyList());
+        assertEquals(1, cancionesEnPlaylist2.size());
+        assertEquals("Sueltate el pelo", cancionesEnPlaylist2.get(0).getCancion().getTitulo());
+
+        // Por Genero Rock y Pop (2 genrero)
+        List<String> generosBuscados3 = Arrays.asList("Rock", "Pop");
+        var cancionesEnPlaylistOpt3 = cancionPlaylistRepository.findByPlaylistIdAndCancionGeneroInOrderByOrdenAsc(playlist.getIdPlaylist(), generosBuscados3);
+        var cancionesEnPlaylist3 = cancionesEnPlaylistOpt3.orElse(Collections.emptyList());
+        assertEquals(2, cancionesEnPlaylist3.size());
+        assertEquals("Devuélveme a mi chica", cancionesEnPlaylist3.get(0).getCancion().getTitulo());
+        assertEquals("Sueltate el pelo", cancionesEnPlaylist3.get(1).getCancion().getTitulo());
+        assertTrue(cancionesEnPlaylist3.getFirst().getOrden() < cancionesEnPlaylist3.getLast().getOrden());
+
+        // limpiar
+        cancionPlaylistRepository.delete(cancionPlaylist1);
+        cancionPlaylistRepository.delete(cancionPlaylist2);
+        playlistRepository.delete(playlist);
+        cancionRepository.delete(cancion2);
+        cancionRepository.delete(cancion1);
+        artistaRepository.delete(artista);
+        usuarioRepository.delete(usuario);
+
+    }
+
+    // TODO: añadir test findByCancionTituloInPlaylistTest(); test para en una playlist buscar canciones por titulo. From: @mherreray To:@mherreray
 }
