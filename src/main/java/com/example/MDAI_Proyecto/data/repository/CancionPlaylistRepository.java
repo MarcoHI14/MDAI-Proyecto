@@ -12,8 +12,42 @@ import java.util.Optional;
 @Repository
 public interface CancionPlaylistRepository extends CrudRepository<CancionPlaylist, Long> {
 
+    /**
+     * Busca todas las entradas de CancionPlaylist asociadas a una playlist específica.
+     *
+     * @param playlistId El ID de la playlist.
+     * @return Una lista opcional de CancionPlaylist asociadas a la playlist.
+     */
     @Query("SELECT cp FROM CancionPlaylist cp WHERE cp.playlist.idPlaylist = :playlistId")
     Optional<List<CancionPlaylist>> findByPlaylistIdPlaylist(@Param("playlistId") Long playlistId);
 
+    /**
+     * Busca una entrada de CancionPlaylist por el ID de la canción. Solo ha de haber
+     * una entrada por canción, ya que no se puede añadir dos veces la misma a la playlist.
+     * @param cancionId
+     * @return
+     */
+    @Query("SELECT cp FROM CancionPlaylist cp WHERE cp.cancion.idCancion = :cancionId")
+    Optional<CancionPlaylist> findByCancionId(@Param("cancionId") Long cancionId);
+
+    /**
+     * Busca todas las entradas de CancionPlaylist asociadas a una playlist específica,
+     * ordenadas por el campo 'orden' en orden ascendente.
+     *
+     * @param playlistId El ID de la playlist.
+     * @return Una lista opcional de CancionPlaylist asociadas a la playlist, ordenadas por 'orden'.
+     */
+    @Query("SELECT cp FROM CancionPlaylist cp WHERE cp.playlist.idPlaylist = :playlistId ORDER BY cp.orden ASC")
+    Optional<List<CancionPlaylist>> findByPlaylistIdPlaylistOrderByOrdenAsc(@Param("playlistId") Long playlistId);
+
+    /**
+     * Busca todas las entradas de CancionPlaylist asociadas a una playlist específica,
+     * ordenadas por el campo 'orden' en orden descendente.
+     *
+     * @param playlistId El ID de la playlist.
+     * @return Una lista opcional de CancionPlaylist asociadas a la playlist, ordenadas por 'orden' en orden descendente.
+     */
+    @Query("SELECT cp FROM CancionPlaylist cp WHERE cp.playlist.idPlaylist = :playlistId ORDER BY cp.orden DESC")
+    Optional<List<CancionPlaylist>> findByPlaylistIdPlaylistOrderByOrdenDesc(@Param("playlistId") Long playlistId);
 
 }

@@ -582,7 +582,7 @@ public class CancionPlaylistTest {
 
     /** Test para verificar la correcta recuperación
      * de todas las canciones asociadas a una playlist
-     * utilizando el mét odo findByPlaylistIdPlaylist.
+     * utilizando el metodo findByPlaylistIdPlaylist.
      */
     @Test
     void findByPlaylistId() {
@@ -687,5 +687,245 @@ public class CancionPlaylistTest {
         artistaRepository.delete(artista);
         usuarioRepository.delete(usuario);
 
+    }
+
+    /** Test para verificar la correcta recuperación
+     * de una CancionPlaylist específica utilizando
+     * el metodo findByCancionId.
+     */
+    @Test
+    void findByCancionIdTest() {
+        // Configuración inicial: crear usuario, artista, canción, playlist y cancionPlaylist
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Michael Jackson");
+        usuario.setEmail("mjackson@gmail.com");
+        usuario.setPassword("thriller");
+        usuario = usuarioRepository.save(usuario);
+
+        Artista artista = new Artista();
+        artista.setBiografia("El Rey del Pop.");
+        artista.setUsuario(usuario);
+        artista = artistaRepository.save(artista);
+        usuario.setArtista(artista);
+        usuarioRepository.save(usuario);
+
+        Playlist playlist = new Playlist();
+        playlist.setNombre("Pop Hits");
+        playlist.setDescripcion("Las mejores canciones de pop.");
+        playlist.setUsuario(usuario);
+        playlist.setFechaCreacion(java.time.LocalDateTime.now());
+        playlist = playlistRepository.save(playlist);
+
+        Cancion cancion = new Cancion();
+        cancion.setTitulo("Billie Jean");
+        cancion.setArtista(artista);
+        cancion.setGenero("Pop");
+        cancion.setDuracion("4:54");
+        cancion.setFechaSubida(java.time.LocalDateTime.now());
+        cancion = cancionRepository.save(cancion);
+        CancionPlaylist cancionPlaylist = new CancionPlaylist();
+        cancionPlaylist.setCancion(cancion);
+        cancionPlaylist.setPlaylist(playlist);
+        cancionPlaylist.setOrden(1);
+        cancionPlaylist = cancionPlaylistRepository.save(cancionPlaylist);
+
+        Cancion cancion2 = new Cancion();
+        cancion2.setTitulo("Thriller");
+        cancion2.setArtista(artista);
+        cancion2.setGenero("Pop");
+        cancion2.setDuracion("5:57");
+        cancion2.setFechaSubida(java.time.LocalDateTime.now());
+        cancion2 = cancionRepository.save(cancion2);
+        CancionPlaylist cancionPlaylist2 = new CancionPlaylist();
+        cancionPlaylist2.setCancion(cancion2);
+        cancionPlaylist2.setPlaylist(playlist);
+        cancionPlaylist2.setOrden(2);
+        cancionPlaylist2 = cancionPlaylistRepository.save(cancionPlaylist2);
+
+        Optional<CancionPlaylist> resultadoOpt = cancionPlaylistRepository.findByCancionId(cancion.getIdCancion());
+        assertTrue(resultadoOpt.isPresent());
+        CancionPlaylist resultado =  resultadoOpt.get();
+        assertEquals("Billie Jean", resultado.getCancion().getTitulo());
+        assertEquals("Pop Hits", resultado.getPlaylist().getNombre());
+
+        Optional<CancionPlaylist> resultadoOpt2 = cancionPlaylistRepository.findByCancionId(cancion2.getIdCancion());
+        assertTrue(resultadoOpt2.isPresent());
+        CancionPlaylist resultado2 =  resultadoOpt2.get();
+        assertEquals("Thriller", resultado2.getCancion().getTitulo());
+        assertEquals("Pop Hits", resultado2.getPlaylist().getNombre());
+
+        // limpieza de datos
+        cancionPlaylistRepository.delete(cancionPlaylist2);
+        cancionPlaylistRepository.delete(cancionPlaylist);
+
+        Optional<CancionPlaylist> deleted1 = cancionPlaylistRepository.findById(cancionPlaylist.getId());
+        assertFalse(deleted1.isPresent());
+        Optional<CancionPlaylist> deleted2 = cancionPlaylistRepository.findById(cancionPlaylist2.getId());
+        assertFalse(deleted2.isPresent());
+
+        playlistRepository.delete(playlist);
+        cancionRepository.delete(cancion2);
+        cancionRepository.delete(cancion);
+        artistaRepository.delete(artista);
+        usuarioRepository.delete(usuario);
+    }
+
+    /** Test para verificar que findByPlaylistIdPlaylistOrderByOrdenAsc
+     * devuelve las canciones en el orden correcto (ascendente) según
+     * el campo 'orden' en la entidad CancionPlaylist.
+     */
+    @Test
+    void findByPlaylistIdPlaylistOrderByOrdenAsc_Test() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Coldplay");
+        usuario.setEmail("jugadafria@campofrio.com");
+        usuario.setPassword("yellow");
+        usuario = usuarioRepository.save(usuario);
+        Artista artista = new Artista();
+        artista.setBiografia("Banda británica de rock alternativo.");
+        artista.setUsuario(usuario);
+        artista = artistaRepository.save(artista);
+        usuario.setArtista(artista);
+        usuarioRepository.save(usuario);
+
+        Playlist playlist = new Playlist();
+        playlist.setNombre("Rock Alternativo");
+        playlist.setDescripcion("Las mejores canciones de rock alternativo.");
+        playlist.setUsuario(usuario);
+        playlist.setFechaCreacion(java.time.LocalDateTime.now());
+        playlist = playlistRepository.save(playlist);
+
+        Cancion cancion1 = new Cancion();
+        cancion1.setTitulo("Yellow");
+        cancion1.setArtista(artista);
+        cancion1.setGenero("Rock Alternativo");
+        cancion1.setDuracion("4:26");
+        cancion1.setFechaSubida(java.time.LocalDateTime.now());
+        cancion1 = cancionRepository.save(cancion1);
+        CancionPlaylist cancionPlaylist1 = new CancionPlaylist();
+        cancionPlaylist1.setCancion(cancion1);
+        cancionPlaylist1.setPlaylist(playlist);
+        cancionPlaylist1.setOrden(2);
+        cancionPlaylist1 = cancionPlaylistRepository.save(cancionPlaylist1);
+
+        Cancion cancion2 = new Cancion();
+        cancion2.setTitulo("Fix You");
+        cancion2.setArtista(artista);
+        cancion2.setGenero("Rock Alternativo");
+        cancion2.setDuracion("4:55");
+        cancion2.setFechaSubida(java.time.LocalDateTime.now());
+        cancion2 = cancionRepository.save(cancion2);
+        CancionPlaylist cancionPlaylist2 = new CancionPlaylist();
+        cancionPlaylist2.setCancion(cancion2);
+        cancionPlaylist2.setPlaylist(playlist);
+        cancionPlaylist2.setOrden(1);
+        cancionPlaylist2 = cancionPlaylistRepository.save(cancionPlaylist2);
+
+        Cancion cancion3 = new Cancion();
+        cancion3.setTitulo("Viva la vida");
+        cancion3.setArtista(artista);
+        cancion3.setGenero("Rock Alternativo");
+        cancion3.setDuracion("4:02");
+        cancion3.setFechaSubida(java.time.LocalDateTime.now());
+        cancion3 = cancionRepository.save(cancion3);
+        CancionPlaylist cancionPlaylist3 = new CancionPlaylist();
+        cancionPlaylist3.setCancion(cancion3);
+        cancionPlaylist3.setPlaylist(playlist);
+        cancionPlaylist3.setOrden(3);
+        cancionPlaylist3 = cancionPlaylistRepository.save(cancionPlaylist3);
+
+        var cancionesEnPlaylistOpt = cancionPlaylistRepository.findByPlaylistIdPlaylistOrderByOrdenAsc(playlist.getIdPlaylist());
+        var cancionesEnPlaylist = cancionesEnPlaylistOpt.orElse(Collections.emptyList());
+        assertEquals(3, cancionesEnPlaylist.size());
+        assertEquals("Fix You", cancionesEnPlaylist.get(0).getCancion().getTitulo()); // Primero
+        assertEquals("Yellow", cancionesEnPlaylist.get(1).getCancion().getTitulo()); // Segundo
+        assertEquals("Viva la vida", cancionesEnPlaylist.get(2).getCancion().getTitulo()); // Tercero
+        // limpiar
+        cancionPlaylistRepository.delete(cancionPlaylist1);
+        cancionPlaylistRepository.delete(cancionPlaylist2);
+        cancionPlaylistRepository.delete(cancionPlaylist3);
+        playlistRepository.delete(playlist);
+        cancionRepository.delete(cancion3);
+        cancionRepository.delete(cancion2);
+        cancionRepository.delete(cancion1);
+        artistaRepository.delete(artista);
+        usuarioRepository.delete(usuario);
+    }
+
+    @Test
+    void findByPlaylistIdPlaylistOrderByOrdenDesc_Test() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Radiohead");
+        usuario.setEmail("radio@head.com");
+        usuario.setPassword("karmaPolice");
+        usuario = usuarioRepository.save(usuario);
+        Artista artista = new Artista();
+        artista.setBiografia("Banda británica de rock alternativo.");
+        artista.setUsuario(usuario);
+        artista = artistaRepository.save(artista);
+        usuario.setArtista(artista);
+        usuarioRepository.save(usuario);
+
+        Playlist playlist = new Playlist();
+        playlist.setNombre("Rock Alternativo 2");
+        playlist.setDescripcion("Más canciones de rock alternativo.");
+        playlist.setUsuario(usuario);
+        playlist.setFechaCreacion(java.time.LocalDateTime.now());
+        playlist = playlistRepository.save(playlist);
+        Cancion cancion1 = new Cancion();
+        cancion1.setTitulo("Creep");
+        cancion1.setArtista(artista);
+        cancion1.setGenero("Rock Alternativo");
+        cancion1.setDuracion("3:56");
+        cancion1.setFechaSubida(java.time.LocalDateTime.now());
+        cancion1 = cancionRepository.save(cancion1);
+        CancionPlaylist cancionPlaylist1 = new CancionPlaylist();
+        cancionPlaylist1.setCancion(cancion1);
+        cancionPlaylist1.setPlaylist(playlist);
+        cancionPlaylist1.setOrden(1);
+        cancionPlaylist1 = cancionPlaylistRepository.save(cancionPlaylist1);
+
+        Cancion cancion2 = new Cancion();
+        cancion2.setTitulo("Karma Police");
+        cancion2.setArtista(artista);
+        cancion2.setGenero("Rock Alternativo");
+        cancion2.setDuracion("4:21");
+        cancion2.setFechaSubida(java.time.LocalDateTime.now());
+        cancion2 = cancionRepository.save(cancion2);
+        CancionPlaylist cancionPlaylist2 = new CancionPlaylist();
+        cancionPlaylist2.setCancion(cancion2);
+        cancionPlaylist2.setPlaylist(playlist);
+        cancionPlaylist2.setOrden(2);
+        cancionPlaylist2 = cancionPlaylistRepository.save(cancionPlaylist2);
+
+        Cancion cancion3 = new Cancion();
+        cancion3.setTitulo("No Surprises");
+        cancion3.setArtista(artista);
+        cancion3.setGenero("Rock Alternativo");
+        cancion3.setDuracion("3:49");
+        cancion3.setFechaSubida(java.time.LocalDateTime.now());
+        cancion3 = cancionRepository.save(cancion3);
+        CancionPlaylist cancionPlaylist3 = new CancionPlaylist();
+        cancionPlaylist3.setCancion(cancion3);
+        cancionPlaylist3.setPlaylist(playlist);
+        cancionPlaylist3.setOrden(3);
+        cancionPlaylist3 = cancionPlaylistRepository.save(cancionPlaylist3);
+
+        var cancionesEnPlaylistOpt = cancionPlaylistRepository.findByPlaylistIdPlaylistOrderByOrdenDesc(playlist.getIdPlaylist());
+        var cancionesEnPlaylist = cancionesEnPlaylistOpt.orElse(Collections.emptyList());
+        assertEquals(3, cancionesEnPlaylist.size());
+        assertEquals("No Surprises", cancionesEnPlaylist.get(0).getCancion().getTitulo()); // Primero
+        assertEquals("Karma Police", cancionesEnPlaylist.get(1).getCancion().getTitulo()); // Segundo
+        assertEquals("Creep", cancionesEnPlaylist.get(2).getCancion().getTitulo()); // Tercero
+        // limpiar
+        cancionPlaylistRepository.delete(cancionPlaylist1);
+        cancionPlaylistRepository.delete(cancionPlaylist2);
+        cancionPlaylistRepository.delete(cancionPlaylist3);
+        playlistRepository.delete(playlist);
+        cancionRepository.delete(cancion3);
+        cancionRepository.delete(cancion2);
+        cancionRepository.delete(cancion1);
+        artistaRepository.delete(artista);
+        usuarioRepository.delete(usuario);
     }
 }
