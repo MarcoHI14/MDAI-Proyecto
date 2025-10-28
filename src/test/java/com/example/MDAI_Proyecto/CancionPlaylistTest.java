@@ -1031,5 +1031,82 @@ public class CancionPlaylistTest {
 
     }
 
-    // TODO: añadir test findByCancionTituloInPlaylistTest(); test para en una playlist buscar canciones por titulo. From: @mherreray To:@mherreray
+    /** Test para verificar la correcta recuperación
+     * de las canciones asociadas a una playlist específica
+     * filtradas por título utilizando el metodo
+     * findByPlaylistIdAndCancionTituloInOrderByOrdenAsc.
+     */
+    @Test
+    void findByCancionTituloInPlaylistTest() {
+        // Configuración inicial: crear usuario, artista, canciones, playlist y cancionPlaylist
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Peso Pluma");
+        usuario.setEmail("pesopluma@gmail.com");
+        usuario.setPassword("bzs");
+        usuario = usuarioRepository.save(usuario);
+        Artista artista = new Artista();
+        artista.setBiografia("Cantante mexicano de música regional.");
+        artista.setUsuario(usuario);
+        artista = artistaRepository.save(artista);
+        usuario.setArtista(artista);
+        usuarioRepository.save(usuario);
+
+        Playlist playlist = new Playlist();
+        playlist.setNombre("Música Regional");
+        playlist.setDescripcion("Las mejores canciones de música regional.");
+        playlist.setUsuario(usuario);
+        playlist.setFechaCreacion(java.time.LocalDateTime.now());
+        playlist = playlistRepository.save(playlist);
+
+        Cancion cancion1 = new Cancion();
+        cancion1.setTitulo("PRC");
+        cancion1.setArtista(artista);
+        cancion1.setGenero("Regional Mexicano");
+        cancion1.setDuracion("3:10");
+        cancion1.setFechaSubida(java.time.LocalDateTime.now());
+        cancion1 = cancionRepository.save(cancion1);
+
+        CancionPlaylist cancionPlaylist1 = new CancionPlaylist();
+        cancionPlaylist1.setCancion(cancion1);
+        cancionPlaylist1.setPlaylist(playlist);
+        cancionPlaylist1.setOrden(1);
+        cancionPlaylist1 = cancionPlaylistRepository.save(cancionPlaylist1);
+
+        Cancion cancion2 = new Cancion();
+        cancion2.setTitulo("Ella baila sola");
+        cancion2.setArtista(artista);
+        cancion2.setGenero("Regional Mexicano");
+        cancion2.setDuracion("3:45");
+        cancion2.setFechaSubida(java.time.LocalDateTime.now());
+        cancion2 = cancionRepository.save(cancion2);
+        CancionPlaylist cancionPlaylist2 = new CancionPlaylist();
+        cancionPlaylist2.setCancion(cancion2);
+        cancionPlaylist2.setPlaylist(playlist);
+        cancionPlaylist2.setOrden(2);
+        cancionPlaylist2 = cancionPlaylistRepository.save(cancionPlaylist2);
+
+        // Buscar por título "PRC"
+        List<String> titulosBuscados = Arrays.asList("PRC");
+        var cancionesEnPlaylistOpt = cancionPlaylistRepository.findByPlaylistIdAndCancionTituloInOrderByOrdenAsc(playlist.getIdPlaylist(), titulosBuscados);
+        var cancionesEnPlaylist = cancionesEnPlaylistOpt.orElse(Collections.emptyList());
+        assertEquals(1, cancionesEnPlaylist.size());
+        assertEquals("PRC", cancionesEnPlaylist.get(0).getCancion().getTitulo());
+
+        List<String> titulosBuscados2 = Arrays.asList("Ella baila sola");
+        var cancionesEnPlaylistOpt2 = cancionPlaylistRepository.findByPlaylistIdAndCancionTituloInOrderByOrdenAsc(playlist.getIdPlaylist(), titulosBuscados2);
+        var cancionesEnPlaylist2 = cancionesEnPlaylistOpt2.orElse(Collections.emptyList());
+        assertEquals(1, cancionesEnPlaylist2.size());
+        assertEquals("Ella baila sola", cancionesEnPlaylist2.get(0).getCancion().getTitulo());
+
+        // limpiar
+        cancionPlaylistRepository.delete(cancionPlaylist1);
+        cancionPlaylistRepository.delete(cancionPlaylist2);
+        playlistRepository.delete(playlist);
+        cancionRepository.delete(cancion2);
+        cancionRepository.delete(cancion1);
+        artistaRepository.delete(artista);
+        usuarioRepository.delete(usuario);
+
+    }
+
 }
