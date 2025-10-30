@@ -86,4 +86,27 @@ public interface CancionRepository extends CrudRepository<Cancion, Long> {
      * @return Lista (posiblemente vacía) de canciones subidas antes de {@code fechaSubida}.
      */
     List<Cancion> findByFechaSubidaBefore(LocalDateTime fechaSubida);
+
+    /**
+     * Recupera las canciones cuya fecha de subida sea posterior a la fecha indicada.
+     *
+     * @param fechaSubida Límite superior (exclusive) de la fecha de subida.
+     * @return Lista (posiblemente vacía) de canciones subidas antes de {@code fechaSubida}.
+     */
+    List<Cancion> findByFechaSubidaAfter(LocalDateTime fechaSubida);
+
+
+    /**
+     * Recupera todas las {@link Cancion} cuyo título contiene el fragmento indicado,
+     * ignorando diferencias entre mayúsculas y minúsculas.
+     *
+     * La operación equivale a una búsqueda tipo SQL `LIKE %fragmento%` (case-insensitive).
+     * Pasar `null` puede lanzar una excepción según el proveedor JPA; un `fragmento` vacío
+     * podría devolver todas las canciones dependiendo de la base de datos.
+     *
+     * @param fragmento Subcadena a buscar dentro del título de la canción.
+     * @return Lista (posiblemente vacía) de canciones cuyos títulos contienen el fragmento,
+     *         sin distinguir mayúsculas/minúsculas.
+     */
+    List<Cancion> findByTituloContainingIgnoreCase(String fragmento);
 }

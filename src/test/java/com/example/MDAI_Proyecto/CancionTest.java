@@ -555,6 +555,66 @@ class CancionTest {
     }
 
     /**
+     * Prueba la consulta {@code findByFechaSubidaAfter} para recuperar canciones
+     * subidas después de una fecha determinada.
+     */
+    @Test
+    void findByFechaSubidaAfterTest() {
+        Usuario user = new Usuario ();
+        user.setUsername("Radwimps");
+        user.setPassword("Zenzenzense");
+        user.setEmail("radwimps@gmail.com");
+        Usuario savedUser = usuarioRepository.save(user);
+        Artista artista = new Artista();
+        artista.setUsuario(savedUser);
+        artista.setBiografia("Biografía del artista");
+        Artista savedArtista = artistaRepository.save(artista);
+
+        Cancion cancion1 = new Cancion();
+        cancion1.setTitulo("Hyperventilation");
+        cancion1.setGenero("Rock");
+        cancion1.setArchivoAudio("ruta/a/archivo1.mp3");
+        cancion1.setDuracion("04:23");
+        cancion1.setFechaSubida(java.time.LocalDateTime.of(2010, 5, 10, 10, 0));
+        cancion1.setArtista(savedArtista);
+
+        Cancion cancion2 = new Cancion();
+        cancion2.setTitulo("Zenzenzense");
+        cancion2.setGenero("Rock");
+        cancion2.setArchivoAudio("ruta/a/archivo2.mp3");
+        cancion2.setDuracion("03:50");
+        cancion2.setFechaSubida(java.time.LocalDateTime.of(2016, 8, 20, 12, 0));
+        cancion2.setArtista(savedArtista);
+
+        Cancion cancion3 = new Cancion();
+        cancion3.setTitulo("Dream Lantern");
+        cancion3.setGenero("Rock");
+        cancion3.setArchivoAudio("ruta/a/archivo3.mp3");
+        cancion3.setDuracion("02:11");
+        cancion3.setFechaSubida(java.time.LocalDateTime.of(2017, 11, 15, 14, 0));
+        cancion3.setArtista(savedArtista);
+
+        Cancion cancion4 = new Cancion();
+        cancion4.setTitulo("Suzume");
+        cancion4.setGenero("Rock");
+        cancion4.setArchivoAudio("ruta/a/archivo4.mp3");
+        cancion4.setDuracion("03:58");
+        cancion4.setFechaSubida(java.time.LocalDateTime.of(2024, 2, 5, 16, 0));
+        cancion4.setArtista(savedArtista);
+
+        cancionRepository.saveAll(List.of(cancion1, cancion2, cancion3, cancion4));
+
+        List<Cancion> cancionesDespues2015 = cancionRepository.findByFechaSubidaAfter(java.time.LocalDateTime.of(2015, 12, 31, 23, 59));
+        assertThat(cancionesDespues2015).hasSize(3);
+        for (Cancion c : cancionesDespues2015) {
+            assertThat(c.getFechaSubida().isAfter(java.time.LocalDateTime.of(2015, 12, 31, 23, 59))).isTrue();
+            if (c.getFechaSubida().isAfter(java.time.LocalDateTime.of(2015, 12, 31, 23, 59))) {
+                System.out.println(c.getTitulo()+" fue publicada después de 2015.");
+            }
+        }
+    }
+
+    /**
      * Verifica la consulta {@code findByDuracion} que devuelve canciones con la
      * duración exacta solicitada.
      */
@@ -609,6 +669,86 @@ class CancionTest {
         for (Cancion c : cancionesDuracion305) {
             assertEquals("03:05", c.getDuracion());
             System.out.println(c.getTitulo() + " tiene una duración de 03:05.");
+        }
+    }
+
+    /**
+     * Prueba la consulta {@code findByTituloContaining} para recuperar canciones
+     * cuyo título contiene una subcadena dada.
+     */
+    @Test
+    void findByTituloContainingIgnoreCaseTest() {
+
+        Usuario user = new Usuario ();
+        user.setUsername("Walls");
+        user.setPassword("ginesfms");
+        user.setEmail("wallsrb@gmail.com");
+        Usuario savedUser = usuarioRepository.save(user);
+        Artista artista = new Artista();
+        artista.setUsuario(savedUser);
+        artista.setBiografia("Biografía del artista");
+        Artista savedArtista = artistaRepository.save(artista);
+
+        Cancion cancion1 = new Cancion();
+        cancion1.setTitulo("Promesas");
+        cancion1.setGenero("HipHop");
+        cancion1.setArchivoAudio("ruta/a/archivo1.mp3");
+        cancion1.setDuracion("03:21");
+        cancion1.setFechaSubida(java.time.LocalDateTime.of(2018, 6, 9, 12, 0));
+        cancion1.setArtista(savedArtista);
+
+        Cancion cancion2 = new Cancion();
+        cancion2.setTitulo("Cerca");
+        cancion2.setGenero("Pop");
+        cancion2.setArchivoAudio("ruta/a/archivo2.mp3");
+        cancion2.setDuracion("03:56");
+        cancion2.setFechaSubida(java.time.LocalDateTime.of(2019, 4, 15, 14, 0));
+        cancion2.setArtista(savedArtista);
+
+        Cancion cancion3 = new Cancion();
+        cancion3.setTitulo("Por Partes");
+        cancion3.setGenero("HipHop");
+        cancion3.setArchivoAudio("ruta/a/archivo3.mp3");
+        cancion3.setDuracion("03:04");
+        cancion3.setFechaSubida(java.time.LocalDateTime.of(2018, 11, 20, 16, 0));
+        cancion3.setArtista(savedArtista);
+
+        Cancion cancion4 = new Cancion();
+        cancion4.setTitulo("En Paz");
+        cancion4.setGenero("Acoustic");
+        cancion4.setArchivoAudio("ruta/a/archivo4.mp3");
+        cancion4.setDuracion("03:38");
+        cancion4.setFechaSubida(java.time.LocalDateTime.of(2018, 1, 5, 18, 0));
+        cancion4.setArtista(savedArtista);
+
+        cancionRepository.saveAll(List.of(cancion1, cancion2, cancion3, cancion4));
+
+        // Buscar por fragmentos distintos y comprobar resultados y case-insensitivity
+        List<Cancion> resProm = cancionRepository.findByTituloContainingIgnoreCase("prom");
+        assertThat(resProm).hasSize(1);
+        assertThat(resProm.get(0).getTitulo()).isEqualTo("Promesas");
+        System.out.println(resProm.get(0).getTitulo());
+
+        List<Cancion> resPor = cancionRepository.findByTituloContainingIgnoreCase("por");
+        assertThat(resPor).hasSize(1);
+        assertThat(resPor.get(0).getTitulo()).isEqualTo("Por Partes");
+        System.out.println(resPor.get(0).getTitulo());
+
+        List<Cancion> resPaz = cancionRepository.findByTituloContainingIgnoreCase("PAZ"); // mayúsculas
+        assertThat(resPaz).hasSize(1);
+        assertThat(resPaz.get(0).getTitulo()).isEqualTo("En Paz");
+        System.out.println(resPaz.get(0).getTitulo());
+
+        List<Cancion> resCer = cancionRepository.findByTituloContainingIgnoreCase("cer");
+        assertThat(resCer).hasSize(1);
+        assertThat(resCer.get(0).getTitulo()).isEqualTo("Cerca");
+        System.out.println(resCer.get(0).getTitulo());
+
+        // Comprobación genérica: fragmento corto devuelve al menos una coincidencia
+        List<Cancion> resA = cancionRepository.findByTituloContainingIgnoreCase("a");
+        assertThat(resA).isNotEmpty();
+        for (Cancion c : resA) {
+            System.out.println(c.getTitulo());
         }
     }
 }
