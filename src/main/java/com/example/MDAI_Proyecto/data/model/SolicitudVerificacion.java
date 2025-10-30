@@ -15,7 +15,7 @@ public class SolicitudVerificacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_solicitud")
-    private Integer idSolicitud;
+    private Long idSolicitud;
 
     /** Relación muchos a uno con Usuario */
     @ManyToOne
@@ -35,8 +35,8 @@ public class SolicitudVerificacion {
     private String estado;
 
     /** Getters y setters */
-    public Integer getIdSolicitud() { return idSolicitud; }
-    public void setIdSolicitud(Integer idSolicitud) { this.idSolicitud = idSolicitud; }
+    public Long getIdSolicitud() { return idSolicitud; }
+    public void setIdSolicitud(Long idSolicitud) { this.idSolicitud = idSolicitud; }
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
     public String getMensajeVerificacion() { return mensajeVerificacion; }
