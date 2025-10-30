@@ -48,6 +48,10 @@ public class Cancion {
     public LocalDateTime getFechaSubida() { return fechaSubida; }
     public void setFechaSubida(LocalDateTime fechaSubida) { this.fechaSubida = fechaSubida; }
     public Artista getArtista() { return artista; }
+    /**
+     * Establece el artista de la canción, manteniendo la relación bidireccional.
+     * @param artista
+     */
     public void setArtista(Artista artista) {
         // Quitar de artista anterior
         if (this.artista != null && this.artista.getCanciones() != null) {
@@ -64,6 +68,10 @@ public class Cancion {
     public void setCancionPlaylists(List<CancionPlaylist> cancionPlaylists) { this.cancionPlaylists = cancionPlaylists; }
 
     // Helpers para mantener la relación en memoria
+    /**
+     * Añade una relación CancionPlaylist a la canción, manteniendo la relación bidireccional.
+     * @param cp
+     */
     public void addCancionPlaylist(CancionPlaylist cp) {
         if (cp == null) return;
         if (!this.cancionPlaylists.contains(cp)) {
@@ -72,6 +80,10 @@ public class Cancion {
         }
     }
 
+    /**
+     * Elimina una relación CancionPlaylist de la canción, manteniendo la relación bidireccional.
+     * @param cp
+     */
     public void removeCancionPlaylist(CancionPlaylist cp) {
         if (cp == null) return;
         if (this.cancionPlaylists.remove(cp)) {

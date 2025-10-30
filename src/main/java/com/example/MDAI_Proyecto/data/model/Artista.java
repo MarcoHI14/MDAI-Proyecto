@@ -41,6 +41,10 @@ public class Artista {
     }
 
     // Métodos auxiliares para mantener la relación bidireccional
+    /**
+     * Añade una canción a la lista del artista y establece la relación.
+     * @param cancion
+     */
     public void addCancion(Cancion cancion) {
         if (cancion == null) return;
 
@@ -70,6 +74,10 @@ public class Artista {
         }
     }
 
+    /**
+     * Remueve una canción de la lista del artista y desvincula la relación.
+     * @param cancion
+     */
     public void removeCancion(Cancion cancion) {
         if (cancion == null) return;
         if (this.canciones.remove(cancion)) {

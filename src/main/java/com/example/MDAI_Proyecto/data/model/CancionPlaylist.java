@@ -40,6 +40,10 @@ public class CancionPlaylist {
     }
 
     public Cancion getCancion() { return cancion; }
+    /**
+     * Establece la canción asociada, manteniendo la relación bidireccional.
+     * @param cancion
+     */
     public void setCancion(Cancion cancion) {
         // quitar esta instancia de la lista de la canción anterior si existe
         if (this.cancion != null && this.cancion.getCancionPlaylists() != null) {
@@ -50,6 +54,9 @@ public class CancionPlaylist {
     }
 
     @PostPersist
+    /**
+     * Metodo para mantener la relación bidireccional después de persistir.
+     */
     private void postPersist() {
         if (this.cancion != null && this.cancion.getCancionPlaylists() != null && !this.cancion.getCancionPlaylists().contains(this)) {
             this.cancion.getCancionPlaylists().add(this);
@@ -60,6 +67,9 @@ public class CancionPlaylist {
     }
 
     @PostRemove
+    /**
+     * Metodo para mantener la relación bidireccional después de eliminar.
+     */
     private void postRemove() {
         if (this.cancion != null && this.cancion.getCancionPlaylists() != null) {
             this.cancion.getCancionPlaylists().remove(this);

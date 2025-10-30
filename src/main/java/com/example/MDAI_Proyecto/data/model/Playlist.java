@@ -45,6 +45,10 @@ public class Playlist {
     public void setCancionPlaylists(List<CancionPlaylist> cancionPlaylists) { this.cancionPlaylists = cancionPlaylists; }
 
     // Helpers para mantener la relación bidireccional
+    /**
+     * Añade una CancionPlaylist a la lista y establece la relación.
+     * @param cp
+     */
     public void addCancionPlaylist(CancionPlaylist cp) {
         if (cp == null) return;
         if (!this.cancionPlaylists.contains(cp)) {
@@ -53,6 +57,10 @@ public class Playlist {
         }
     }
 
+    /**
+     * Elimina una CancionPlaylist de la lista y rompe la relación.
+     * @param cp
+     */
     public void removeCancionPlaylist(CancionPlaylist cp) {
         if (cp == null) return;
         if (this.cancionPlaylists.remove(cp)) {
