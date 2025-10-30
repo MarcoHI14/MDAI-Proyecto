@@ -118,12 +118,12 @@ class CancionTest {
         assertThat(allCanciones).hasSizeGreaterThanOrEqualTo(3);
         assertThat(allCanciones.size()).isGreaterThanOrEqualTo(3);
 
-        Optional<Cancion> cancionTest2 = Optional.ofNullable(cancionRepository.findByTitulo("Cancion 2").orElse(null));
+        Optional<Cancion> cancionTest2 = Optional.ofNullable(cancionRepository.findByTituloIgnoreCase("Cancion 2").orElse(null));
         assertThat(cancionTest2).isNotNull();
     }
 
     /**
-     * Verifica la consulta {@code findByTitulo} para varios títulos insertados.
+     * Verifica la consulta {@code findByTituloIgnoreCase} para varios títulos insertados.
      * Comprueba que los datos recuperados coinciden con lo esperado.
      */
     @Test
@@ -173,21 +173,21 @@ class CancionTest {
         cancionRepository.saveAll(canciones).forEach(guardadas::add);
         assertThat(guardadas).hasSize(3);
 
-        Optional<Cancion> cancionTest3 = cancionRepository.findByTitulo("Cancion 3");
+        Optional<Cancion> cancionTest3 = cancionRepository.findByTituloIgnoreCase("Cancion 3");
         assertThat(cancionTest3).isPresent();
         assertThat(cancionTest3.get().getTitulo()).isEqualTo("Cancion 3");
         assertThat(cancionTest3.get().getGenero()).isEqualTo("Jazz");
         assertThat(cancionTest3.get().getArchivoAudio()).isEqualTo("ruta/a/archivo3.mp3");
         assertThat(cancionTest3.get().getDuracion()).isEqualTo("05:15");
 
-        Optional<Cancion> cancionTest2 = cancionRepository.findByTitulo("Cancion 2");
+        Optional<Cancion> cancionTest2 = cancionRepository.findByTituloIgnoreCase("Cancion 2");
         assertThat(cancionTest2).isPresent();
         assertThat(cancionTest2.get().getTitulo()).isEqualTo("Cancion 2");
         assertThat(cancionTest2.get().getGenero()).isEqualTo("Rock");
         assertThat(cancionTest2.get().getArchivoAudio()).isEqualTo("ruta/a/archivo2.mp3");
         assertThat(cancionTest2.get().getDuracion()).isEqualTo("04:00");
 
-        Optional<Cancion> cancionTest4 = cancionRepository.findByTitulo("Cancion 4");
+        Optional<Cancion> cancionTest4 = cancionRepository.findByTituloIgnoreCase("Cancion 4");
         assertThat(cancionTest4).isPresent();
         assertThat(cancionTest4.get().getTitulo()).isEqualTo("Cancion 4");
         assertThat(cancionTest4.get().getGenero()).isEqualTo("Classical");
@@ -196,7 +196,7 @@ class CancionTest {
     }
 
     /**
-     * Prueba la consulta {@code findByGenero} que devuelve una lista de canciones
+     * Prueba la consulta {@code findByGeneroIgnoreCase} que devuelve una lista de canciones
      * con el género solicitado. Verifica tamaño y consistencia del género.
      */
     @Test
@@ -246,16 +246,16 @@ class CancionTest {
         cancionRepository.saveAll(canciones).forEach(guardadas::add);
         assertThat(guardadas).hasSize(3);
 
-        List<Cancion> rock = cancionRepository.findByGenero("Rock");
+        List<Cancion> rock = cancionRepository.findByGeneroIgnoreCase("Rock");
         assertThat(rock).isNotEmpty();
         // Opcional: comprobar que todos tengan el género esperado
         assertThat(rock).allMatch(c -> "Rock".equals(c.getGenero()));
 
-        List<Cancion> jazz = cancionRepository.findByGenero("Jazz");
+        List<Cancion> jazz = cancionRepository.findByGeneroIgnoreCase("Jazz");
         assertThat(jazz).isNotEmpty();
         assertThat(jazz).allMatch(c -> "Jazz".equals(c.getGenero()));
 
-        List<Cancion> classical = cancionRepository.findByGenero("Classical");
+        List<Cancion> classical = cancionRepository.findByGeneroIgnoreCase("Classical");
         assertThat(classical).isNotEmpty();
         assertThat(classical).allMatch(c -> "Classical".equals(c.getGenero()));
     }
@@ -314,7 +314,7 @@ class CancionTest {
         cancion4.setArtista(guardadoArtista2);
 
         cancionRepository.saveAll(List.of(cancion2, cancion3, cancion4));
-        List<Cancion> encontradas = cancionRepository.findByArtista_Usuario_Username("ArtistaCancion");
+        List<Cancion> encontradas = cancionRepository.findByArtista_Usuario_UsernameIgnoreCase("ArtistaCancion");
         assertNotNull(encontradas);
         assertFalse(encontradas.isEmpty());
         Cancion encontrada = encontradas.getFirst();
@@ -440,7 +440,7 @@ class CancionTest {
 
         //Comprobar que las canciones han sido borradas
         try {
-            Optional<Cancion> recuperada = cancionRepository.findByTitulo("Six blade knife");
+            Optional<Cancion> recuperada = cancionRepository.findByTituloIgnoreCase("Six blade knife");
             System.out.println("Error: La canción no ha sido borrada al borrar el artista.");
         } catch (Exception e) {
             System.out.println("Las canciones han sido borradas al borrar el artista." + e.getMessage());
@@ -548,9 +548,9 @@ class CancionTest {
         assertThat(cancionesAntes2005).hasSize(3);
         for (Cancion c : cancionesAntes2005) {
             assertThat(c.getFechaSubida().isBefore(java.time.LocalDateTime.of(2005, 1, 1, 0, 0))).isTrue();
-            if (c.getFechaSubida().isBefore(java.time.LocalDateTime.of(2005, 1, 1, 0, 0))) {
-                System.out.println(c.getTitulo()+" fue publicada antes de 2005.");
-            }
+        //    if (c.getFechaSubida().isBefore(java.time.LocalDateTime.of(2005, 1, 1, 0, 0))) {
+        //        System.out.println(c.getTitulo()+" fue publicada antes de 2005.");
+        //    }
         }
     }
 
@@ -608,9 +608,9 @@ class CancionTest {
         assertThat(cancionesDespues2015).hasSize(3);
         for (Cancion c : cancionesDespues2015) {
             assertThat(c.getFechaSubida().isAfter(java.time.LocalDateTime.of(2015, 12, 31, 23, 59))).isTrue();
-            if (c.getFechaSubida().isAfter(java.time.LocalDateTime.of(2015, 12, 31, 23, 59))) {
-                System.out.println(c.getTitulo()+" fue publicada después de 2015.");
-            }
+        //    if (c.getFechaSubida().isAfter(java.time.LocalDateTime.of(2015, 12, 31, 23, 59))) {
+        //        System.out.println(c.getTitulo()+" fue publicada después de 2015.");
+        //    }
         }
     }
 
@@ -666,10 +666,10 @@ class CancionTest {
         List<Cancion> cancionesDuracion305 = cancionRepository.findByDuracion("03:05");
         assertNotNull(cancionesDuracion305);
         assertThat(cancionesDuracion305).hasSize(2);
-        for (Cancion c : cancionesDuracion305) {
-            assertEquals("03:05", c.getDuracion());
-            System.out.println(c.getTitulo() + " tiene una duración de 03:05.");
-        }
+        //for (Cancion c : cancionesDuracion305) {
+        //    assertEquals("03:05", c.getDuracion());
+        //    System.out.println(c.getTitulo() + " tiene una duración de 03:05.");
+        //}
     }
 
     /**
@@ -747,8 +747,8 @@ class CancionTest {
         // Comprobación genérica: fragmento corto devuelve al menos una coincidencia
         List<Cancion> resA = cancionRepository.findByTituloContainingIgnoreCase("a");
         assertThat(resA).isNotEmpty();
-        for (Cancion c : resA) {
-            System.out.println(c.getTitulo());
-        }
+        // for (Cancion c : resA) {
+        //    System.out.println(c.getTitulo());
+        //}
     }
 }

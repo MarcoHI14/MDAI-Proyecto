@@ -387,15 +387,15 @@ public class ArtistaTest {
         artistaRepository.save(artista);
 
         // Comprobaciones: las canciones deben existir (consulta por título)
-        assertTrue(cancionRepository.findByTitulo("Carretera-Test").isPresent(), "La canción Carretera-Test debe existir tras persistir el artista");
-        assertTrue(cancionRepository.findByTitulo("Azul-Test").isPresent(), "La canción Azul-Test debe existir tras persistir el artista");
+        assertTrue(cancionRepository.findByTituloIgnoreCase("Carretera-Test").isPresent(), "La canción Carretera-Test debe existir tras persistir el artista");
+        assertTrue(cancionRepository.findByTituloIgnoreCase("Azul-Test").isPresent(), "La canción Azul-Test debe existir tras persistir el artista");
 
         // Borrar el artista
         artistaRepository.delete(artista);
 
         // Tras eliminar el artista, las canciones deben haber desaparecido por cascade
-        assertFalse(cancionRepository.findByTitulo("Carretera-Test").isPresent(), "La canción Carretera-Test debe borrarse tras eliminar el artista");
-        assertFalse(cancionRepository.findByTitulo("Azul-Test").isPresent(), "La canción Azul-Test debe borrarse tras eliminar el artista");
+        assertFalse(cancionRepository.findByTituloIgnoreCase("Carretera-Test").isPresent(), "La canción Carretera-Test debe borrarse tras eliminar el artista");
+        assertFalse(cancionRepository.findByTituloIgnoreCase("Azul-Test").isPresent(), "La canción Azul-Test debe borrarse tras eliminar el artista");
 
         // Comprobación final: no debe quedar el artista ni canciones
         assertEquals(0, artistaRepository.count(), "No deben quedar artistas");
@@ -446,15 +446,15 @@ public class ArtistaTest {
         // Guardar artista; cascade = ALL en Artista debería persistir las canciones también
         artistaRepository.save(artista);
         // Comprobaciones: las canciones deben existir
-        assertTrue(cancionRepository.findByTitulo("Los hijos de Jhonny Cash").isPresent());
-        assertTrue(cancionRepository.findByTitulo("Nómadas").isPresent());
+        assertTrue(cancionRepository.findByTituloIgnoreCase("Los hijos de Jhonny Cash").isPresent());
+        assertTrue(cancionRepository.findByTituloIgnoreCase("Nómadas").isPresent());
 
         // Borrar el usuario
         userRepository.delete(usuarioGuardado);
         // Tras eliminar el usuario, el artista y las canciones deben haber desaparecido
         assertFalse(artistaRepository.findById(artista.getIdArtista()).isPresent());
-        assertFalse(cancionRepository.findByTitulo("Los hijos de Jhonny Cash").isPresent());
-        assertFalse(cancionRepository.findByTitulo("Nómadas").isPresent());
+        assertFalse(cancionRepository.findByTituloIgnoreCase("Los hijos de Jhonny Cash").isPresent());
+        assertFalse(cancionRepository.findByTituloIgnoreCase("Nómadas").isPresent());
 
         // Comprobación final: no debe quedar el artista ni canciones ni usuario
         assertEquals(0, artistaRepository.count());

@@ -48,7 +48,7 @@ public interface CancionRepository extends CrudRepository<Cancion, Long> {
      * @param titulo Título de la canción a buscar.
      * @return Optional con la canción encontrada o vacío si no existe.
      */
-    Optional<Cancion> findByTitulo(String titulo);
+    Optional<Cancion> findByTituloIgnoreCase(String titulo);
 
     /**
      * Recupera todas las canciones que coincidan con el género indicado.
@@ -56,7 +56,7 @@ public interface CancionRepository extends CrudRepository<Cancion, Long> {
      * @param genero Género de las canciones a recuperar.
      * @return Lista (posiblemente vacía) de canciones con el género solicitado.
      */
-    List<Cancion> findByGenero(String genero);
+    List<Cancion> findByGeneroIgnoreCase(String genero);
 
     /**
      * Recupera las canciones cuyo artista esté asociado al usuario con el
@@ -68,7 +68,7 @@ public interface CancionRepository extends CrudRepository<Cancion, Long> {
      * @param artista Nombre de usuario del artista (username).
      * @return Lista (posiblemente vacía) de canciones del artista indicado.
      */
-    List<Cancion> findByArtista_Usuario_Username(String artista);
+    List<Cancion> findByArtista_Usuario_UsernameIgnoreCase(String artista);
 
     /**
      * Recupera las canciones cuya duración coincida exactamente con el valor
