@@ -3,28 +3,38 @@ package com.example.MDAI_Proyecto.data.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad SolicitudVerificacion que representa una solicitud de verificación de un usuario.
+ * Relacionada muchos a uno con Usuario.
+ */
 @Entity
 @Table(name = "Solicitud_Verificacion")
 public class SolicitudVerificacion {
+    /** Atributos */
+    /** Identificador único de la solicitud */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_solicitud")
     private Integer idSolicitud;
 
+    /** Relación muchos a uno con Usuario */
     @ManyToOne
     @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     private Usuario usuario;
 
+    /** Mensaje de verificación proporcionado por el usuario */
     @Column(name = "mensaje_verificacion", nullable = false)
     private String mensajeVerificacion;
 
+    /** Fecha y hora de la solicitud */
     @Column(name = "fecha_solicitud")
     private LocalDateTime fechaSolicitud;
 
+    /** Estado de la solicitud (pendiente, aprobada, rechazada) */
     @Column(name = "estado")
     private String estado;
 
-    // Getters y setters
+    /** Getters y setters */
     public Integer getIdSolicitud() { return idSolicitud; }
     public void setIdSolicitud(Integer idSolicitud) { this.idSolicitud = idSolicitud; }
     public Usuario getUsuario() { return usuario; }
