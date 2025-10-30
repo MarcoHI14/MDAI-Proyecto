@@ -31,6 +31,7 @@ public class PlaylistTest {
     @Autowired
     private ArtistaRepository artistaRepository;
 
+    /** Prueba para crear y guardar una Playlist asociada a un Usuario */
     @Test
     void crearPlaylistTest() {
         Usuario user = new Usuario();
@@ -55,6 +56,7 @@ public class PlaylistTest {
         assert guardadaPlaylist.getUsuario().getEmail().equals("usuario@gmail.com");
     }
 
+    /** Prueba para buscar una Playlist por su nombre */
     @Test
     void findByNombreTest() {
 
@@ -97,6 +99,7 @@ public class PlaylistTest {
         playlistRepository.deleteAll(List.of(playlist2, playlist3, playlist4));
     }
 
+    /** Prueba para buscar una Playlist por el nombre de usuario del Usuario asociado */
     @Test
     void findByUsuario_Username() {
         Usuario usuarioCreate = new Usuario();
@@ -153,6 +156,7 @@ public class PlaylistTest {
 
     }
 
+    /** Prueba CRUD completa para la entidad Playlist */
     @Test
     void CRUDTest () {
 

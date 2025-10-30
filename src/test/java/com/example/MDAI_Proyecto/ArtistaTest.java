@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 public class ArtistaTest {
 
+
     @Autowired
     private ArtistaRepository artistaRepository;
 

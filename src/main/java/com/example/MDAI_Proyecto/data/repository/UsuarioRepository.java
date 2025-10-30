@@ -21,6 +21,10 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
+/**
+ * Repositorio para la entidad Usuario.
+ * Proporciona métodos para realizar operaciones CRUD y consultas personalizadas.
+ */
 @Repository
 public interface UsuarioRepository extends CrudRepository<Usuario, Long> {
     /**

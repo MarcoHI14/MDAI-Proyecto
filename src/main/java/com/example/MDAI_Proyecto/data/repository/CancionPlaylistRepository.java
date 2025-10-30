@@ -9,6 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para la entidad CancionPlaylist.
+ * Proporciona métodos para realizar operaciones CRUD y consultas personalizadas.
+ */
 @Repository
 public interface CancionPlaylistRepository extends CrudRepository<CancionPlaylist, Long> {
 

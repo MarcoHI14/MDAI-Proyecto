@@ -22,6 +22,10 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
+/**
+ * Repositorio para la entidad Artista.
+ * Proporciona métodos para realizar operaciones CRUD y consultas personalizadas.
+ */
 @Repository
 public interface ArtistaRepository extends CrudRepository<Artista, Long> {
 
