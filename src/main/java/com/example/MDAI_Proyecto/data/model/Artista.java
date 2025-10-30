@@ -5,44 +5,48 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Entidad Artista que representa a un artista en el sistema.
+ * Relacionado uno a uno con Usuario y uno a muchos con Cancion.
+ */
 @Entity
 @Table(name = "Artista")
 public class Artista {
+    /** Atributos */
+
+    /** Identificador del artista, que es el mismo que el del usuario asociado */
     @Id
     private Long idArtista;
 
+    /** Relación OneToOne con Usuario */
     @OneToOne
     @MapsId
     @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     private Usuario usuario;
 
+    /** Biografía del artista */
     @Column(name = "biografia")
     private String biografia;
 
-    // Relación OneToMany con Cancion (lado inverso: Cancion.artista es el owning side) CASCADA
+
+    /** Relación OneToMany con Cancion (lado inverso: Cancion.artista es el owning side) CASCADA
+    *Cuando se elimina un artista, se eliminan sus canciones (orphanRemoval)
+    * Lista de canciones asociadas al artista */
     @OneToMany(mappedBy = "artista", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cancion> canciones = new ArrayList<>();
 
-    // Getters y setters
+    /** Getters y Setters */
     public Long getIdArtista() { return idArtista; }
     public void setIdArtista(Long idArtista) { this.idArtista = idArtista; }
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
     public String getBiografia() { return biografia; }
     public void setBiografia(String biografia) { this.biografia = biografia; }
-
-    // Getters/Setters para canciones
-    public List<Cancion> getCanciones() {
-        return canciones;
-    }
-
-    public void setCanciones(List<Cancion> canciones) {
-        this.canciones = canciones;
-    }
+    public List<Cancion> getCanciones() { return canciones;}
+    public void setCanciones(List<Cancion> canciones) { this.canciones = canciones;}
 
     // Métodos auxiliares para mantener la relación bidireccional
-    /**
-     * Añade una canción a la lista del artista y establece la relación.
+    /** Añade una canción a la lista del artista y establece la relación.
      * @param cancion
      */
     public void addCancion(Cancion cancion) {
