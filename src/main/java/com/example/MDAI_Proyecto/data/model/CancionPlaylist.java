@@ -1,6 +1,8 @@
 package com.example.MDAI_Proyecto.data.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(
@@ -19,6 +21,7 @@ public class CancionPlaylist {
 
     @ManyToOne
     @JoinColumn(name = "id_cancion", nullable = false)
+//    @OnDelete(action = OnDeleteAction.CASCADE)
     private Cancion cancion;
 
     private int orden;

@@ -62,7 +62,27 @@ public interface CancionPlaylistRepository extends CrudRepository<CancionPlaylis
     @Query("SELECT cp FROM CancionPlaylist cp WHERE cp.playlist.idPlaylist = :playlistId AND cp.cancion.genero IN :genres ORDER BY cp.orden ASC")
     Optional<List<CancionPlaylist>> findByPlaylistIdAndCancionGeneroInOrderByOrdenAsc(@Param("playlistId") Long playlistId, @Param("genres") List<String> genres);
 
-
+    /**
+     * Busca todas las entradas de CancionPlaylist asociadas a una playlist específica y
+     * a una lista de títulos de canción, ordenadas por el campo 'orden' en orden ascendente.
+     *
+     * @param playlistId El ID de la playlist.
+     * @param titulos    Una lista de títulos de canción.
+     * @return Una lista opcional de CancionPlaylist asociadas a la playlist y títulos dados,
+     * ordenadas por 'orden'.
+     */
     @Query("SELECT cp FROM CancionPlaylist cp WHERE cp.playlist.idPlaylist = :playlistId AND cp.cancion.titulo IN :titulos ORDER BY cp.orden ASC")
     Optional<List<CancionPlaylist>> findByPlaylistIdAndCancionTituloInOrderByOrdenAsc (@Param("playlistId") Long playlistId, @Param("titulos") List<String> titulos);
+
+    /**
+     * Busca todas las entradas de CancionPlaylist asociadas a una playlist específica y
+     * al nombre de un artista (parcial, case insensitive), ordenadas por el campo 'orden' en orden ascendente.
+     *
+     * @param playlistId   El ID de la playlist.
+     * @param artistaNombre El nombre (o parte del nombre) del artista.
+     * @return Una lista opcional de CancionPlaylist asociadas a la playlist y al artista dado,
+     * ordenadas por 'orden'.
+     */
+    @Query("SELECT cp FROM CancionPlaylist cp WHERE cp.playlist.idPlaylist = :playlistId AND LOWER(cp.cancion.artista.usuario.username) LIKE LOWER(CONCAT('%', :artistaNombre, '%')) ORDER BY cp.orden ASC")
+    Optional<List<CancionPlaylist>> findByPlaylistIdAndCancionArtistaNombreOrderByOrdenAsc(@Param("playlistId") Long playlistId, @Param("artistaNombre") String artistaNombre);
 }

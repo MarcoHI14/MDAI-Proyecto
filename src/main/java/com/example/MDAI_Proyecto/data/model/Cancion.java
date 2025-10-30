@@ -2,6 +2,8 @@ package com.example.MDAI_Proyecto.data.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Cancion")
@@ -23,6 +25,11 @@ public class Cancion {
     @Column(name = "fecha_subida")
     private LocalDateTime fechaSubida;
 
+    // Añadido: cascada para eliminar automáticamente las relaciones CancionPlaylist
+   // @OneToMany(mappedBy = "cancion", cascade = CascadeType.REMOVE, orphanRemoval = true)
+   // private List<CancionPlaylist> cancionPlaylists = new ArrayList<>();
+
+
     @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "id_artista", nullable = false)
     private Artista artista;
@@ -42,4 +49,7 @@ public class Cancion {
     public void setFechaSubida(LocalDateTime fechaSubida) { this.fechaSubida = fechaSubida; }
     public Artista getArtista() { return artista; }
     public void setArtista(Artista artista) { this.artista = artista; }
+   // public List<CancionPlaylist> getCancionPlaylists() { return cancionPlaylists; }
+    //public void setCancionPlaylists(List<CancionPlaylist> cancionPlaylists) { this.cancionPlaylists = cancionPlaylists; }
+
 }

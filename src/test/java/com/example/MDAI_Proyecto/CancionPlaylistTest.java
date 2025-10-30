@@ -1109,4 +1109,114 @@ public class CancionPlaylistTest {
 
     }
 
+    /** Test para verificar la correcta recuperación
+     * de las canciones asociadas a una playlist específica
+     * filtradas por artista utilizando el metodo
+     * findByPlaylistIdAndCancionArtistaNombreOrderByOrdenAsc.
+     */
+    @Test
+    void findByCancionArtistaInPlaylistTest() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Leiva");
+        usuario.setEmail("leiva@ojo.com");
+        usuario.setPassword("pólvora");
+        usuario = usuarioRepository.save(usuario);
+        Artista artista = new Artista();
+        artista.setBiografia("Cantante y compositor español de rock.");
+        artista.setUsuario(usuario);
+        artista = artistaRepository.save(artista);
+        usuario.setArtista(artista);
+        usuarioRepository.save(usuario);
+
+        Playlist playlist = new Playlist();
+        playlist.setNombre("Rock Español");
+        playlist.setDescripcion("Las mejores canciones de rock español.");
+        playlist.setUsuario(usuario);
+        playlist.setFechaCreacion(java.time.LocalDateTime.now());
+        playlist = playlistRepository.save(playlist);
+
+        Cancion cancion1 = new Cancion();
+        cancion1.setTitulo("Lobos");
+        cancion1.setArtista(artista);
+        cancion1.setGenero("Rock");
+        cancion1.setDuracion("4:15");
+        cancion1.setFechaSubida(java.time.LocalDateTime.now());
+        cancion1 = cancionRepository.save(cancion1);
+        CancionPlaylist cancionPlaylist1 = new CancionPlaylist();
+        cancionPlaylist1.setCancion(cancion1);
+        cancionPlaylist1.setPlaylist(playlist);
+        cancionPlaylist1.setOrden(1);
+        cancionPlaylist1 = cancionPlaylistRepository.save(cancionPlaylist1);
+
+        // Buscar por artista "Leiva"
+        List<Artista> artistasBuscados = Arrays.asList(artista);
+        var cancionesEnPlaylistOpt = cancionPlaylistRepository.findByPlaylistIdAndCancionArtistaNombreOrderByOrdenAsc(playlist.getIdPlaylist(), "Leiva");
+        var cancionesEnPlaylist = cancionesEnPlaylistOpt.orElse(Collections.emptyList());
+        assertEquals(1, cancionesEnPlaylist.size());
+        assertEquals("Lobos", cancionesEnPlaylist.get(0).getCancion().getTitulo());
+
+        // limpiar
+        cancionPlaylistRepository.delete(cancionPlaylist1);
+        playlistRepository.delete(playlist);
+        cancionRepository.delete(cancion1);
+        artistaRepository.delete(artista);
+        usuarioRepository.delete(usuario);
+    }
+
+    @Test
+    void removeCancionAndCancionPlaylistFromPlaylistTest() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("The Offspring");
+        usuario.setEmail("offsrping@mail.com");
+        usuario.setPassword("selfEsteem");
+        usuario = usuarioRepository.save(usuario);
+        Artista artista = new Artista();
+        artista.setBiografia("Banda estadounidense de punk rock.");
+        artista.setUsuario(usuario);
+        artista = artistaRepository.save(artista);
+        usuario.setArtista(artista);
+        usuarioRepository.save(usuario);
+
+        Playlist playlist = new Playlist();
+        playlist.setNombre("Punk Rock Anthems");
+        playlist.setDescripcion("Las mejores canciones de punk rock.");
+        playlist.setUsuario(usuario);
+        playlist.setFechaCreacion(java.time.LocalDateTime.now());
+        playlist = playlistRepository.save(playlist);
+
+        Cancion cancion = new Cancion();
+        cancion.setTitulo("Why Don't You Get a Job?");
+        cancion.setArtista(artista);
+        cancion.setGenero("Punk Rock");
+        cancion.setDuracion("2:48");
+        cancion.setFechaSubida(java.time.LocalDateTime.now());
+        cancion = cancionRepository.save(cancion);
+
+        CancionPlaylist cancionPlaylist = new CancionPlaylist();
+        cancionPlaylist.setCancion(cancion);
+        cancionPlaylist.setPlaylist(playlist);
+        cancionPlaylist.setOrden(1);
+        cancionPlaylist = cancionPlaylistRepository.save(cancionPlaylist);
+
+        // Verificar que la canción y la relación existen
+        Optional<CancionPlaylist> cpOpt = cancionPlaylistRepository.findById(cancionPlaylist.getId());
+        assertTrue(cpOpt.isPresent());
+        Optional<Cancion> cOpt = cancionRepository.findById(cancion.getIdCancion());
+        assertTrue(cOpt.isPresent());
+
+        // Eliminar la canción
+        cancionRepository.delete(cancion);
+        // Verificar que la relación CancionPlaylist también se ha eliminado
+        Optional<CancionPlaylist> deletedCpOpt = cancionPlaylistRepository.findById(cancionPlaylist.getId());
+        assertFalse(deletedCpOpt.isPresent());
+        // Verificar que la canción ya no existe
+        Optional<Cancion> deletedCOpt = cancionRepository.findById(cancion.getIdCancion());
+        assertFalse(deletedCOpt.isPresent());
+
+        // limpieza de datos
+        playlistRepository.delete(playlist);
+        artistaRepository.delete(artista);
+        usuarioRepository.delete(usuario);
+    }
+
 }
