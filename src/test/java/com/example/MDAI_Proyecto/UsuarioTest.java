@@ -148,7 +148,7 @@ class UsuarioTest {
         usuarioRepository.deleteAll(List.of(usuario2, usuario3));
     }
 
-    /** Test para comprobar el método comprobarPassword de la clase Usuario. **/
+    /** Test para comprobar el metodo comprobarPassword de la clase Usuario. **/
     @Test
     void comprobarPasswordTest() {
         Usuario usuario = new Usuario();
