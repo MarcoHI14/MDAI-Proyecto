@@ -86,3 +86,4 @@ public interface CancionPlaylistRepository extends CrudRepository<CancionPlaylis
     @Query("SELECT cp FROM CancionPlaylist cp WHERE cp.playlist.idPlaylist = :playlistId AND LOWER(cp.cancion.artista.usuario.username) LIKE LOWER(CONCAT('%', :artistaNombre, '%')) ORDER BY cp.orden ASC")
     Optional<List<CancionPlaylist>> findByPlaylistIdAndCancionArtistaNombreOrderByOrdenAsc(@Param("playlistId") Long playlistId, @Param("artistaNombre") String artistaNombre);
 }
+

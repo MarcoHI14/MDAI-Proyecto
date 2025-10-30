@@ -25,9 +25,9 @@ public class Cancion {
     @Column(name = "fecha_subida")
     private LocalDateTime fechaSubida;
 
-    // Añadido: cascada para eliminar automáticamente las relaciones CancionPlaylist
-   // @OneToMany(mappedBy = "cancion", cascade = CascadeType.REMOVE, orphanRemoval = true)
-   // private List<CancionPlaylist> cancionPlaylists = new ArrayList<>();
+    // Relación con CancionPlaylist: lado inverso, para permitir cascada al eliminar una Cancion
+    @OneToMany(mappedBy = "cancion", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<CancionPlaylist> cancionPlaylists = new ArrayList<>();
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -48,8 +48,35 @@ public class Cancion {
     public LocalDateTime getFechaSubida() { return fechaSubida; }
     public void setFechaSubida(LocalDateTime fechaSubida) { this.fechaSubida = fechaSubida; }
     public Artista getArtista() { return artista; }
-    public void setArtista(Artista artista) { this.artista = artista; }
-   // public List<CancionPlaylist> getCancionPlaylists() { return cancionPlaylists; }
-    //public void setCancionPlaylists(List<CancionPlaylist> cancionPlaylists) { this.cancionPlaylists = cancionPlaylists; }
+    public void setArtista(Artista artista) {
+        // Quitar de artista anterior
+        if (this.artista != null && this.artista.getCanciones() != null) {
+            this.artista.getCanciones().remove(this);
+        }
+        this.artista = artista;
+        // Añadir a la nueva lista del artista si procede
+        if (artista != null && artista.getCanciones() != null && !artista.getCanciones().contains(this)) {
+            artista.getCanciones().add(this);
+        }
+    }
+
+    public List<CancionPlaylist> getCancionPlaylists() { return cancionPlaylists; }
+    public void setCancionPlaylists(List<CancionPlaylist> cancionPlaylists) { this.cancionPlaylists = cancionPlaylists; }
+
+    // Helpers para mantener la relación en memoria
+    public void addCancionPlaylist(CancionPlaylist cp) {
+        if (cp == null) return;
+        if (!this.cancionPlaylists.contains(cp)) {
+            this.cancionPlaylists.add(cp);
+            cp.setCancion(this);
+        }
+    }
+
+    public void removeCancionPlaylist(CancionPlaylist cp) {
+        if (cp == null) return;
+        if (this.cancionPlaylists.remove(cp)) {
+            cp.setCancion(null);
+        }
+    }
 
 }

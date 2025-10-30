@@ -1163,6 +1163,10 @@ public class CancionPlaylistTest {
         usuarioRepository.delete(usuario);
     }
 
+    /** Test para verificar que al eliminar una canción,
+     * también se elimina la relación correspondiente
+     * en la tabla CancionPlaylist.
+     */
     @Test
     void removeCancionAndCancionPlaylistFromPlaylistTest() {
         Usuario usuario = new Usuario();
@@ -1219,4 +1223,171 @@ public class CancionPlaylistTest {
         usuarioRepository.delete(usuario);
     }
 
+    /**
+     * Test para verificar que al eliminar un artista,
+     * también se eliminan las canciones asociadas
+     * y las relaciones correspondientes en la tabla CancionPlaylist.
+     */
+    @Test
+    void removeArtistaAndCancionPlaylistFromPlaylistTest() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("The Weeknd");
+        usuario.setEmail("itsalmostweek@end.com");
+        usuario.setPassword("blindingLights");
+        usuario = usuarioRepository.save(usuario);
+        Artista artista = new Artista();
+        artista.setBiografia("Cantante canadiense de R&B y pop.");
+        artista.setUsuario(usuario);
+        artista = artistaRepository.save(artista);
+        usuario.setArtista(artista);
+        usuarioRepository.save(usuario);
+
+        Playlist playlist = new Playlist();
+        playlist.setNombre("Top Hits");
+        playlist.setDescripcion("Las mejores canciones del momento.");
+        playlist.setUsuario(usuario);
+        playlist.setFechaCreacion(java.time.LocalDateTime.now());
+        playlist = playlistRepository.save(playlist);
+
+        Cancion cancion = new Cancion();
+        cancion.setTitulo("Blinding Lights");
+        cancion.setArtista(artista);
+        cancion.setGenero("Pop");
+        cancion.setDuracion("3:20");
+        cancion.setFechaSubida(java.time.LocalDateTime.now());
+        cancion = cancionRepository.save(cancion);
+
+        CancionPlaylist cancionPlaylist = new CancionPlaylist();
+        cancionPlaylist.setCancion(cancion);
+        cancionPlaylist.setPlaylist(playlist);
+        cancionPlaylist.setOrden(1);
+        cancionPlaylist = cancionPlaylistRepository.save(cancionPlaylist);
+
+        // Verificar que la canción y la relación existen
+        Optional<CancionPlaylist> cpOpt = cancionPlaylistRepository.findById(cancionPlaylist.getId());
+        assertTrue(cpOpt.isPresent());
+        Optional<Cancion> cOpt = cancionRepository.findById(cancion.getIdCancion());
+        assertTrue(cOpt.isPresent());
+        // Eliminar el artista
+        artistaRepository.delete(artista);
+        // Verificar que la canción ya no existe
+        Optional<Cancion> deletedCOpt = cancionRepository.findById(cancion.getIdCancion());
+        assertFalse(deletedCOpt.isPresent());
+        // Verificar que la relación CancionPlaylist también se ha eliminado
+        Optional<CancionPlaylist> deletedCpOpt = cancionPlaylistRepository.findById(cancionPlaylist.getId());
+        assertFalse(deletedCpOpt.isPresent());
+
+        // limpieza de datos
+        playlistRepository.delete(playlist);
+        usuarioRepository.delete(usuario);
+
+    }
+
+    /**
+     * Test para verificar que al eliminar un usuario,
+     * también se eliminan las canciones asociadas
+     * y las relaciones correspondientes en la tabla CancionPlaylist.
+     */
+    @Test
+    void removeUsuarioAndCancionPlaylistFromPlaylistTest() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("The Cranberries");
+        usuario.setEmail("cranberries@zom.com");
+        usuario.setPassword("dreams");
+        usuario = usuarioRepository.save(usuario);
+        Artista artista = new Artista();
+        artista.setBiografia("Banda irlandesa de rock alternativo.");
+        artista.setUsuario(usuario);
+        artista = artistaRepository.save(artista);
+        usuario.setArtista(artista);
+        usuarioRepository.save(usuario);
+
+        Playlist playlist = new Playlist();
+        playlist.setNombre("Rock Alternativo Internacional");
+        playlist.setDescripcion("Las mejores canciones de rock alternativo internacional.");
+        playlist.setUsuario(usuario);
+        playlist.setFechaCreacion(java.time.LocalDateTime.now());
+        playlist = playlistRepository.save(playlist);
+
+        Cancion cancion = new Cancion();
+        cancion.setTitulo("Linger");
+        cancion.setArtista(artista);
+        cancion.setGenero("Rock Alternativo");
+        cancion.setDuracion("4:34");
+        cancion.setFechaSubida(java.time.LocalDateTime.now());
+        cancion = cancionRepository.save(cancion);
+        CancionPlaylist cancionPlaylist = new CancionPlaylist();
+        cancionPlaylist.setCancion(cancion);
+        cancionPlaylist.setPlaylist(playlist);
+        cancionPlaylist.setOrden(1);
+        cancionPlaylist = cancionPlaylistRepository.save(cancionPlaylist);
+
+        // Verificar que la canción y la relación existen
+        Optional<CancionPlaylist> cpOpt = cancionPlaylistRepository.findById(cancionPlaylist.getId());
+        assertTrue(cpOpt.isPresent());
+        Optional<Cancion> cOpt = cancionRepository.findById(cancion.getIdCancion());
+        assertTrue(cOpt.isPresent());
+        // Eliminar el usuario
+        usuarioRepository.delete(usuario);
+        // Verificar que la canción ya no existe
+        Optional<Cancion> deletedCOpt = cancionRepository.findById(cancion.getIdCancion());
+        assertFalse(deletedCOpt.isPresent());
+        // Verificar que la relación CancionPlaylist también se ha eliminado
+        Optional<CancionPlaylist> deletedCpOpt = cancionPlaylistRepository.findById(cancionPlaylist.getId());
+        assertFalse(deletedCpOpt.isPresent());
+    }
+
+    /**
+     * Test para verificar que al eliminar una playlist,
+     * también se eliminan las relaciones correspondientes
+     * en la tabla CancionPlaylist.
+     */
+    @Test
+    void deletePlaylistAndCascadeDeleteCancionPlaylistTest() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("Twenty One Pilots");
+        usuario.setEmail("21pil@ts.com");
+        usuario.setPassword("stressedout");
+        usuario = usuarioRepository.save(usuario);
+        Artista artista = new Artista();
+        artista.setBiografia("Dúo estadounidense de música alternativa.");
+        artista.setUsuario(usuario);
+        artista = artistaRepository.save(artista);
+        usuario.setArtista(artista);
+        usuarioRepository.save(usuario);
+
+        Playlist playlist = new Playlist();
+        playlist.setNombre("Alternative Hits");
+        playlist.setDescripcion("Las mejores canciones alternativas.");
+        playlist.setUsuario(usuario);
+        playlist.setFechaCreacion(java.time.LocalDateTime.now());
+        playlist = playlistRepository.save(playlist);
+
+        Cancion cancion = new Cancion();
+        cancion.setTitulo("Ride");
+        cancion.setArtista(artista);
+        cancion.setGenero("Alternative");
+        cancion.setDuracion("3:34");
+        cancion.setFechaSubida(java.time.LocalDateTime.now());
+        cancion = cancionRepository.save(cancion);
+        CancionPlaylist cancionPlaylist = new CancionPlaylist();
+        cancionPlaylist.setCancion(cancion);
+        cancionPlaylist.setPlaylist(playlist);
+        cancionPlaylist.setOrden(1);
+        cancionPlaylist = cancionPlaylistRepository.save(cancionPlaylist);
+
+        // Verificar que la relación existe
+        Optional<CancionPlaylist> cpOpt = cancionPlaylistRepository.findById(cancionPlaylist.getId());
+        assertTrue(cpOpt.isPresent());
+        // Eliminar la playlist
+        playlistRepository.delete(playlist);
+        // Verificar que la relación CancionPlaylist también se ha eliminado
+        Optional<CancionPlaylist> deletedCpOpt = cancionPlaylistRepository.findById(cancionPlaylist.getId());
+        assertFalse(deletedCpOpt.isPresent());
+        // limpieza de datos
+        cancionRepository.delete(cancion);
+        artistaRepository.delete(artista);
+        usuarioRepository.delete(usuario);
+
+    }
 }
