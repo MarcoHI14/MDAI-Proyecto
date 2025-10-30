@@ -10,9 +10,6 @@ En este documento podrás encontrar la siguiente información:
 ### *INFORMACIÓN GENERAL*
 TunedHive es una aplicación diseñada para compartir, escuchar y organizar música, en la que todo el mundo puede tanto crear como consumir contenido. 
 
-![[https://github.com/MarcoHI14/MDAI-Proyecto/blob/main/src/main/resources/static/TunedHive.png]]
-
-
 En su creación hemos colaborado:
 - **Marco Herrera Iborra**, estudiante de 4º de Ing. Informática en el CUMe
 - **Juan José Galindo Cotano**, estudiante de 4º de Ing. Informática en el CUMe
