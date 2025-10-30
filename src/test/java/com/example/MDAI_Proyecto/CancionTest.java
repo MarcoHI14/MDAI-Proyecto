@@ -11,19 +11,40 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+
+/**
+ * Conjunto de pruebas de integración para el repositorio de {@link Cancion}.
+ *
+ * Usa @DataJpaTest para arrancar un contexto de persistencia ligero y validar
+ * operaciones CRUD y consultas personalizadas del repositorio.
+ *
+ */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CancionTest {
 
+    /**
+     * Repositorio para operaciones sobre {@link Cancion}.
+     */
     @Autowired
     private CancionRepository cancionRepository;
 
+    /**
+     * Repositorio para operaciones sobre {@link Artista}.
+     */
     @Autowired
     private ArtistaRepository artistaRepository;
 
+    /**
+     * Repositorio para operaciones sobre {@link Usuario}.
+     */
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    /**
+     * Prueba que crea varias canciones y valida guardado, búsqueda por título,
+     * eliminación y consultas generales como findAll.
+     */
     @Test
     void crearCancionTest() {
 
@@ -101,6 +122,10 @@ class CancionTest {
         assertThat(cancionTest2).isNotNull();
     }
 
+    /**
+     * Verifica la consulta {@code findByTitulo} para varios títulos insertados.
+     * Comprueba que los datos recuperados coinciden con lo esperado.
+     */
     @Test
     void findByTituloTest() {
         Usuario user = new Usuario();
@@ -170,6 +195,10 @@ class CancionTest {
         assertThat(cancionTest4.get().getDuracion()).isEqualTo("02:45");
     }
 
+    /**
+     * Prueba la consulta {@code findByGenero} que devuelve una lista de canciones
+     * con el género solicitado. Verifica tamaño y consistencia del género.
+     */
     @Test
     void findByGeneroTest() {
         Usuario user = new Usuario();
@@ -217,19 +246,25 @@ class CancionTest {
         cancionRepository.saveAll(canciones).forEach(guardadas::add);
         assertThat(guardadas).hasSize(3);
 
-        Optional<Cancion> cancionTestRock = cancionRepository.findByGenero("Rock");
-        assertThat(cancionTestRock).isPresent();
-        assertThat(cancionTestRock.get().getGenero()).isEqualTo("Rock");
+        List<Cancion> rock = cancionRepository.findByGenero("Rock");
+        assertThat(rock).isNotEmpty();
+        // Opcional: comprobar que todos tengan el género esperado
+        assertThat(rock).allMatch(c -> "Rock".equals(c.getGenero()));
 
-        Optional<Cancion> cancionTestJazz = cancionRepository.findByGenero("Jazz");
-        assertThat(cancionTestJazz).isPresent();
-        assertThat(cancionTestJazz.get().getGenero()).isEqualTo("Jazz");
+        List<Cancion> jazz = cancionRepository.findByGenero("Jazz");
+        assertThat(jazz).isNotEmpty();
+        assertThat(jazz).allMatch(c -> "Jazz".equals(c.getGenero()));
 
-        Optional<Cancion> cancionTestClassical = cancionRepository.findByGenero("Classical");
-        assertThat(cancionTestClassical).isPresent();
-        assertThat(cancionTestClassical.get().getGenero()).isEqualTo("Classical");
+        List<Cancion> classical = cancionRepository.findByGenero("Classical");
+        assertThat(classical).isNotEmpty();
+        assertThat(classical).allMatch(c -> "Classical".equals(c.getGenero()));
     }
 
+    /**
+     * Verifica la consulta por artista (navegando por la relación de usuario).
+     * Inserta canciones de dos artistas distintos y comprueba que la búsqueda por
+     * username devuelve las correspondientes.
+     */
     @Test
     void findByArtistaTest() {
 
@@ -279,13 +314,18 @@ class CancionTest {
         cancion4.setArtista(guardadoArtista2);
 
         cancionRepository.saveAll(List.of(cancion2, cancion3, cancion4));
-        Cancion encontrada = cancionRepository.findByArtista_Usuario_Username("ArtistaCancion").orElse(null);
-        assertNotNull(encontrada);
+        List<Cancion> encontradas = cancionRepository.findByArtista_Usuario_Username("ArtistaCancion");
+        assertNotNull(encontradas);
+        assertFalse(encontradas.isEmpty());
+        Cancion encontrada = encontradas.getFirst();
         assertEquals("Cancion 2", encontrada.getTitulo());
         assertEquals("Rock", encontrada.getGenero());
         assertEquals("ArtistaCancion", encontrada.getArtista().getUsuario().getUsername());
     }
 
+    /**
+     * Prueba CRUD completo: crear, leer, actualizar y borrar una canción.
+     */
     @Test
     void CRUDTest () {
         //CREATE
@@ -326,6 +366,11 @@ class CancionTest {
         Optional<Cancion> deletedCancion = cancionRepository.findById(updatedCancion.getIdCancion());
         assertFalse(deletedCancion.isPresent());
     }
+
+    /**
+     * Comprueba que al borrar un artista con cascade las canciones relacionadas se eliminan.
+     * Intenta recuperar una canción tras borrar el artista y observa el resultado.
+     */
 
     @Test
     void deleteArtistaCascadaCancionesTest() {
@@ -403,6 +448,11 @@ class CancionTest {
 
     }
 
+    /**
+     * Verifica que el título no pueda ser nulo al guardar una canción.
+     * Inserta una canción válida y otra sin título para comprobar la restricción.
+     */
+
     @Test
     void tituloNoNuloTest() {
 
@@ -440,6 +490,125 @@ class CancionTest {
             System.out.println("Error: La canción sin título ha sido guardada.");
         } catch (Exception e) {
             System.out.println("Error al guardar la canción sin título: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Prueba la consulta {@code findByFechaSubidaBefore} para recuperar canciones
+     * subidas antes de una fecha determinada.
+     */
+    @Test
+    void findByFechaSubidaBeforeTest() {
+
+        Usuario user = new Usuario ();
+        user.setUsername("LinkinPark");
+        user.setPassword("Numb123");
+        user.setEmail("shinoda@bennington.com");
+        Usuario savedUser = usuarioRepository.save(user);
+        Artista artista = new Artista();
+        artista.setUsuario(savedUser);
+        artista.setBiografia("Biografía del artista");
+        Artista savedArtista = artistaRepository.save(artista);
+
+        Cancion cancion1 = new Cancion();
+        cancion1.setTitulo("In the End");
+        cancion1.setGenero("Rock");
+        cancion1.setArchivoAudio("ruta/a/archivo1.mp3");
+        cancion1.setDuracion("03:36");
+        cancion1.setFechaSubida(java.time.LocalDateTime.of(2000, 1, 15, 10, 0));
+        cancion1.setArtista(savedArtista);
+
+        Cancion cancion2 = new Cancion();
+        cancion2.setTitulo("Numb");
+        cancion2.setGenero("Rock");
+        cancion2.setArchivoAudio("ruta/a/archivo2.mp3");
+        cancion2.setDuracion("03:07");
+        cancion2.setFechaSubida(java.time.LocalDateTime.of(2003, 3, 25, 12, 0));
+        cancion2.setArtista(savedArtista);
+
+        Cancion cancion3 = new Cancion();
+        cancion3.setTitulo("Breaking the Habit");
+        cancion3.setGenero("Rock");
+        cancion3.setArchivoAudio("ruta/a/archivo3.mp3");
+        cancion3.setDuracion("03:16");
+        cancion3.setFechaSubida(java.time.LocalDateTime.of(2004, 7, 20, 14, 0));
+        cancion3.setArtista(savedArtista);
+
+        Cancion cancion4 = new Cancion();
+        cancion4.setTitulo("Let You Fade");
+        cancion4.setGenero("Rock");
+        cancion4.setArchivoAudio("ruta/a/archivo4.mp3");
+        cancion4.setDuracion("03:30");
+        cancion4.setFechaSubida(java.time.LocalDateTime.of(2024, 10, 19, 16, 0));
+        cancion4.setArtista(savedArtista);
+
+        cancionRepository.saveAll(List.of(cancion1, cancion2, cancion3, cancion4));
+
+        List<Cancion> cancionesAntes2005 = cancionRepository.findByFechaSubidaBefore(java.time.LocalDateTime.of(2005, 1, 1, 0, 0));
+        assertThat(cancionesAntes2005).hasSize(3);
+        for (Cancion c : cancionesAntes2005) {
+            assertThat(c.getFechaSubida().isBefore(java.time.LocalDateTime.of(2005, 1, 1, 0, 0))).isTrue();
+            if (c.getFechaSubida().isBefore(java.time.LocalDateTime.of(2005, 1, 1, 0, 0))) {
+                System.out.println(c.getTitulo()+" fue publicada antes de 2005.");
+            }
+        }
+    }
+
+    /**
+     * Verifica la consulta {@code findByDuracion} que devuelve canciones con la
+     * duración exacta solicitada.
+     */
+    @Test
+    void findByDuracionTest() {
+        Usuario user = new Usuario ();
+        user.setUsername("Generico");
+        user.setPassword("RollingStones");
+        user.setEmail("tipo@deincognito.com");
+        Usuario savedUser = usuarioRepository.save(user);
+        Artista artista = new Artista();
+        artista.setUsuario(savedUser);
+        artista.setBiografia("Biografía del artista");
+        Artista savedArtista = artistaRepository.save(artista);
+
+        Cancion cancion1 = new Cancion();
+        cancion1.setTitulo("Value");
+        cancion1.setGenero("Pop");
+        cancion1.setArchivoAudio("ruta/a/archivo1.mp3");
+        cancion1.setDuracion("03:05");
+        cancion1.setFechaSubida(java.time.LocalDateTime.now());
+        cancion1.setArtista(savedArtista);
+
+        Cancion cancion2 = new Cancion();
+        cancion2.setTitulo("Backlight");
+        cancion2.setGenero("Rock");
+        cancion2.setArchivoAudio("ruta/a/archivo2.mp3");
+        cancion2.setDuracion("03:17");
+        cancion2.setFechaSubida(java.time.LocalDateTime.now());
+        cancion2.setArtista(savedArtista);
+
+        Cancion cancion3 = new Cancion();
+        cancion3.setTitulo("Sunset");
+        cancion3.setGenero("Jazz");
+        cancion3.setArchivoAudio("ruta/a/archivo3.mp3");
+        cancion3.setDuracion("03:05");
+        cancion3.setFechaSubida(java.time.LocalDateTime.now());
+        cancion3.setArtista(savedArtista);
+
+        Cancion cancion4 = new Cancion();
+        cancion4.setTitulo("Mirror");
+        cancion4.setGenero("Pop");
+        cancion4.setArchivoAudio("ruta/a/archivo4.mp3");
+        cancion4.setDuracion("02:58");
+        cancion4.setFechaSubida(java.time.LocalDateTime.now());
+        cancion4.setArtista(savedArtista);
+
+        cancionRepository.saveAll(List.of(cancion1, cancion2, cancion3, cancion4));
+        List<Cancion> cancionesDuracion305 = cancionRepository.findByDuracion("03:05");
+        assertNotNull(cancionesDuracion305);
+        assertThat(cancionesDuracion305).hasSize(2);
+        for (Cancion c : cancionesDuracion305) {
+            assertEquals("03:05", c.getDuracion());
+            System.out.println(c.getTitulo() + " tiene una duración de 03:05.");
         }
     }
 }
