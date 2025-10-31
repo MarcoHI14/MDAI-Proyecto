@@ -25,10 +25,7 @@ Este es el Diagrama Entidad-Relación de nuestra app web:
 
 ### *GUÍA DE INSTALACIÓN*
 Antes de poder usar TunedHive deberás cumplir los siguientes requisitos:
-- *Tener Docker Desktop instalado:*
-	- [[https://docs.docker.com/desktop/setup/install/windows-install|Guía de Instalación Windows]]
-	- [[https://docs.docker.com/desktop/setup/install/linux|Guía de Instalación Linux]]
-	- [[https://docs.docker.com/desktop/setup/install/mac-install|Guía de Instalación Mac]]
+- *Tener Docker Desktop instalado*
 
 Estos son los pasos que deberás seguir para estar al día con las novedades de TunedHive:
 - Paso 1: Clonar la rama main del Repositorio usando tu IDE de confianza
