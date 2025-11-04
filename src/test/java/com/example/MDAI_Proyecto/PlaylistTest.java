@@ -1,5 +1,6 @@
 package com.example.MDAI_Proyecto;
 
+import com.example.MDAI_Proyecto.data.model.Artista;
 import com.example.MDAI_Proyecto.data.model.Playlist;
 import com.example.MDAI_Proyecto.data.model.Usuario;
 import com.example.MDAI_Proyecto.data.repository.ArtistaRepository;
@@ -191,5 +192,34 @@ public class PlaylistTest {
         Optional<Playlist> deletedPlaylist = playlistRepository.findById(savedPlaylist.getIdPlaylist());
         assertFalse(deletedPlaylist.isPresent());
         assertNotNull(savedUser); //Comprobamos que el usuario asignado a la playlist no se borre
+    }
+
+    @Test
+    void eliminarUsuarioeliminaPlaylist () {
+        Usuario user = new Usuario();
+        user.setUsername("TwoDoorCinemaClub");
+        user.setPassword("music123");
+        user.setEmail("movietheater@gmail.com");
+        Usuario guardadoUser = usuarioRepository.save(user);
+        Artista artista = new Artista();
+        artista.setUsuario(guardadoUser);
+        artista.setBiografia("Biografía de TDCC");
+        Artista guardadoArtista = artistaRepository.save(artista);
+
+        Playlist playlist = new Playlist();
+        playlist.setNombre("Tourist History");
+        playlist.setDescripcion("Album de debut de TDCC");
+        playlist.setUsuario(guardadoUser);
+        Playlist guardadaPlaylist = playlistRepository.save(playlist);
+
+        // Verificar que la playlist está guardada
+        assertNotNull(guardadaPlaylist.getIdPlaylist());
+
+        // Eliminar el usuario
+        usuarioRepository.delete(guardadoUser);
+
+        // Verificar que la playlist también ha sido eliminada
+        Optional<Playlist> deletedPlaylist = playlistRepository.findById(guardadaPlaylist.getIdPlaylist());
+        assertFalse(deletedPlaylist.isPresent());
     }
 }
