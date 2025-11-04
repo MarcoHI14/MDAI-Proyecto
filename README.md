@@ -34,7 +34,7 @@ Estos son los pasos que deberás seguir para estar al día con las novedades de 
 - Paso 3: Ejecutar el siguiente comando:
 	*docker compose up -d*
 
-Dicho comando creará el contenedor de Docker necesario para el funcionamiento de la app, así como la base de datos y su conexión con el proyecto de SpringBoot.
+Dicho comando creará el contenedor de Docker necesario para el funcionamiento de la app. Posteriormente, la base de datos y sus tablas se generarán automáticamente gracias al archivo application.properties, en el que se encuentra la configuración del proyecto.
 
 
 ### *EJECUCIÓN DE TESTS*
