@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Tuned Hive</title>
-  <link rel="stylesheet" href="../static/estilos.css">
+  <!-- Usar la ruta que Spring Boot sirve desde / y Thymeleaf para resolverla correctamente -->
+  <link rel="stylesheet" th:href="@{/estilos.css}" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-    <button class="btn-colmena info info-top-left" onclick="window.location.href='Información.html'">Más información</button>
+    <button class="btn-colmena info info-top-left" onclick="window.location.href='/Información.html'">Más información</button>
     <div class="eslogan eslogan-top-right">Hone-y your music!</div>
     <div class="logo-contenedor" style="position: relative; display: inline-block;">
       <div class="abeja-voladora" id="abeja-voladora" aria-hidden="true">
@@ -26,14 +27,15 @@
           <ellipse cx="28" cy="18" rx="1.5" ry="0.5" fill="#bfa14a"/>
         </svg>
       </div>
-      <img src="../static/TunedHive.png" alt="Logo TunedHive" class="logo-colmena" id="logo-colmena">
+      <!-- Usar Thymeleaf para resolver la ruta de la imagen estática -->
+      <img th:src="@{/TunedHive.png}" alt="Logo TunedHive" class="logo-colmena" id="logo-colmena">
     </div>
     <div class="icono-musica">
       <i class="fas fa-music"></i>
     </div>
     <div class="botones-colmena" style="margin-bottom: 1.5em;">
-      <button class="btn-colmena login" onclick="window.open('InicioSesion.html', '_blank')">Iniciar sesión</button>
-      <button class="btn-colmena registro" onclick="window.open('Registro.html', '_blank')">Registrarse</button>
+      <button class="btn-colmena login" onclick="window.open('/InicioSesion.html', '_blank')">Iniciar sesión</button>
+      <button class="btn-colmena registro" onclick="window.open('/Registro.html', '_blank')">Registrarse</button>
     </div>
     <h1>Tuned Hive</h1>
     <div class="subtitulo">

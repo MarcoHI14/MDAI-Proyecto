@@ -5,8 +5,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class InicioController {
-    @GetMapping("/inicio")
+    public InicioController() {
+        System.out.println("\t InicioController");
+    }
+
+    @GetMapping("/")
     public String mostrarInicio() {
+        System.out.println("\t Recojo la peticion");
         return "Inicio";
     }
 }
