@@ -17,13 +17,12 @@ En su creación hemos colaborado:
 
 ### *REQUISITOS DE USO (FUNCIONALIDADES)*
 En el siguiente enlace podrá consultar todas las funcionalidades y casos de uso de nuestra aplicación:
-	*https://github.com/MarcoHI14/MDAI-Proyecto/blob/main/Requisitos_TunedHive.md*
+- *https://github.com/MarcoHI14/MDAI-Proyecto/blob/main/Requisitos_TunedHive.md*
 
 ### *DIAGRAMA E/R*
 Puedes consultar el Diagrama E/R de nuestro proyecto usando los siguientes enlaces:
-	*https://github.com/MarcoHI14/MDAI-Proyecto/blob/main/DERR.md*
-	
-	*https://github.com/MarcoHI14/MDAI-Proyecto/blob/main/DERR.jpeg*
+- *https://github.com/MarcoHI14/MDAI-Proyecto/blob/main/DERR.md*
+- *https://github.com/MarcoHI14/MDAI-Proyecto/blob/main/DERR.jpeg*
 
 ### *GUÍA DE INSTALACIÓN*
 Antes de poder usar TunedHive deberás cumplir los siguientes requisitos:
