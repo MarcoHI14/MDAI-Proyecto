@@ -22,6 +22,7 @@ En el siguiente enlace podrá consultar todas las funcionalidades y casos de uso
 ### *DIAGRAMA E/R*
 Puedes consultar el Diagrama E/R de nuestro proyecto usando los siguientes enlaces:
 	*https://github.com/MarcoHI14/MDAI-Proyecto/blob/main/DERR.md*
+	
 	*https://github.com/MarcoHI14/MDAI-Proyecto/blob/main/DERR.jpeg*
 
 ### *GUÍA DE INSTALACIÓN*
