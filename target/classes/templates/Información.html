@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Información | Tuned Hive</title>
-  <link rel="stylesheet" href="../static/estilos.css">
+  <!-- Usar Thymeleaf para resolver el CSS servido desde /estilos.css -->
+  <link rel="stylesheet" th:href="@{/estilos.css}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-  <button class="btn-colmena info info-top-left" onclick="window.location.href='Inicio.html'">Volver al inicio</button>
+  <!-- Usar th:onclick para que la URL se resuelva por Thymeleaf -->
+  <button class="btn-colmena info info-top-left" th:onclick="|window.location.href='@{/Inicio.html}'|">Volver al inicio</button>
   <h1 style="margin-top: 80px;">¿Qué es Tuned Hive?</h1>
   <div class="subtitulo" style="max-width: 600px; margin: 0 auto 2em auto;">
     Tuned Hive es una plataforma colaborativa donde los usuarios pueden compartir, descubrir y valorar música de manera colectiva, como en una colmena. Aquí, cada usuario es una abeja que aporta y disfruta del trabajo común.
