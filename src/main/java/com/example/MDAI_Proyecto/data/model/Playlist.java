@@ -50,7 +50,18 @@ public class Playlist {
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
     public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public void setUsuario(Usuario usuario) {
+        // Romper relación con el usuario anterior
+        if (this.usuario != null && this.usuario.getPlaylists() != null) {
+            this.usuario.getPlaylists().remove(this);
+        }
+        // Establecer nuevo usuario
+        this.usuario = usuario;
+        // Añadir a la colección del nuevo usuario si no está ya presente
+        if (usuario != null && usuario.getPlaylists() != null && !usuario.getPlaylists().contains(this)) {
+            usuario.getPlaylists().add(this);
+        }
+    }
     public List<CancionPlaylist> getCancionPlaylists() { return cancionPlaylists; }
     public void setCancionPlaylists(List<CancionPlaylist> cancionPlaylists) { this.cancionPlaylists = cancionPlaylists; }
 

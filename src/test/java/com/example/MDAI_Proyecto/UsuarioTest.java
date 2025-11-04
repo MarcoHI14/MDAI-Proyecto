@@ -1,9 +1,11 @@
 package com.example.MDAI_Proyecto;
 
 import com.example.MDAI_Proyecto.data.model.Artista;
+import com.example.MDAI_Proyecto.data.model.Playlist;
 import com.example.MDAI_Proyecto.data.model.Usuario;
 import com.example.MDAI_Proyecto.data.repository.ArtistaRepository;
 import com.example.MDAI_Proyecto.data.repository.UsuarioRepository;
+import com.example.MDAI_Proyecto.data.repository.PlaylistRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -25,6 +27,9 @@ class UsuarioTest {
 
     @Autowired
     private ArtistaRepository artistaRepository;
+
+    @Autowired
+    private PlaylistRepository playlistRepository;
 
     /** Test para crear, leer, actualizar y eliminar usuarios en la base de datos. **/
     @Test
@@ -396,5 +401,40 @@ class UsuarioTest {
             System.out.println("Excepción capturada correctamente al intentar añadir un usuario con email nulo: " + e.getMessage());
         }
     }
-}
 
+    /** Test para comprobar que al eliminar un Usuario también se eliminan sus Playlists (cascade). */
+    @Test
+    void eliminarUsuarioYCascadePlaylistsTest() {
+        // Crear usuario
+        Usuario usuario = new Usuario();
+        usuario.setUsername("UserConPlaylists");
+        usuario.setPassword("pass");
+        usuario.setEmail("userplay@domain.com");
+        Usuario savedUser = usuarioRepository.save(usuario);
+
+        // Crear playlists y asociarlas al usuario (lado propietario es Playlist)
+        Playlist p1 = new Playlist();
+        p1.setNombre("Playlist 1");
+        p1.setFechaCreacion(java.time.LocalDateTime.now());
+        p1.setUsuario(savedUser);
+
+        Playlist p2 = new Playlist();
+        p2.setNombre("Playlist 2");
+        p2.setFechaCreacion(java.time.LocalDateTime.now());
+        p2.setUsuario(savedUser);
+
+        Playlist savedP1 = playlistRepository.save(p1);
+        Playlist savedP2 = playlistRepository.save(p2);
+
+        // Comprobar que las playlists existen
+        assertTrue(playlistRepository.findById(savedP1.getIdPlaylist()).isPresent());
+        assertTrue(playlistRepository.findById(savedP2.getIdPlaylist()).isPresent());
+
+        // Eliminar el usuario
+        usuarioRepository.delete(savedUser);
+
+        // Comprobar que las playlists han sido eliminadas por cascada
+        assertTrue(playlistRepository.findById(savedP1.getIdPlaylist()).isEmpty());
+        assertTrue(playlistRepository.findById(savedP2.getIdPlaylist()).isEmpty());
+    }
+}

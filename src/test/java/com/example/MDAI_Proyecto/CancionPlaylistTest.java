@@ -1269,7 +1269,10 @@ public class CancionPlaylistTest {
         Optional<Cancion> cOpt = cancionRepository.findById(cancion.getIdCancion());
         assertTrue(cOpt.isPresent());
         // Eliminar el artista
-        artistaRepository.delete(artista);
+        usuarioRepository.delete(usuario);
+        // Verificar que al eliminar el usuario, la playlist también se elimina
+        Optional<Playlist> deletedPlaylistOpt = playlistRepository.findById(playlist.getIdPlaylist());
+        assertFalse(deletedPlaylistOpt.isPresent());
         // Verificar que la canción ya no existe
         Optional<Cancion> deletedCOpt = cancionRepository.findById(cancion.getIdCancion());
         assertFalse(deletedCOpt.isPresent());

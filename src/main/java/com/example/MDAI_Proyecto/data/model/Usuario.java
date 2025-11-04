@@ -42,6 +42,12 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<SolicitudVerificacion> solicitudes = new ArrayList<>();
 
+    /** Relación uno a muchos con Playlist: cuando se elimina un usuario,
+     * también se eliminan sus playlists asociadas (cascade REMOVE + orphanRemoval).
+     */
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Playlist> playlists = new ArrayList<>();
+
     /** Obtiene el artista asociado a este usuario.
      *
      * @return el artista asociado, o null si no existe
@@ -85,6 +91,24 @@ public class Usuario {
     public void removeSolicitud(SolicitudVerificacion solicitud) {
         if (solicitudes.remove(solicitud)) {
             solicitud.setUsuario(null);
+        }
+    }
+
+    /** Obtiene la lista de playlists asociadas a este usuario. */
+    public List<Playlist> getPlaylists() { return playlists; }
+
+    /** Añade una playlist y mantiene la relación bidireccional. */
+    public void addPlaylist(Playlist playlist) {
+        if (playlist != null && !playlists.contains(playlist)) {
+            playlists.add(playlist);
+            playlist.setUsuario(this);
+        }
+    }
+
+    /** Elimina una playlist y mantiene la relación bidireccional. */
+    public void removePlaylist(Playlist playlist) {
+        if (playlists.remove(playlist)) {
+            playlist.setUsuario(null);
         }
     }
 
