@@ -194,8 +194,9 @@ public class PlaylistTest {
         assertNotNull(savedUser); //Comprobamos que el usuario asignado a la playlist no se borre
     }
 
+    /** Prueba para verificar que al eliminar un Usuario se eliminan sus Playlists asociadas */
     @Test
-    void eliminarUsuarioeliminaPlaylist () {
+    void eliminarUsuarioEliminaPlaylist () {
         Usuario user = new Usuario();
         user.setUsername("TwoDoorCinemaClub");
         user.setPassword("music123");
