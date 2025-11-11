@@ -80,4 +80,13 @@ public class UsuarioServiceImplement implements UsuarioService {
     public void eliminarUsuario(Usuario usuario) {
         usuarioRepository.delete(usuario);
     }
+
+    /**
+     * Guarda un usuario en el repositorio.
+     *
+     * @param usuario El usuario a guardar.
+     */
+    public void save(Usuario usuario) {
+        usuarioRepository.save(usuario);
+    }
 }
