@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
-public class CancionServiceImplement {
+public class CancionServiceImplement implements CancionService {
 
     private CancionRepository cancionRepository;
 
