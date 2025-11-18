@@ -27,11 +27,8 @@ public class CancionServiceImplement implements CancionService {
         return cancionRepository.findById(id);
     }
 
-    public List<Cancion> getAll() {
-        Iterable<Cancion> iterable = cancionRepository.findAll();
-        List<Cancion> result = new ArrayList<>();
-        iterable.forEach(result::add);
-        return result;
+    public Iterable<Cancion> getAll() {
+        return cancionRepository.findAll();
     }
 
     @Transactional(readOnly = true)
