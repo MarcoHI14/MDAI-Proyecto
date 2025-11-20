@@ -178,9 +178,6 @@ public class CancionPlaylistServiceImplement implements CancionPlaylistService{
     @Override
     @Transactional
     public boolean existsById(Long id) {
-        if (id == null || id <= 0) {
-            return false;
-        }
         return cancionPlaylistRepository.existsById(id);
     }
 }

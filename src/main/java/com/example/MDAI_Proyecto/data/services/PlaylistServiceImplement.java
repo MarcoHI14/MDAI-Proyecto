@@ -114,9 +114,6 @@ public class PlaylistServiceImplement implements PlaylistService{
     @Override
     @Transactional
     public boolean existsById(Long id) {
-        if (id == null || id <= 0) {
-            return false;
-        }
         return playlistRepository.existsById(id);
     }
 

@@ -150,9 +150,6 @@ public class CancionServiceImplement implements CancionService {
     @Override
     @Transactional
     public boolean existsById(Long id) {
-        if (id == null || id <= 0) {
-            return false;
-        }
         return cancionRepository.existsById(id);
     }
 
