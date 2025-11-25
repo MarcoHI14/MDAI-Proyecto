@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @Controller
 @RequestMapping("/users")
@@ -42,6 +44,12 @@ public class UsuarioController {
 
         Usuario usuario = usuarioService.obtenerUsuarioByEmail(e);
         if (usuario != null && usuario.comprobarPassword(p)) {
+            // Guardamos en la sesión usando la abstracción de Spring
+            RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+            if (attrs != null) {
+                attrs.setAttribute("usuario", usuario, RequestAttributes.SCOPE_SESSION);
+                System.out.println("\t [SESSION] Usuario guardado en sesión: " + usuario.getUsername());
+            }
             redirectAttributes.addFlashAttribute("username", usuario.getUsername());
             return "redirect:/Bienvenida";
         } else {
@@ -102,9 +110,33 @@ public class UsuarioController {
 
         usuarioService.guardarUsuario(usuario);
 
+        // Guardamos en la sesión usando la abstracción de Spring
+        RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+        if (attrs != null) {
+            attrs.setAttribute("usuario", usuario, RequestAttributes.SCOPE_SESSION);
+            System.out.println("\t [SESSION] Usuario guardado en sesión: " + usuario.getUsername());
+        }
+
         redirectAttributes.addFlashAttribute("username", usuario.getUsername());
         redirectAttributes.addFlashAttribute("success", "Registro completado. ¡Bienvenido!");
         return "redirect:/Bienvenida";
+    }
+
+    // Logout que elimina el atributo de sesión (sin usar jakarta)
+    @GetMapping("/logout")
+    public String logout(RedirectAttributes redirectAttributes) {
+        RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+        if (attrs != null) {
+            Object u = attrs.getAttribute("usuario", RequestAttributes.SCOPE_SESSION);
+            if (u instanceof com.example.MDAI_Proyecto.data.model.Usuario usuario) {
+                System.out.println("\t [SESSION] Eliminando usuario de sesión: " + usuario.getUsername());
+            } else {
+                System.out.println("\t [SESSION] No había usuario en sesión para eliminar");
+            }
+            attrs.removeAttribute("usuario", RequestAttributes.SCOPE_SESSION);
+        }
+        redirectAttributes.addFlashAttribute("info", "Sesión cerrada correctamente.");
+        return "redirect:/";
     }
 
     @GetMapping(value = "/exists/username", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -130,6 +162,26 @@ public class UsuarioController {
         } catch (Exception ex) {
             System.err.println("Error comprobando email: " + ex.getMessage());
             return ResponseEntity.ok("false");
+        }
+    }
+
+    @GetMapping(value = "/whoami", produces = MediaType.TEXT_PLAIN_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> whoami() {
+        try {
+            RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+            if (attrs != null) {
+                Object u = attrs.getAttribute("usuario", RequestAttributes.SCOPE_SESSION);
+                if (u instanceof Usuario usuario) {
+                    return ResponseEntity.ok(usuario.getUsername());
+                } else if (u != null) {
+                    return ResponseEntity.ok(u.toString());
+                }
+            }
+            return ResponseEntity.ok("ANONYMOUS");
+        } catch (Exception ex) {
+            System.err.println("Error en whoami: " + ex.getMessage());
+            return ResponseEntity.status(500).body("ERROR");
         }
     }
 }
