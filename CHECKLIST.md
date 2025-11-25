@@ -1,0 +1,54 @@
+- Usuario Service:
+	- ObtenerByUsername() ✓
+	- ObtenerByEmail() ✓
+	- GuardarUsuario() ✓
+	- EliminarUsuario() ?
+	- ObtenerUsuarioById() ?
+	- FindAll() ?
+
+- ArtistaService: ?
+	- FindAll() ?  
+	- FindById() ?  
+	- FindByUsuarioUsername() ?
+	- FindByUsuarioEmail() ?
+	- SaveArtista() ?  
+	- DeleteArtista() ?
+
+- CancionService: ?
+	- FindById() ?
+	- GetAll() ?
+	- FindByTitulo() ?
+	- FindByGenero() ?
+	- FindByArtista() ?
+	- Save() ?
+	- DeleteById() ?
+	- ExistsById() ?
+
+- PlaylistService: ?
+	- FindById() ?
+	- FindAll() ?
+	- FindByNombre() ?
+	- FindByUsuario_Username() ?
+	- Save() ?
+	- DeleteById() ?
+	- ExistsById() ?
+
+- CancionPlaylistService: ?
+	- FindByPlaylistIdPlaylist() ?
+	- FindByCancionId() ?
+	- FindByPlaylistIdPlaylistOrderByOrdenAsc() ?
+	- FindByPlaylistIdPlaylistOrderByOrdenDesc() ?
+	- FindByPlaylistIdPlaylistAndCancion_Genero_NombreInOrderByOrdenAsc() ?
+	- FindByPlaylistIdAndCancionTituloInOrderByOrdenAsc() ?
+	- FindByPlaylistIdAndCancionArtistaNombreOrderByOrdenAsc() ?
+	- Save() ?
+	- DeleteById() ?
+	- ExistsById() ?
+
+- SolicitudVerificacionService: ?
+	- FindByEstado() ?
+	- FindAll() ?
+	- Save() ?
+	- FindById() ?
+	- DeleteById() ?
+	- ExistsById() ?
