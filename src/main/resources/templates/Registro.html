@@ -8,28 +8,50 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-  <button class="btn-colmena info info-top-left" onclick="window.location.href='/Inicio.html'">Volver al inicio</button>
+  <!-- Volver al inicio usa un botón normal que redirige a la ruta /Inicio (no nueva pestaña) -->
+  <button class="btn-colmena info info-top-left" onclick="window.location.href='/Inicio'">Volver al inicio</button>
   <h1 style="margin-top: 80px;">Crea tu cuenta en Tuned Hive</h1>
   <div class="subtitulo" style="max-width: 600px; margin: 0 auto 2em auto;">
     Únete a la comunidad y empieza a compartir tu música.
   </div>
-  <form style="max-width: 400px; margin: 0 auto; background: #fffbe6cc; padding: 2em 2em 1.5em 2em; border-radius: 18px; box-shadow: 0 2px 12px #0001; display: flex; flex-direction: column; gap: 1.2em;">
-    <label for="usuario" style="font-weight: 500; color: #3a2a13;">Nombre de usuario</label>
-    <input type="text" id="usuario" name="usuario" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
+
+  <!-- Formulario de registro: enviar por POST a /users/register -->
+  <form th:action="@{/users/register}" method="post" style="max-width: 400px; margin: 0 auto; background: #fffbe6cc; padding: 2em 2em 1.5em 2em; border-radius: 18px; box-shadow: 0 2px 12px #0001; display: flex; flex-direction: column; gap: 1.2em;">
+    <label for="username" style="font-weight: 500; color: #3a2a13;">Nombre de usuario</label>
+    <input type="text" id="username" name="username" th:value="${username}" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
+    <div id="usernameError" style="color:#b00020;font-weight:600;margin-top:6px;font-size:0.95em;" th:if="${validationErrors != null and #lists.contains(validationErrors,'El nombre de usuario ya existe.') }" th:text="'El nombre de usuario ya existe.'"></div>
 
     <label for="email" style="font-weight: 500; color: #3a2a13;">Correo electrónico</label>
-    <input type="email" id="email" name="email" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
+    <input type="email" id="email" name="email" th:value="${email}" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
+    <div id="emailError" style="color:#b00020;font-weight:600;margin-top:6px;font-size:0.95em;" th:if="${validationErrors != null and #lists.contains(validationErrors,'El correo ya está registrado.') }" th:text="'El correo ya está registrado.'"></div>
 
     <label for="password" style="font-weight: 500; color: #3a2a13;">Contraseña</label>
     <input type="password" id="password" name="password" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
+    <div id="passwordError" style="color:#b00020;font-weight:600;margin-top:6px;font-size:0.95em;" th:if="${validationErrors != null and #lists.contains(validationErrors,'Introduce una contraseña.') }" th:text="'Introduce una contraseña.'"></div>
 
     <label for="password2" style="font-weight: 500; color: #3a2a13;">Repite la contraseña</label>
     <input type="password" id="password2" name="password2" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
+    <div id="password2Error" style="color:#b00020;font-weight:600;margin-top:6px;font-size:0.95em;" th:if="${validationErrors != null and #lists.contains(validationErrors,'Las contraseñas no coinciden.') }" th:text="'Las contraseñas no coinciden.'"></div>
 
     <button type="submit" class="btn-colmena registro" style="margin-top: 0.5em;">Registrarse</button>
   </form>
   <div style="text-align: center; margin-top: 1.5em;">
-    ¿Ya tienes cuenta? <a th:href="@{/InicioSesion.html}" target="_blank" style="color: #6b3e13; font-weight: bold; text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#bfa14a'" onmouseout="this.style.color='#6b3e13'">Inicia sesión</a>
+    ¿Ya tienes cuenta? <a th:href="@{/users/login}" style="color: #6b3e13; font-weight: bold; text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#bfa14a'" onmouseout="this.style.color='#6b3e13'">Inicia sesión</a>
   </div>
+
+  <!-- Mostrar modal con errores (gestión en el Controller) -->
+  <div th:if="${validationErrors}" id="errorModalOverlay" style="position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:200;">
+    <div style="background:#fff;padding:1.2em;border-radius:12px;max-width:600px;width:90%;box-shadow:0 6px 30px #0008;">
+      <h3 style="margin-top:0;color:#b00020;">Se han detectado errores en el formulario</h3>
+      <ul style="margin:0.6em 0;padding-left:1.2em;color:#3a2a13;">
+        <li th:each="err : ${validationErrors}" th:text="${err}">Error</li>
+      </ul>
+      <div style="text-align:right;margin-top:1em;">
+        <button class="btn-colmena" onclick="document.getElementById('errorModalOverlay').style.display='none'">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No hay lógica de negocio en el HTML; validación y errores salen del Controller mediante model -->
 </body>
 </html>
