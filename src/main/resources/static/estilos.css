@@ -136,12 +136,13 @@ h1 {
   border-radius: 16px;
   padding: 0.7em 1.7em;
   font-size: 1.1em;
-  font-weight: 600;
+  font-weight: 700; /* Subido a 700 para que se vea en negrita como en Registro.html */
   box-shadow: 0 2px 12px #0002;
   cursor: pointer;
   transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
   outline: none;
   letter-spacing: 0.5px;
+  text-decoration: none; /* quitar subrayado en enlaces */
 }
 
 .btn-colmena.info,
@@ -169,6 +170,7 @@ h1 {
   transform: translateY(-3px) scale(1.04);
   box-shadow: 0 4px 18px #bfa14a55;
   border-color: #e2a84a;
+  text-decoration: none; /* asegurar que en hover/focus tampoco aparezca subrayado */
 }
 
 .btn-colmena.info.info-top-left {
@@ -199,7 +201,7 @@ h1 {
 @keyframes vuelo-abeja {
   0%   { top: 30px; transform: translateX(-50%) rotate(-8deg); }
   20%  { top: 10px; transform: translateX(-50%) rotate(8deg); }
-  40%  { top: 0px;  transform: translateX(-50%) rotate(-8deg); }
+  40%  { top: 0;  transform: translateX(-50%) rotate(-8deg); }
   60%  { top: 10px; transform: translateX(-50%) rotate(8deg); }
   80%  { top: 30px; transform: translateX(-50%) rotate(-8deg); }
   100% { top: 30px; transform: translateX(-50%) rotate(0deg); }

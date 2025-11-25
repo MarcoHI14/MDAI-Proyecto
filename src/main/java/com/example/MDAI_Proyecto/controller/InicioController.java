@@ -35,10 +35,10 @@ public class InicioController {
     }
 
     // Página de información
-    @GetMapping({"/Informacion", "/Informacion.html"})
+    @GetMapping({"/Información", "/Información.html"})
     public String mostrarInformacionHtml() {
         System.out.println("\t Recojo la petición de /Informacion");
-        return "Informacion";
+        return "Información";
     }
 
     // Página de inicio de sesión
@@ -53,6 +53,13 @@ public class InicioController {
     public String mostrarAdminSolicitudesHtml() {
         System.out.println("\t Recojo la petición de /AdminSolicitudes");
         return "AdminSolicitudes";
+    }
+
+    // Página de bienvenida tras registro/inicio de sesión
+    @GetMapping({"/Bienvenida", "/Bienvenida.html"})
+    public String mostrarBienvenida() {
+        System.out.println("\t Recojo la petición de /Bienvenida");
+        return "Bienvenida";
     }
 
 
