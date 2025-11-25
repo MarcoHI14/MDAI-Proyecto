@@ -44,11 +44,12 @@ public class UsuarioController {
 
         Usuario usuario = usuarioService.obtenerUsuarioByEmail(e);
         if (usuario != null && usuario.comprobarPassword(p)) {
-            // Guardamos en la sesión usando la abstracción de Spring
+            // Guardamos solo el id del usuario en la sesión (Long)
             RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
             if (attrs != null) {
-                attrs.setAttribute("usuario", usuario, RequestAttributes.SCOPE_SESSION);
-                System.out.println("\t [SESSION] Usuario guardado en sesión: " + usuario.getUsername());
+                Long idUsuario = usuario.getId();
+                attrs.setAttribute("id_usuario", idUsuario, RequestAttributes.SCOPE_SESSION);
+                System.out.println("\t [SESSION] id_usuario guardado en sesión: " + idUsuario);
             }
             redirectAttributes.addFlashAttribute("username", usuario.getUsername());
             return "redirect:/Bienvenida";
@@ -108,16 +109,18 @@ public class UsuarioController {
         usuario.setEmail(e);
         usuario.setPassword(p);
 
-        usuarioService.guardarUsuario(usuario);
+        // Guardar y usar el usuario devuelto por el servicio para obtener el id asignado
+        Usuario saved = usuarioService.guardarUsuario(usuario);
 
-        // Guardamos en la sesión usando la abstracción de Spring
+        // Guardamos en la sesión usando la abstracción de Spring el id del usuario recién creado
         RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
         if (attrs != null) {
-            attrs.setAttribute("usuario", usuario, RequestAttributes.SCOPE_SESSION);
-            System.out.println("\t [SESSION] Usuario guardado en sesión: " + usuario.getUsername());
+            Long idUsuario = (saved != null && saved.getId() != null) ? saved.getId() : usuario.getId();
+            attrs.setAttribute("id_usuario", idUsuario, RequestAttributes.SCOPE_SESSION);
+            System.out.println("\t [SESSION] id_usuario guardado en sesión: " + idUsuario);
         }
 
-        redirectAttributes.addFlashAttribute("username", usuario.getUsername());
+        redirectAttributes.addFlashAttribute("username", saved != null ? saved.getUsername() : usuario.getUsername());
         redirectAttributes.addFlashAttribute("success", "Registro completado. ¡Bienvenido!");
         return "redirect:/Bienvenida";
     }
@@ -127,13 +130,13 @@ public class UsuarioController {
     public String logout(RedirectAttributes redirectAttributes) {
         RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
         if (attrs != null) {
-            Object u = attrs.getAttribute("usuario", RequestAttributes.SCOPE_SESSION);
-            if (u instanceof com.example.MDAI_Proyecto.data.model.Usuario usuario) {
-                System.out.println("\t [SESSION] Eliminando usuario de sesión: " + usuario.getUsername());
+            Object idUsuarioObj = attrs.getAttribute("id_usuario", RequestAttributes.SCOPE_SESSION);
+            if (idUsuarioObj instanceof Long idUsuario) {
+                System.out.println("\t [SESSION] Eliminando usuario con id " + idUsuario + " de sesión");
             } else {
                 System.out.println("\t [SESSION] No había usuario en sesión para eliminar");
             }
-            attrs.removeAttribute("usuario", RequestAttributes.SCOPE_SESSION);
+            attrs.removeAttribute("id_usuario", RequestAttributes.SCOPE_SESSION);
         }
         redirectAttributes.addFlashAttribute("info", "Sesión cerrada correctamente.");
         return "redirect:/";
@@ -171,11 +174,17 @@ public class UsuarioController {
         try {
             RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
             if (attrs != null) {
-                Object u = attrs.getAttribute("usuario", RequestAttributes.SCOPE_SESSION);
-                if (u instanceof Usuario usuario) {
-                    return ResponseEntity.ok(usuario.getUsername());
-                } else if (u != null) {
-                    return ResponseEntity.ok(u.toString());
+                Object idUsuarioObj = attrs.getAttribute("id_usuario", RequestAttributes.SCOPE_SESSION);
+                if (idUsuarioObj instanceof Long idUsuario) {
+                    // Resolver el usuario a partir del id
+                    Usuario usuario = usuarioService.obtenerUsuarioPorId(idUsuario);
+                    if (usuario != null) {
+                        return ResponseEntity.ok(usuario.getUsername());
+                    } else {
+                        return ResponseEntity.ok("ANONYMOUS");
+                    }
+                } else if (idUsuarioObj != null) {
+                    return ResponseEntity.ok(idUsuarioObj.toString());
                 }
             }
             return ResponseEntity.ok("ANONYMOUS");
