@@ -98,7 +98,7 @@ public class UsuarioController {
         Usuario usuario = new Usuario();
         usuario.setUsername(u);
         usuario.setEmail(e);
-        usuario.setPassword(p); // Recomendar BCrypt en producción
+        usuario.setPassword(p);
 
         usuarioService.guardarUsuario(usuario);
 
