@@ -2,9 +2,6 @@ package com.example.MDAI_Proyecto.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class InicioController {
@@ -59,7 +56,7 @@ public class InicioController {
     @GetMapping({"/Bienvenida", "/Bienvenida.html"})
     public String mostrarBienvenida() {
         System.out.println("\t Recojo la petición de /Bienvenida");
-        return "Bienvenida";
+        return "BienvenidaUsuario";
     }
 
 
