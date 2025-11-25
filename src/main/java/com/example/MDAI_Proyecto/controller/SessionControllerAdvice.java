@@ -1,6 +1,7 @@
 package com.example.MDAI_Proyecto.controller;
 
 import com.example.MDAI_Proyecto.data.model.Usuario;
+import com.example.MDAI_Proyecto.data.services.UsuarioService;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.context.request.RequestAttributes;
@@ -9,16 +10,36 @@ import org.springframework.web.context.request.RequestContextHolder;
 @ControllerAdvice
 public class SessionControllerAdvice {
 
+    private final UsuarioService usuarioService;
+
+    public SessionControllerAdvice(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
+
     @ModelAttribute("sessionUsuario")
     public Usuario sessionUsuario() {
         RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
         if (attrs != null) {
-            Object u = attrs.getAttribute("usuario", RequestAttributes.SCOPE_SESSION);
-            if (u instanceof Usuario) {
-                return (Usuario) u;
+            Object idObj = attrs.getAttribute("id_usuario", RequestAttributes.SCOPE_SESSION);
+            Long idUsuario = null;
+            if (idObj instanceof Long l) {
+                idUsuario = l;
+            } else if (idObj instanceof Integer i) {
+                idUsuario = i.longValue();
+            } else if (idObj != null) {
+                try {
+                    idUsuario = Long.parseLong(idObj.toString());
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            if (idUsuario != null) {
+                try {
+                    return usuarioService.obtenerUsuarioPorId(idUsuario);
+                } catch (Exception ex) {
+                    System.err.println("Error obteniendo usuario por id en SessionControllerAdvice: " + ex.getMessage());
+                }
             }
         }
         return null;
     }
 }
-
