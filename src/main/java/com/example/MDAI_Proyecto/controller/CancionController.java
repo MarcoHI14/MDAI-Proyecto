@@ -21,7 +21,7 @@ public class CancionController {
         System.out.println("\t CancionController inicializado");
     }
 
-    @GetMapping("/Buscar")
+    @GetMapping("/BuscarCanciones")
     public String buscar(
             @RequestParam(required = false) String filtroTipo,
             @RequestParam(required = false) String query,

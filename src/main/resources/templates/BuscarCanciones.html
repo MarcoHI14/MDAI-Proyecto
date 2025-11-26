@@ -62,7 +62,7 @@
 
     <!-- Barra de Búsqueda -->
     <section style="margin-bottom: 2em;">
-        <form th:action="@{/Buscar}" method="get" style="display: flex; gap: 1em; align-items: center; max-width: 800px; margin: 0 auto;">
+        <form th:action="@{/BuscarCanciones}" method="get" style="display: flex; gap: 1em; align-items: center; max-width: 800px; margin: 0 auto;">
             <input type="hidden" id="filtroTipo" name="filtroTipo" value="">
             <input type="text" id="searchInput" name="query" placeholder="Selecciona un filtro para buscar..." disabled
                    style="flex: 1; padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; font-size: 1em; background: #f5f5f5;">
