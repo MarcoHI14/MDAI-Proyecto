@@ -35,6 +35,8 @@ public interface CancionService {
      */
     Optional<Cancion> findByTituloIgnoreCase (String titulo);
 
+    List<Cancion> findByTituloContainingIgnoreCase(String fragmento);
+
     /**
      * Busca canciones por género ignorando mayúsculas/minúsculas.
      *

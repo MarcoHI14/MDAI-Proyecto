@@ -3,7 +3,7 @@
 	- ObtenerByEmail() ✓
 	- GuardarUsuario() ✓
 	- EliminarUsuario() ?
-	- ObtenerUsuarioById() ?
+	- ObtenerUsuarioById() ✓
 	- FindAll() ?
 
 - ArtistaService: ?
@@ -13,6 +13,7 @@
 	- FindByUsuarioEmail() ?
 	- SaveArtista() ?  
 	- DeleteArtista() ?
+    - (Modificar los findbynombre y email para que todos usen containing, QOL Upgrade)
 
 - CancionService: ?
 	- FindById() ?
@@ -23,6 +24,7 @@
 	- Save() ?
 	- DeleteById() ?
 	- ExistsById() ?
+    - (Modificar los findbygenero y artista para que todos usen containing, QOL Upgrade)
 
 - PlaylistService: ?
 	- FindById() ?
@@ -32,6 +34,7 @@
 	- Save() ?
 	- DeleteById() ?
 	- ExistsById() ?
+    - (Modificar los findbynombre y usuario para que todos usen containing, QOL Upgrade)
 
 - CancionPlaylistService: ?
 	- FindByPlaylistIdPlaylist() ?
@@ -44,6 +47,7 @@
 	- Save() ?
 	- DeleteById() ?
 	- ExistsById() ?
+    - (Modificar los findbynombre y artista para que todos usen containing, QOL Upgrade)
 
 - SolicitudVerificacionService: ?
 	- FindByEstado() ?
