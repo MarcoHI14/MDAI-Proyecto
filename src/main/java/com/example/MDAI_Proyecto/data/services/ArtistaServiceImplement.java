@@ -51,6 +51,8 @@ public class ArtistaServiceImplement implements ArtistaService{
      */
     public Artista findByUsuarioEmail(String email) { return artistaRepository.findByUsuarioEmail(email).orElse(null); }
 
+    public Artista findByUsuarioId(Long usuarioId) { return artistaRepository.findByUsuarioId(usuarioId).orElse(null); }
+
     /**
      * Guarda un artista en el repositorio.
      *

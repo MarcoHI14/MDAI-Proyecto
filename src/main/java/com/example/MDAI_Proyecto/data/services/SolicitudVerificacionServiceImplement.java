@@ -130,11 +130,19 @@ public class SolicitudVerificacionServiceImplement implements SolicitudVerificac
     @Transactional
     public void aprobarSolicitudYCrearArtista(Long idSolicitud) {
         SolicitudVerificacion s = solicitudVerificacionRepository.findById(idSolicitud).orElse(null);
-        if (s == null) return;
+        if (s == null) {
+            throw new IllegalArgumentException("Solicitud con id " + idSolicitud + " no encontrada.");
+        }
+        // Solo proceder si está en PENDIENTE
+        if (!"PENDIENTE".equalsIgnoreCase(s.getEstado())) {
+            throw new IllegalStateException("La solicitud con id " + idSolicitud + " no está pendiente (estado=" + s.getEstado() + ")");
+        }
+
+        // Cambiar estado a APROBADA y persistir
         s.setEstado("APROBADA");
         solicitudVerificacionRepository.save(s);
 
-        // Crear artista asociado si procede
+        // Crear artista asociado si procede, dentro de la misma transacción
         try {
             Usuario u = s.getUsuario();
             if (u != null && artistaService != null) {

@@ -17,10 +17,10 @@
   </header>
   <nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
     <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
-      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Panel de Control</a></li>
-      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Usuarios</a></li>
-      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Estadísticas</a></li>
-      <li><a href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mi Cuenta</a></li>
+      <li><a th:href="@{/admin}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Panel de Control</a></li>
+      <li><a th:href="@{/admin/AdminUsuarios}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Gestión Usuarios</a></li>
+      <li><a th:href="@{/admin/estadisticas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Estadísticas</a></li>
+      <li><a th:href="@{/admin/AdminSolicitudes}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Solicitudes</a></li>
     </ul>
   </nav>
   <div class="main-flex" style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; width: 100vw; max-width: 100vw; margin-top: 7.5em; min-height: 60vh;">
@@ -44,9 +44,10 @@
       <div style="background: #fffbe6; border-radius: 16px; box-shadow: 0 2px 12px #0001; padding: 1.2em 1em; margin-bottom: 2em; text-align: center;">
         <h3 style="color: #bfa14a; margin-top: 0;">Solicitudes de Verificación</h3>
         <p style="color: #3a2a13; font-size: 1.08em; margin-bottom: 1.2em;">Revisa y gestiona las solicitudes de verificación de artistas y usuarios.</p>
-        <a th:href="@{/AdminSolicitudes}" style="display:inline-block; background: #bfa14a; color: #fff; border: none; border-radius: 8px; padding: 0.7em 1.5em; font-size: 1em; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 0.5em; text-decoration: none;">Ver Solicitudes</a>
+        <a href="/admin/AdminSolicitudes" th:href="@{/admin/AdminSolicitudes}" onclick="window.location.href='/admin/AdminSolicitudes'" style="display:inline-block; background: #bfa14a; color: #fff; border: none; border-radius: 8px; padding: 0.7em 1.5em; font-size: 1em; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 0.5em; text-decoration: none;">Ver Solicitudes</a>
       </div>
     </aside>
   </div>
+
 </body>
 </html>

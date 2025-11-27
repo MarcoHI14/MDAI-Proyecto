@@ -15,6 +15,7 @@ public interface ArtistaService  {
     Artista findById(Long id);
     Artista findByUsuarioUsername(String username);
     Artista findByUsuarioEmail(String email);
+    Artista findByUsuarioId(Long usuarioId);
     Artista saveArtista(Artista artista);
     void deleteArtista(Artista artista);
 

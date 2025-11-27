@@ -4,11 +4,7 @@ import com.example.MDAI_Proyecto.data.model.SolicitudVerificacion;
 import com.example.MDAI_Proyecto.data.model.Usuario;
 import com.example.MDAI_Proyecto.data.services.SolicitudVerificacionService;
 import com.example.MDAI_Proyecto.data.services.UsuarioService;
-import com.example.MDAI_Proyecto.data.services.ArtistaService;
-import com.example.MDAI_Proyecto.data.model.Artista;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -16,8 +12,6 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -25,66 +19,65 @@ public class SolicitudVerificacionController {
 
     private final SolicitudVerificacionService solicitudService;
     private final UsuarioService usuarioService;
-    private final ArtistaService artistaService;
 
-    public SolicitudVerificacionController(SolicitudVerificacionService solicitudService, UsuarioService usuarioService, ArtistaService artistaService) {
+    public SolicitudVerificacionController(SolicitudVerificacionService solicitudService, UsuarioService usuarioService) {
         this.solicitudService = solicitudService;
         this.usuarioService = usuarioService;
-        this.artistaService = artistaService;
         System.out.println("\t SolicitudVerificacionController inicializado");
     }
 
-    // Listar solicitudes pendientes para la vista de admin
-    @GetMapping({"/AdminSolicitudes","/AdminSolicitudes.html"})
-    public String listarSolicitudesAdmin(@RequestParam(name = "estado", required = false) String estado, Model model) {
-        System.out.println("\t Recojo la petición de /AdminSolicitudes (SolicitudVerificacionController) estado=" + estado);
-
-        String estadoSeleccionado = (estado == null || estado.trim().isEmpty()) ? "PENDIENTE" : estado.trim().toUpperCase();
-
-        List<SolicitudVerificacion> lista;
-        if ("ALL".equals(estadoSeleccionado) || "TODAS".equals(estadoSeleccionado)) {
-            Optional<List<SolicitudVerificacion>> optAll = solicitudService.findAll();
-            lista = optAll.orElse(Collections.emptyList());
-            System.out.println("\t Se han cargado " + lista.size() + " solicitudes (todas)");
-        } else {
-            Optional<List<SolicitudVerificacion>> opt = solicitudService.findByEstado(estadoSeleccionado);
-            lista = opt.orElse(Collections.emptyList());
-            System.out.println("\t Se han cargado " + lista.size() + " solicitudes con estado=" + estadoSeleccionado);
-        }
-
-        model.addAttribute("solicitudes", lista);
-        model.addAttribute("selectedEstado", estadoSeleccionado);
-        return "AdminSolicitudes";
+    // Redirigir las antiguas rutas /AdminSolicitudes a la nueva ubicación bajo /admin
+    @org.springframework.web.bind.annotation.GetMapping({"/AdminSolicitudes","/AdminSolicitudes.html"})
+    public String redirectOldAdminSolicitudes() {
+        return "redirect:/admin/AdminSolicitudes";
     }
 
     // Aceptar solicitud (simplificado)
     @PostMapping("/solicitudes/aceptar")
     public String aceptarSolicitud(@RequestParam Long id,
-                                   @RequestParam(name = "estado", required = false) String estado) {
+                                   @RequestParam(name = "estado", required = false) String estado,
+                                   RedirectAttributes redirectAttributes) {
         System.out.println("\t Petición aceptar solicitud id=" + id + " estado=" + estado);
         try {
-            solicitudService.aprobarSolicitudYCrearArtista(id);
-            System.out.println("\t Solicitud aprobada y se intentó crear artista (si procedía)");
+            // Verificar que la solicitud está en estado PENDIENTE
+            com.example.MDAI_Proyecto.data.model.SolicitudVerificacion s = solicitudService.findById(id);
+            if (s == null) {
+                redirectAttributes.addFlashAttribute("error", "Solicitud no encontrada.");
+            } else if (!"PENDIENTE".equalsIgnoreCase(s.getEstado())) {
+                redirectAttributes.addFlashAttribute("error", "Solo se pueden aceptar solicitudes pendientes.");
+                System.out.println("\t Intento de aceptar solicitud con estado=" + s.getEstado());
+            } else {
+                solicitudService.aprobarSolicitudYCrearArtista(id);
+                System.out.println("\t Solicitud aprobada y se intentó crear artista (si procedía)");
+                redirectAttributes.addFlashAttribute("success", "Solicitud aprobada correctamente.");
+            }
         } catch (Exception ex) {
             System.err.println("Error al aprobar solicitud y crear artista: " + ex.getMessage());
-            // añadir flash o manejar según convenga
+            redirectAttributes.addFlashAttribute("error", "Error al procesar la solicitud: " + ex.getMessage());
         }
         String redirectEstado = (estado == null || estado.trim().isEmpty()) ? "PENDIENTE" : estado.trim();
-        return "redirect:/AdminSolicitudes?estado=" + redirectEstado;
+        return "redirect:/admin/AdminSolicitudes?estado=" + redirectEstado; // ir a la ruta agrupada
     }
 
     // Rechazar solicitud (simplificado)
     @PostMapping("/solicitudes/rechazar")
     public String rechazarSolicitud(@RequestParam Long id,
-                                    @RequestParam(name = "estado", required = false) String estado) {
+                                     @RequestParam(name = "estado", required = false) String estado,
+                                     RedirectAttributes redirectAttributes) {
         System.out.println("\t Petición rechazar solicitud id=" + id + " estado=" + estado);
-        SolicitudVerificacion s = solicitudService.findById(id);
-        if (s != null) {
+        com.example.MDAI_Proyecto.data.model.SolicitudVerificacion s = solicitudService.findById(id);
+        if (s == null) {
+            redirectAttributes.addFlashAttribute("error", "Solicitud no encontrada.");
+        } else if (!"PENDIENTE".equalsIgnoreCase(s.getEstado())) {
+            redirectAttributes.addFlashAttribute("error", "Solo se pueden rechazar solicitudes pendientes.");
+            System.out.println("\t Intento de rechazar solicitud con estado=" + s.getEstado());
+        } else {
             s.setEstado("RECHAZADA");
             solicitudService.save(s);
+            redirectAttributes.addFlashAttribute("success", "Solicitud rechazada correctamente.");
         }
         String redirectEstado = (estado == null || estado.trim().isEmpty()) ? "PENDIENTE" : estado.trim();
-        return "redirect:/AdminSolicitudes?estado=" + redirectEstado;
+        return "redirect:/admin/AdminSolicitudes?estado=" + redirectEstado; // ir a la ruta agrupada
     }
 
     // Crear nueva solicitud desde BienvenidaUsuario

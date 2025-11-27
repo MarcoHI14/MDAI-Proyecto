@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Usuario | Tuned Hive</title>
+  <link rel="stylesheet" th:href="@{/estilos.css}">
+</head>
+<body>
+  <header>
+    <a th:href="@{/admin}"><img th:src="@{/TunedHive.png}" alt="Logo" class="logo-colmena"></a>
+    <a th:href="@{/admin/AdminUsuarios}">Volver</a>
+  </header>
+  <main style="padding:2em; max-width:720px; margin:0 auto;">
+    <h1>Editar Usuario</h1>
+
+    <div th:if="${usernameError}" style="color:#b33; font-weight:600; margin-bottom:0.5em;" th:text="${usernameError}"></div>
+    <div th:if="${emailError}" style="color:#b33; font-weight:600; margin-bottom:0.5em;" th:text="${emailError}"></div>
+    <div th:if="${passwordError}" style="color:#b33; font-weight:600; margin-bottom:0.5em;" th:text="${passwordError}"></div>
+
+    <form th:action="@{/admin/AdminUsuarios/{id}/update(id=${usuario.id})}" method="post">
+      <div style="margin-bottom:1em;">
+        <label>Username</label><br>
+        <input type="text" name="username" th:value="${usuario.username}" style="width:100%; padding:0.6em;" />
+      </div>
+      <div style="margin-bottom:1em;">
+        <label>Email</label><br>
+        <input type="email" name="email" th:value="${usuario.email}" style="width:100%; padding:0.6em;" />
+      </div>
+      <div style="margin-bottom:1em;">
+        <label>Nueva contraseña (opcional)</label><br>
+        <input type="password" name="password" style="width:100%; padding:0.6em;" />
+      </div>
+      <div style="margin-bottom:1em;">
+        <label>Repetir contraseña</label><br>
+        <input type="password" name="password2" style="width:100%; padding:0.6em;" />
+      </div>
+      <div>
+        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <button type="submit" class="btn-colmena" style="padding:0.6em 1em;">Guardar cambios</button>
+      </div>
+    </form>
+  </main>
+</body>
+</html>
+
