@@ -4,6 +4,8 @@ import com.example.MDAI_Proyecto.data.model.SolicitudVerificacion;
 import com.example.MDAI_Proyecto.data.model.Usuario;
 import com.example.MDAI_Proyecto.data.services.SolicitudVerificacionService;
 import com.example.MDAI_Proyecto.data.services.UsuarioService;
+import com.example.MDAI_Proyecto.data.services.ArtistaService;
+import com.example.MDAI_Proyecto.data.model.Artista;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +25,12 @@ public class SolicitudVerificacionController {
 
     private final SolicitudVerificacionService solicitudService;
     private final UsuarioService usuarioService;
+    private final ArtistaService artistaService;
 
-    public SolicitudVerificacionController(SolicitudVerificacionService solicitudService, UsuarioService usuarioService) {
+    public SolicitudVerificacionController(SolicitudVerificacionService solicitudService, UsuarioService usuarioService, ArtistaService artistaService) {
         this.solicitudService = solicitudService;
         this.usuarioService = usuarioService;
+        this.artistaService = artistaService;
         System.out.println("\t SolicitudVerificacionController inicializado");
     }
 
@@ -58,10 +62,12 @@ public class SolicitudVerificacionController {
     public String aceptarSolicitud(@RequestParam Long id,
                                    @RequestParam(name = "estado", required = false) String estado) {
         System.out.println("\t Petición aceptar solicitud id=" + id + " estado=" + estado);
-        SolicitudVerificacion s = solicitudService.findById(id);
-        if (s != null) {
-            s.setEstado("APROBADA");
-            solicitudService.save(s);
+        try {
+            solicitudService.aprobarSolicitudYCrearArtista(id);
+            System.out.println("\t Solicitud aprobada y se intentó crear artista (si procedía)");
+        } catch (Exception ex) {
+            System.err.println("Error al aprobar solicitud y crear artista: " + ex.getMessage());
+            // añadir flash o manejar según convenga
         }
         String redirectEstado = (estado == null || estado.trim().isEmpty()) ? "PENDIENTE" : estado.trim();
         return "redirect:/AdminSolicitudes?estado=" + redirectEstado;

@@ -32,6 +32,12 @@ public interface SolicitudVerificacionService {
     Optional<List<SolicitudVerificacion>> findByUsuarioIdAndEstadoIn(Long usuarioId, List<String> estados);
 
     /**
+     * Aprueba una solicitud y crea el artista asociado si procede, todo en una transacción.
+     * @param idSolicitud id de la solicitud a aprobar
+     */
+    void aprobarSolicitudYCrearArtista(Long idSolicitud);
+
+    /**
      * Obtiene todas las solicitudes de verificación registradas.
      *
      * @return Un {@link Optional} que contiene una lista con todas las solicitudes,
