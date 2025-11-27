@@ -2,11 +2,22 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Bienvenida | Tuned Hive</title>
-    <!-- Usar Thymeleaf para resolver la hoja de estilos y la imagen -->
+    <title>Mis Playlists | Tuned Hive</title>
     <link rel="stylesheet" th:href="@{/estilos.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        html, body {
+            overflow-y: scroll;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+    </style>
 </head>
 <body>
 <header style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; align-items: center; justify-content: space-between; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; padding: 0.5em 2em 0.5em 1.5em; border-radius: 0; margin: 0; position: fixed; top: 0; left: 0; z-index: 100;">
@@ -18,14 +29,92 @@
         <button class="btn-colmena info" style="margin: 0; position: static;" th:onclick="|window.location.href='@{/Inicio}'|">Cerrar Sesión</button>
     </div>
 </header>
+
 <nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
     <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
-        <li><a th:href="@{/Buscar}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Buscar Música</a></li>
-        <li><a th:href="@{/Playlists}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mis Playlist</a></li>
-        <li><a th:href="@{/Artistas}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Artistas</a></li>
-        <li><a th:href="@{/Micuenta}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mi Cuenta</a></li>
+        <li><a th:href="@{/Buscar}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Buscar Música</a></li>
+        <li><a th:href="@{/Playlists}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mis Playlist</a></li>
+        <li><a th:href="@{/Artistas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Artistas</a></li>
+        <li><a th:href="@{/Micuenta}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mi Cuenta</a></li>
     </ul>
 </nav>
+
+<main style="margin-top: 140px; padding: 2em; width: 100vw; box-sizing: border-box;">
+    <div style="display: grid; grid-template-columns: 70% 30%; gap: 2em;">
+
+
+        <!-- Columna Izquierda: Lista de Playlists -->
+        <section style="background: #fffbe6cc; border-radius: 16px; padding: 2em; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
+            <h2 style="color: #2d2d2d; margin-bottom: 1.5em; text-align: center;">
+                <i class="fas fa-list-music"></i> Mis Playlists
+            </h2>
+
+            <div style="display: flex; flex-direction: column; gap: 1em;">
+                <div th:each="playlist : ${playlists}"
+                     style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 1.5em; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; display: flex; justify-content: space-between; align-items: center;"
+                     onmouseover="this.style.transform='translateX(5px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
+                     onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='none'">
+
+                    <div>
+                        <h3 th:text="${playlist.nombre}" style="color: #6b3e13; margin-bottom: 0.5em; font-size: 1.2em;">
+                            Nombre Playlist
+                        </h3>
+                        <p style="color: #999; font-size: 0.9em;">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span th:text="${playlist.fechaCreacion}">Fecha de creación</span>
+                        </p>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5em;">
+                        <button class="btn-colmena" style="padding: 0.6em 1.2em; font-size: 0.9em;">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="btn-colmena" style="padding: 0.6em 1.2em; font-size: 0.9em;">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensaje cuando no hay playlists -->
+            <div th:if="${#lists.isEmpty(playlists)}" style="text-align: center; padding: 3em; color: #999;">
+                <i class="fas fa-music" style="font-size: 3em; margin-bottom: 0.5em; color: #bfa14a;"></i>
+                <p style="font-size: 1.2em;">No tienes playlists aún</p>
+            </div>
+        </section>
+
+        <!-- Columna Derecha: Acciones -->
+        <section style="display: flex; flex-direction: column; gap: 1.5em; margin-right: 1em;">
+
+            <!-- Crear Playlist -->
+            <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
+                 onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
+                 onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
+                <i class="fas fa-plus-circle" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
+                <h3 style="color: #6b3e13; margin-bottom: 0.5em; transition: color 0.2s;">Crear Playlist</h3>
+                <p style="color: #999; font-size: 0.9em; transition: color 0.2s;">Nueva lista de reproducción</p>
+            </div>
+
+            <!-- Buscar Playlist -->
+            <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
+                 onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
+                 onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
+                <i class="fas fa-search" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
+                <h3 style="color: #6b3e13; margin-bottom: 0.5em; transition: color 0.2s;">Buscar Playlist</h3>
+                <p style="color: #999; font-size: 0.9em; transition: color 0.2s;">Playlists creadas por ti</p>
+            </div>
+
+            <!-- Buscar Álbum -->
+            <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
+                 onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
+                 onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
+                <i class="fas fa-compact-disc" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
+                <h3 style="color: #6b3e13; margin-bottom: 0.5em; transition: color 0.2s;">Buscar Álbum</h3>
+                <p style="color: #999; font-size: 0.9em; transition: color 0.2s;">Playlists creadas por artistas</p>
+            </div>
+        </section>
+    </div>
+</main>
 
 </body>
 </html>

@@ -74,6 +74,14 @@ public class CancionServiceImplement implements CancionService {
         return cancionRepository.findByTituloIgnoreCase(titulo);
     }
 
+    @Override
+    public List<Cancion> findByTituloContainingIgnoreCase(String fragmento) {
+        if (!StringUtils.hasText(fragmento)) {
+            return new ArrayList<>();
+        }
+        return cancionRepository.findByTituloContainingIgnoreCase(fragmento);
+    }
+
     /**
      * Busca canciones por género ignorando mayúsculas/minúsculas.
      *
