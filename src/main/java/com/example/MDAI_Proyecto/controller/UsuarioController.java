@@ -62,8 +62,8 @@ public class UsuarioController {
     @GetMapping("/admin")
     public String BienvenidaAdmin() {
         System.out.println("\t Recojo la petición de /users/admin");
-        // Mostrar la pantalla de bienvenida del administrador
-        return "BienvenidaAdmin";
+        // Redirigir a la ruta centralizada de admin (/admin) para agrupar rutas
+        return "redirect:/admin";
     }
 
     // Nota: el listado de solicitudes (ruta /AdminSolicitudes) se gestiona desde

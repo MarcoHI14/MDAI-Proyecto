@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión Usuarios | Tuned Hive</title>
+  <link rel="stylesheet" th:href="@{/estilos.css}">
+</head>
+<body>
+  <header>
+    <a th:href="@{/admin}"><img th:src="@{/TunedHive.png}" alt="Logo" class="logo-colmena"></a>
+    <a th:href="@{/admin}">Volver</a>
+  </header>
+  <main style="padding:2em;">
+    <h1>Usuarios</h1>
+    <div th:if="${usuarios == null or #lists.isEmpty(usuarios)}">No hay usuarios.</div>
+    <table th:if="${usuarios != null and !#lists.isEmpty(usuarios)}" style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr><th>ID</th><th>Username</th><th>Email</th><th>Es Artista</th><th>Acciones</th></tr>
+      </thead>
+      <tbody>
+        <tr th:each="u : ${usuarios}">
+          <td th:text="${u.id}">1</td>
+          <td th:text="${u.username}">usuario</td>
+          <td th:text="${u.email}">email@ejemplo</td>
+          <td th:text="${isArtistaByUserId[u.id] == true ? 'Sí' : 'No'}">No</td>
+          <td>
+            <a th:href="@{/admin/AdminUsuarios/{id}/edit(id=${u.id})}" class="btn-colmena" style="padding:0.3em 0.6em; text-decoration:none;">Editar</a>
+            <form th:action="@{/admin/AdminUsuarios/{id}/delete(id=${u.id})}" method="post" style="display:inline-block; margin-left:0.4em;">
+              <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+              <button type="submit" class="btn-colmena" style="background:#b33; color:#fff; border:none; padding:0.3em 0.6em; border-radius:6px;">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>

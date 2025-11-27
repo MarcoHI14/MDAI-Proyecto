@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Estadísticas Administrador | Tuned Hive</title>
+  <link rel="stylesheet" th:href="@{/estilos.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+  <header style="width: 100%; min-width: 100%; max-width: 100%; display: flex; align-items: center; justify-content: space-between; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; padding: 0.5em 2em 0.5em 1.5em; border-radius: 0; margin: 0; position: fixed; top: 0; left: 0; z-index: 100;">
+    <a th:href="@{/home}" style="display: inline-block; line-height: 0;">
+      <img th:src="@{/TunedHive.png}" alt="Logo TunedHive" class="logo-colmena" style="width: 60px; height: auto; margin: 0; cursor: pointer;">
+    </a>
+    <div class="eslogan eslogan-top-right" style="pointer-events: none; position: static; margin: 0; font-size: 1.3em; font-weight: bold; color: #2d2d2d; letter-spacing: 1px;">Panel de Verificación</div>
+    <a class="btn-colmena info" th:href="@{/users/logout}" style="margin: 0; position: static; text-decoration: none;">Cerrar Sesión</a>
+  </header>
+  <nav class="menu-bar" style="width: 100%; min-width: 100%; max-width: 100%; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
+    <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
+      <li><a th:href="@{/admin}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Panel de Control</a></li>
+      <li><a th:href="@{/Usuarios}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Usuarios</a></li>
+      <li><a th:href="@{/admin/estadisticas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Estadísticas</a></li>
+      <li><a th:href="@{/admin/AdminSolicitudes}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Solicitudes</a></li>
+    </ul>
+  </nav>
+
+  <main style="margin-top: 7.5em; padding:2em; max-width:1000px; margin-left:auto; margin-right:auto;">
+    <h1 style="color:#6b3e13;">Estadísticas del sistema</h1>
+    <table style="width:100%; border-collapse:collapse; margin-top:1em; background:#fffbe6; border-radius:12px; overflow:hidden;">
+      <thead style="background:#bfa14a; color:#fff; text-align:left;">
+        <tr><th style="padding:0.8em 1em;">Métrica</th><th style="padding:0.8em 1em;">Valor</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding:0.8em 1em;">Usuarios registrados</td><td style="padding:0.8em 1em;" th:text="${totalUsuarios}">0</td></tr>
+        <tr><td style="padding:0.8em 1em;">Artistas</td><td style="padding:0.8em 1em;" th:text="${totalArtistas}">0</td></tr>
+        <tr><td style="padding:0.8em 1em;">Canciones</td><td style="padding:0.8em 1em;" th:text="${totalCanciones}">0</td></tr>
+        <tr><td style="padding:0.8em 1em;">Playlists</td><td style="padding:0.8em 1em;" th:text="${totalPlaylists}">0</td></tr>
+        <tr><td style="padding:0.8em 1em;">Solicitudes pendientes</td><td style="padding:0.8em 1em;" th:text="${pendientes}">0</td></tr>
+        <tr><td style="padding:0.8em 1em;">Solicitudes aprobadas</td><td style="padding:0.8em 1em;" th:text="${aprobadas}">0</td></tr>
+        <tr><td style="padding:0.8em 1em;">Solicitudes rechazadas</td><td style="padding:0.8em 1em;" th:text="${rechazadas}">0</td></tr>
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>
