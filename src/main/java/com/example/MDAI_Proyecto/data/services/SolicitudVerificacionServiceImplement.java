@@ -1,6 +1,8 @@
 package com.example.MDAI_Proyecto.data.services;
 
+import com.example.MDAI_Proyecto.data.model.Artista;
 import com.example.MDAI_Proyecto.data.model.SolicitudVerificacion;
+import com.example.MDAI_Proyecto.data.model.Usuario;
 import com.example.MDAI_Proyecto.data.repository.SolicitudVerificacionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +28,22 @@ public class SolicitudVerificacionServiceImplement implements SolicitudVerificac
      */
     private final SolicitudVerificacionRepository solicitudVerificacionRepository;
 
+    private final ArtistaService artistaService;
+    private final UsuarioService usuarioService;
+
     /**
      * Constructor por inyección de dependencias.
      *
      * @param solicitudVerificacionRepository repositorio para persistencia
+     * @param artistaService servicio de artista
+     * @param usuarioService servicio de usuario
      */
-    public SolicitudVerificacionServiceImplement(SolicitudVerificacionRepository solicitudVerificacionRepository) {
+    public SolicitudVerificacionServiceImplement(SolicitudVerificacionRepository solicitudVerificacionRepository,
+                                                 ArtistaService artistaService,
+                                                 UsuarioService usuarioService) {
         this.solicitudVerificacionRepository = solicitudVerificacionRepository;
+        this.artistaService = artistaService;
+        this.usuarioService = usuarioService;
     }
 
     /**
@@ -77,6 +88,18 @@ public class SolicitudVerificacionServiceImplement implements SolicitudVerificac
         return Optional.of(list);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<List<SolicitudVerificacion>> findByUsuarioId(Long usuarioId) {
+        return solicitudVerificacionRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<List<SolicitudVerificacion>> findByUsuarioIdAndEstadoIn(Long usuarioId, List<String> estados) {
+        return solicitudVerificacionRepository.findByUsuarioIdAndEstadoIn(usuarioId, estados);
+    }
+
     /**
      * Guarda una solicitud de verificación.
      *
@@ -101,6 +124,32 @@ public class SolicitudVerificacionServiceImplement implements SolicitudVerificac
     @Transactional
     public void deleteById(Long id) {
         solicitudVerificacionRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void aprobarSolicitudYCrearArtista(Long idSolicitud) {
+        SolicitudVerificacion s = solicitudVerificacionRepository.findById(idSolicitud).orElse(null);
+        if (s == null) return;
+        s.setEstado("APROBADA");
+        solicitudVerificacionRepository.save(s);
+
+        // Crear artista asociado si procede
+        try {
+            Usuario u = s.getUsuario();
+            if (u != null && artistaService != null) {
+                Artista existing = artistaService.findById(u.getId());
+                if (existing == null) {
+                    Artista a = new Artista();
+                    a.setUsuario(u);
+                    a.setBiografia("");
+                    artistaService.saveArtista(a);
+                }
+            }
+        } catch (Exception ex) {
+            // Lanzar runtime para que la transacción pueda decidir rollback si se desea
+            throw new RuntimeException("Error al crear artista al aprobar solicitud: " + ex.getMessage(), ex);
+        }
     }
 
     /**

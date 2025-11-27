@@ -60,10 +60,17 @@ public class UsuarioController {
     }
 
     @GetMapping("/admin")
-    public String mostrarAdminSolicitudes() {
+    public String BienvenidaAdmin() {
         System.out.println("\t Recojo la petición de /users/admin");
-        return "AdminSolicitudes";
+        // Mostrar la pantalla de bienvenida del administrador
+        return "BienvenidaAdmin";
     }
+
+    // Nota: el listado de solicitudes (ruta /AdminSolicitudes) se gestiona desde
+    // `SolicitudVerificacionController` (mapping en root). Se evita duplicar el mapping
+    // aquí para prevenir confusiones. Si quieres que la ruta sea `/users/AdminSolicitudes`
+    // podemos mover o añadir un mapping específico, pero por ahora se delega al controlador
+    // dedicado a solicitudes.
 
     @GetMapping("/register")
     public String mostrarRegistro() {

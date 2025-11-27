@@ -1,12 +1,12 @@
 package com.example.MDAI_Proyecto.data.services;
 
 import com.example.MDAI_Proyecto.data.model.Artista;
-import com.example.MDAI_Proyecto.data.model.Usuario;
 import com.example.MDAI_Proyecto.data.repository.ArtistaRepository;
-import com.example.MDAI_Proyecto.data.repository.UsuarioRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ArtistaServiceImplement implements ArtistaService{
 
     private final ArtistaRepository artistaRepository;
@@ -33,7 +33,7 @@ public class ArtistaServiceImplement implements ArtistaService{
      * @param id El ID del artista a obtener.
      * @return El artista si se encuentra, o null si no.
      */
-    public Artista findById(Long id) { return (Artista) artistaRepository.findById(id).get(); }
+    public Artista findById(Long id) { return artistaRepository.findById(id).orElse(null); }
 
     /**
      * Obtiene un artista por el nombre de usuario del usuario asociado.
@@ -41,7 +41,7 @@ public class ArtistaServiceImplement implements ArtistaService{
      * @param username El nombre de usuario del usuario asociado.
      * @return El artista si se encuentra, o null si no.
      */
-    public Artista findByUsuarioUsername(String username) { return (Artista) artistaRepository.findByUsuarioUsername(username).get(); }
+    public Artista findByUsuarioUsername(String username) { return artistaRepository.findByUsuarioUsername(username).orElse(null); }
 
     /**
      * Obtiene un artista por el email del usuario asociado.
@@ -49,7 +49,7 @@ public class ArtistaServiceImplement implements ArtistaService{
      * @param email El email del usuario asociado.
      * @return El artista si se encuentra, o null si no.
      */
-    public Artista findByUsuarioEmail(String email) { return (Artista) artistaRepository.findByUsuarioEmail(email).get(); }
+    public Artista findByUsuarioEmail(String email) { return artistaRepository.findByUsuarioEmail(email).orElse(null); }
 
     /**
      * Guarda un artista en el repositorio.
