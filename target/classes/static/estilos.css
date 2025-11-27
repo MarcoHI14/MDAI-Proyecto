@@ -242,22 +242,23 @@ h1 {
   }
 }
 
+/* Consolidated media query: no reservar espacio para scrollbars en elementos fixed */
 @media (min-width: 600px) {
+  /* Sólo reservamos padding en body si se necesita; por defecto --scrollbar-space es 0 */
   body {
     padding-right: var(--scrollbar-space);
   }
-  /* Forzar que header, barras fijas y contenedores principales no usen 100vw y reserven espacio */
-  header, .menu-bar, .main-flex, main, .container, .content, .main-flex aside, .main-flex main {
-    width: calc(100% - var(--scrollbar-space)) !important;
-    max-width: calc(100% - var(--scrollbar-space)) !important;
-    padding-right: var(--scrollbar-space) !important;
+  /* Evitar reglas conflictivas sobre header/.menu-bar en este bloque */
+}
+
+/* ---- Override específico: permitir que header y .menu-bar ocupen TODO el ancho del viewport ---- */
+@media (min-width: 600px) {
+  header, .menu-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-right: 0 !important;
     box-sizing: border-box !important;
-    right: var(--scrollbar-space) !important; /* para elementos fixed */
-  }
-  /* Si algún elemento usa inline width:100vw, lo anulamos para evitar overflow horizontal */
-  [style*="width: 100vw"] {
-    width: calc(100% - var(--scrollbar-space)) !important;
-    max-width: calc(100% - var(--scrollbar-space)) !important;
+    right: 0 !important;
   }
 }
 
@@ -299,29 +300,26 @@ html, body {
 /* Reservar un pequeño espacio a la derecha para evitar que scrollbars 'overlay' cubran contenido
    aplicable en pantallas anchas (escritorio). Ajusta --scrollbar-space si hace falta. */
 :root {
-  --scrollbar-space: 32px; /* aumentar a 32px para Edge/Windows (ajusta entre 8-40 si hace falta) */
+  --scrollbar-space: 0px; /* eliminado el espacio reservado para barras de desplazamiento para permitir que header llegue al borde derecho */
 }
 html {
   scrollbar-gutter: stable both-edges;
 }
+
+/* Eliminado bloque duplicado que forzaba width: calc(100% - var(--scrollbar-space)) para evitar conflictos.
+   Mantenemos la regla de override específica más abajo que garantiza que header y .menu-bar ocupen todo el ancho. */
+
+/* ---- Final override: garantizar que header y menu-bar lleguen al borde derecho ---- */
 @media (min-width: 600px) {
-  body {
-    padding-right: var(--scrollbar-space);
-  }
-  /* Forzar que header, barras fijas y contenedores principales no usen 100vw y reserven espacio */
-  header, .menu-bar, .main-flex, main, .container, .content, .main-flex aside, .main-flex main {
-    width: calc(100% - var(--scrollbar-space)) !important;
-    max-width: calc(100% - var(--scrollbar-space)) !important;
-    padding-right: var(--scrollbar-space) !important;
+  /* selector más específico para asegurarnos de que sobrescriba reglas anteriores duplicadas */
+  html body > header, html body > nav.menu-bar, header, nav.menu-bar {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
     box-sizing: border-box !important;
-    right: var(--scrollbar-space) !important; /* para elementos fixed */
-  }
-  /* Si algún elemento usa inline width:100vw, lo anulamos para evitar overflow horizontal */
-  [style*="width: 100vw"] {
-    width: calc(100% - var(--scrollbar-space)) !important;
-    max-width: calc(100% - var(--scrollbar-space)) !important;
   }
 }
-
-/* Nota: si prefieres que no se reserve espacio deja --scrollbar-space a 0 o elimina el bloque */
-/* Nota adicional: si el sistema Windows tiene activado "Mostrar barras de desplazamiento" las reglas CSS pueden no ocultarlas por completo; ver instrucciones en la respuesta. */

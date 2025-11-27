@@ -6,11 +6,20 @@
   <link rel="stylesheet" th:href="@{/estilos.css}">
 </head>
 <body>
-  <header>
-    <a th:href="@{/admin}"><img th:src="@{/TunedHive.png}" alt="Logo" class="logo-colmena"></a>
-    <a th:href="@{/admin}">Volver</a>
+  <header style="position:fixed; top:0; left:0; right:0; width:100vw; box-sizing:border-box; display:flex; align-items:center; justify-content:space-between; background:#fffbe6cc; box-shadow:0 2px 12px #0001; padding:0.5em 2em 0.5em 1.5em; padding-right:0; border-radius:0; margin:0; z-index:100;">
+    <a th:href="@{/admin}" style="display:inline-block; line-height:0;"><img th:src="@{/TunedHive.png}" alt="Logo" class="logo-colmena" style="width:60px; height:auto; margin:0; cursor:pointer;"></a>
+    <div class="eslogan eslogan-top-right" style="pointer-events:none; position:static; margin:0; font-size:1.3em; font-weight:bold; color:#2d2d2d; letter-spacing:1px;">Gestión Usuarios</div>
+    <a th:href="@{/admin}" style="margin:0; margin-right:0.4em; display:inline-block; padding:0.4em 0.8em; text-decoration:none;">Volver</a>
   </header>
-  <main style="padding:2em;">
+  <nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
+      <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
+          <li><a th:href="@{/admin}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Panel de Control</a></li>
+          <li><a th:href="@{/admin/AdminUsuarios}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Gestión Usuarios</a></li>
+          <li><a th:href="@{/admin/estadisticas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Estadísticas</a></li>
+          <li><a th:href="@{/admin/AdminSolicitudes}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Solicitudes</a></li>
+      </ul>
+  </nav>
+  <main style="padding:2em; margin-top:8.5em;">
     <h1>Usuarios</h1>
     <div th:if="${usuarios == null or #lists.isEmpty(usuarios)}">No hay usuarios.</div>
     <table th:if="${usuarios != null and !#lists.isEmpty(usuarios)}" style="width:100%; border-collapse:collapse;">
