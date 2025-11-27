@@ -2,6 +2,7 @@
   
   REUTILIZAR INTERFAZ DE PLAYLISTS PARA MOSTRAR INFO DE USUARIO, CAMBIO DE CONTRASEÑA, ETC EN FORMATO POPUP
 
+
 - Usuario Service:
 	- ObtenerByUsername() ✓
 	- ObtenerByEmail() ✓
