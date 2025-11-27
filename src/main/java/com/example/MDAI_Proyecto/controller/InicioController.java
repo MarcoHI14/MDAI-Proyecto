@@ -48,11 +48,9 @@ public class InicioController {
     }
 
     // Página de administración
-    @GetMapping({"/AdminSolicitudes", "/AdminSolicitudes.html"})
-    public String mostrarAdminSolicitudesHtml() {
-        System.out.println("\t Recojo la petición de /AdminSolicitudes");
-        return "AdminSolicitudes";
-    }
+    // Nota: el mapeo de AdminSolicitudes se gestiona en SolicitudVerificacionController
+    // para permitir cargar las solicitudes pendientes en el modelo.
+    // (Se dejó el comportamiento en un controlador dedicado).
 
     // Página de bienvenida tras registro/inicio de sesión
     @GetMapping({"/Bienvenida", "/Bienvenida.html"})

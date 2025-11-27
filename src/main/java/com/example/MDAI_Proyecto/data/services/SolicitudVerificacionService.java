@@ -22,6 +22,16 @@ public interface SolicitudVerificacionService {
     Optional<List<SolicitudVerificacion>> findByEstado(String estado);
 
     /**
+     * Busca todas las solicitudes asociadas a un usuario por su id.
+     */
+    Optional<List<SolicitudVerificacion>> findByUsuarioId(Long usuarioId);
+
+    /**
+     * Busca solicitudes de un usuario que estén en alguno de los estados indicados.
+     */
+    Optional<List<SolicitudVerificacion>> findByUsuarioIdAndEstadoIn(Long usuarioId, List<String> estados);
+
+    /**
      * Obtiene todas las solicitudes de verificación registradas.
      *
      * @return Un {@link Optional} que contiene una lista con todas las solicitudes,
@@ -61,4 +71,3 @@ public interface SolicitudVerificacionService {
      */
     boolean existsById(Long id);
 }
-

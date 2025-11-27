@@ -77,6 +77,18 @@ public class SolicitudVerificacionServiceImplement implements SolicitudVerificac
         return Optional.of(list);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<List<SolicitudVerificacion>> findByUsuarioId(Long usuarioId) {
+        return solicitudVerificacionRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<List<SolicitudVerificacion>> findByUsuarioIdAndEstadoIn(Long usuarioId, List<String> estados) {
+        return solicitudVerificacionRepository.findByUsuarioIdAndEstadoIn(usuarioId, estados);
+    }
+
     /**
      * Guarda una solicitud de verificación.
      *

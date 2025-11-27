@@ -27,6 +27,14 @@
     <h1 style="color: #6b3e13; text-shadow: 1px 1px 6px #fffbe6, 0 1px 0 #bfa14a;">Solicitudes de Verificación</h1>
     <p style="font-size: 1.15em; color: #3a2a13;">Aquí podrás revisar, aceptar o rechazar las solicitudes de verificación de artistas y usuarios en Tuned Hive.</p>
 
+    <!-- Filtros de estado: Pendientes / Aprobadas / Rechazadas / Todas -->
+    <div style="margin-top:1em; display:flex; gap:0.6em; align-items:center;">
+      <a th:href="@{/AdminSolicitudes(estado='PENDIENTE')}" th:classappend="${selectedEstado == 'PENDIENTE'} ? ' filtro-activo' : ''" class="btn-colmena" style="text-decoration:none; padding:0.5em 0.9em;">Pendientes</a>
+      <a th:href="@{/AdminSolicitudes(estado='APROBADA')}" th:classappend="${selectedEstado == 'APROBADA'} ? ' filtro-activo' : ''" class="btn-colmena" style="text-decoration:none; padding:0.5em 0.9em;">Aprobadas</a>
+      <a th:href="@{/AdminSolicitudes(estado='RECHAZADA')}" th:classappend="${selectedEstado == 'RECHAZADA'} ? ' filtro-activo' : ''" class="btn-colmena" style="text-decoration:none; padding:0.5em 0.9em;">Rechazadas</a>
+      <a th:href="@{/AdminSolicitudes(estado='ALL')}" th:classappend="${selectedEstado == 'ALL' || selectedEstado == 'TODAS'} ? ' filtro-activo' : ''" class="btn-colmena" style="text-decoration:none; padding:0.5em 0.9em;">Todas</a>
+    </div>
+
     <!-- Si no se pasan solicitudes desde el controlador, se muestra el mensaje por defecto -->
     <div th:if="${solicitudes == null or #lists.isEmpty(solicitudes)}" style="margin-top: 2em; background: #fffbe6; border-radius: 16px; box-shadow: 0 2px 12px #0001; padding: 2em; min-height: 200px; text-align: center;">
       <i class="fa-solid fa-user-check" style="font-size: 2.5em; color: #bfa14a; margin-bottom: 0.5em;"></i>
@@ -42,24 +50,38 @@
             <th style="padding:0.8em 1em;">ID</th>
             <th style="padding:0.8em 1em;">Usuario</th>
             <th style="padding:0.8em 1em;">Tipo</th>
+            <th style="padding:0.8em 1em;">Fecha</th>
+            <th style="padding:0.8em 1em;">Mensaje</th>
             <th style="padding:0.8em 1em;">Estado</th>
             <th style="padding:0.8em 1em;">Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr th:each="sol : ${solicitudes}" style="border-top:1px solid #eee;">
-            <td style="padding:0.8em 1em;" th:text="${sol.id}">1</td>
-            <td style="padding:0.8em 1em;" th:text="${sol.usuarioNombre}">Usuario</td>
-            <td style="padding:0.8em 1em;" th:text="${sol.tipo}">Artista</td>
+            <!-- Usar los nombres de propiedad reales de la entidad SolicitudVerificacion -->
+            <td style="padding:0.8em 1em;" th:text="${sol.idSolicitud}">1</td>
+            <td style="padding:0.8em 1em;" th:text="${sol.usuario != null ? sol.usuario.username : 'Usuario'}">Usuario</td>
+            <td style="padding:0.8em 1em;" th:text="${'Artista'}">Artista</td>
+            <!-- Fecha con formato; si #temporals no está disponible Thymeleaf mostrará el valor por defecto -->
+            <td style="padding:0.8em 1em;" th:text="${sol.fechaSolicitud != null ? (#temporals != null ? #temporals.format(sol.fechaSolicitud, 'dd/MM/yyyy HH:mm') : sol.fechaSolicitud) : '—'}">01/01/2025 12:00</td>
+            <!-- Mensaje: limitar tamaño visible y ofrecer tooltip con el texto completo -->
+            <td style="padding:0.8em 1em; max-width: 360px;">
+              <div style="max-height:4.5em; overflow:auto; white-space:normal; word-wrap:break-word;" th:attr="title=${sol.mensajeVerificacion}">
+                <span th:text="${sol.mensajeVerificacion}">Mensaje de ejemplo...</span>
+              </div>
+            </td>
             <td style="padding:0.8em 1em;" th:text="${sol.estado}">PENDIENTE</td>
             <td style="padding:0.8em 1em;">
               <form th:action="@{/solicitudes/aceptar}" method="post" style="display:inline-block; margin-right:0.5em;">
-                <input type="hidden" th:name="id" th:value="${sol.id}" />
+                <input type="hidden" th:name="id" th:value="${sol.idSolicitud}" />
+                <!-- Mantener el filtro actual al enviar acciones -->
+                <input type="hidden" th:name="estado" th:value="${selectedEstado}" />
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <button type="submit" class="btn-colmena info" style="background:#6b3e13; color:#fff; border:none; padding:0.4em 0.8em; border-radius:8px;">Aceptar</button>
               </form>
               <form th:action="@{/solicitudes/rechazar}" method="post" style="display:inline-block;">
-                <input type="hidden" th:name="id" th:value="${sol.id}" />
+                <input type="hidden" th:name="id" th:value="${sol.idSolicitud}" />
+                <input type="hidden" th:name="estado" th:value="${selectedEstado}" />
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <button type="submit" class="btn-colmena danger" style="background:#b33; color:#fff; border:none; padding:0.4em 0.8em; border-radius:8px;">Rechazar</button>
               </form>

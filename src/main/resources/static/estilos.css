@@ -173,6 +173,14 @@ h1 {
   text-decoration: none; /* asegurar que en hover/focus tampoco aparezca subrayado */
 }
 
+/* Estilo para el filtro activo en AdminSolicitudes */
+.filtro-activo {
+  box-shadow: 0 6px 18px #bfa14a66;
+  background: linear-gradient(135deg, #ffe082 60%, #e2a84a 100%) !important;
+  color: #6b3e13 !important;
+  border: 2px solid #e2a84a;
+}
+
 .btn-colmena.info.info-top-left {
   position: absolute;
   top: 32px;
