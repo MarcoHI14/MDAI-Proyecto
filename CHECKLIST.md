@@ -13,7 +13,7 @@
 	- FindByUsuarioEmail() ?
 	- SaveArtista() ?  
 	- DeleteArtista() ?
-    - (Modificar los findbynombre y email para que todos usen containing, QOL Upgrade)
+    - (Modificar los findbynombre y email para que todos usen containing, QOL Upgrade, mirar en clase)
 
 - CancionService: ?
 	- FindById() ?
