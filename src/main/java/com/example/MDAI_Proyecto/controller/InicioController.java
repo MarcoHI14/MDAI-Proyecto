@@ -2,6 +2,8 @@ package com.example.MDAI_Proyecto.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @Controller
 public class InicioController {
@@ -57,6 +59,22 @@ public class InicioController {
     public String mostrarBienvenida() {
         System.out.println("\t Recojo la petición de /Bienvenida");
         return "BienvenidaUsuario";
+    }
+
+    // Link del logo: comprueba si hay sesión y redirige a Bienvenida o Inicio
+    @GetMapping({"/home","/home.html","/logo"})
+    public String logoHome() {
+        System.out.println("\t Recojo la petición de /home (logo)");
+        RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+        if (attrs != null) {
+            Object idObj = attrs.getAttribute("id_usuario", RequestAttributes.SCOPE_SESSION);
+            if (idObj != null) {
+                System.out.println("\t [SESSION] id_usuario encontrado en logoHome: " + idObj);
+                return "redirect:/Bienvenida";
+            }
+        }
+        System.out.println("\t [SESSION] no hay sesión en logoHome, redirigiendo a Inicio");
+        return "redirect:/Inicio";
     }
 
 
