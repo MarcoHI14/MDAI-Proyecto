@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Bienvenida | Tuned Hive</title>
-    <!-- Usar Thymeleaf para resolver la hoja de estilos y la imagen -->
     <link rel="stylesheet" th:href="@{/estilos.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* Ocultar scrollbar pero mantener funcionalidad */
         html, body {
             overflow-y: scroll;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE y Edge */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
 
         html::-webkit-scrollbar,
         body::-webkit-scrollbar {
-            display: none; /* Chrome, Safari y Opera */
+            display: none;
             width: 0;
             height: 0;
         }
@@ -41,41 +39,42 @@
         <li><a th:href="@{/Micuenta}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mi Cuenta</a></li>
     </ul>
 </nav>
-<main style="margin-top: 140px; padding: 2em; max-width: 1400px; margin-left: auto; margin-right: auto;">
-    <!-- Sección de Toggles de Filtrado -->
-    <section style="margin-bottom: 2em; display: flex; justify-content: center;">
-        <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 1em; display: flex; gap: 1em;">
-            <button id="toggleNombre" class="toggle-btn" onclick="activarFiltro('nombre')"
-                    style="padding: 0.8em 2em; border: 2px solid #bfa14a; background: white; color: #bfa14a; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;">
-                <i class="fas fa-font"></i> Por Nombre
-            </button>
-            <button id="toggleGenero" class="toggle-btn" onclick="activarFiltro('genero')"
-                    style="padding: 0.8em 2em; border: 2px solid #bfa14a; background: white; color: #bfa14a; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;">
-                <i class="fas fa-music"></i> Por Género
-            </button>
-            <button id="toggleArtista" class="toggle-btn" onclick="activarFiltro('artista')"
-                    style="padding: 0.8em 2em; border: 2px solid #bfa14a; background: white; color: #bfa14a; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;">
-                <i class="fas fa-user"></i> Por Artista
-            </button>
+<main style="margin-top: 140px; padding: 1em; width: 100vw; box-sizing: border-box;">
+    <!-- Sección combinada: Búsqueda + Filtros -->
+    <section style="margin-bottom: 1.5em;">
+        <div style="display: flex; gap: 2.5em; align-items: center;">
+            <!-- Barra de Búsqueda (Izquierda) -->
+            <form th:action="@{/BuscarCanciones}" method="get" style="display: flex; gap: 1em; align-items: center; flex: 1;">
+                <input type="hidden" id="filtroTipo" name="filtroTipo" value="">
+                <input type="text" id="searchInput" name="query" placeholder="Selecciona un filtro para buscar..." disabled
+                       style="flex: 1; padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; font-size: 1em; background: #f5f5f5; margin-right: 1.5em;">
+                <button type="submit" id="searchBtn" class="btn-colmena" disabled style="padding: 0.8em 2em;">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </form>
+
+            <!-- Toggles de Filtrado (Derecha) -->
+            <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 1em; display: flex; gap: 1em; flex-shrink: 0;">
+                <button id="toggleNombre" class="toggle-btn" onclick="activarFiltro('nombre')"
+                        style="padding: 0.8em 2em; border: 2px solid #bfa14a; background: white; color: #bfa14a; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;">
+                    <i class="fas fa-font"></i> Por Nombre
+                </button>
+                <button id="toggleGenero" class="toggle-btn" onclick="activarFiltro('genero')"
+                        style="padding: 0.8em 2em; border: 2px solid #bfa14a; background: white; color: #bfa14a; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;">
+                    <i class="fas fa-music"></i> Por Género
+                </button>
+                <button id="toggleArtista" class="toggle-btn" onclick="activarFiltro('artista')"
+                        style="padding: 0.8em 2em; border: 2px solid #bfa14a; background: white; color: #bfa14a; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;">
+                    <i class="fas fa-user"></i> Por Artista
+                </button>
+            </div>
         </div>
     </section>
 
-    <!-- Barra de Búsqueda -->
-    <section style="margin-bottom: 2em;">
-        <form th:action="@{/BuscarCanciones}" method="get" style="display: flex; gap: 1em; align-items: center; max-width: 800px; margin: 0 auto;">
-            <input type="hidden" id="filtroTipo" name="filtroTipo" value="">
-            <input type="text" id="searchInput" name="query" placeholder="Selecciona un filtro para buscar..." disabled
-                   style="flex: 1; padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; font-size: 1em; background: #f5f5f5;">
-            <button type="submit" id="searchBtn" class="btn-colmena" disabled style="padding: 0.8em 2em;">
-                <i class="fas fa-search"></i> Buscar
-            </button>
-        </form>
-    </section>
-
     <!-- Lista de Canciones -->
-    <section style="background: #fffbe6cc; border-radius: 16px; padding: 2em; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
-        <h2 style="color: #2d2d2d; margin-bottom: 1em; text-align: center;" id="tituloResultados">Todas las Canciones</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5em;">
+    <section style="background: #fffbe6cc; border-radius: 16px; padding: 1.5em; box-shadow: 0 2px 12px rgba(0,0,0,0.05); min-height: calc(100vh - 180px);">
+    <h2 style="color: #2d2d2d; margin-bottom: 1em; text-align: center;" id="tituloResultados">Todas las Canciones</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1em;">
             <div th:each="cancion : ${canciones}" class="cancion-card"
                  style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 1.5em; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
                  onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.1)'"
@@ -124,7 +123,6 @@
         const filtroTipo = document.getElementById('filtroTipo');
         const tituloResultados = document.getElementById('tituloResultados');
 
-        // Si se clickea el filtro activo, desactivarlo
         if (filtroActivo === tipo) {
             filtroActivo = null;
             toggles.forEach(btn => {
@@ -138,27 +136,22 @@
             searchBtn.disabled = true;
             filtroTipo.value = '';
             tituloResultados.textContent = 'Todas las Canciones';
-            // Recargar página sin filtros
             window.location.href = '/Buscar';
             return;
         }
 
-        // Activar nuevo filtro
         filtroActivo = tipo;
         filtroTipo.value = tipo;
 
-        // Resetear estilos de todos los toggles
         toggles.forEach(btn => {
             btn.style.background = 'white';
             btn.style.color = '#bfa14a';
         });
 
-        // Activar el toggle seleccionado
         const toggleActivo = document.getElementById('toggle' + tipo.charAt(0).toUpperCase() + tipo.slice(1));
         toggleActivo.style.background = '#6b3e13';
         toggleActivo.style.color = 'white';
 
-        // Habilitar input y actualizar placeholder
         searchInput.disabled = false;
         searchInput.style.background = 'white';
         searchBtn.disabled = false;
