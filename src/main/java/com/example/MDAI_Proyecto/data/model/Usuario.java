@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "usuario")
 public class Usuario {
-    /** Atributos */
+
     /** Identificador único del usuario */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,7 +52,7 @@ public class Usuario {
      *
      * @return el artista asociado, o null si no existe
      */
-    Artista getArtista() { return artista;}
+    public Artista getArtista() { return artista;}
 
     /** Establece el artista asociado a este usuario.
      * Mantiene la consistencia de la relación bidireccional.

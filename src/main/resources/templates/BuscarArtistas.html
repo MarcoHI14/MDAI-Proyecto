@@ -2,11 +2,25 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Bienvenida | Tuned Hive</title>
-    <!-- Usar Thymeleaf para resolver la hoja de estilos y la imagen -->
+    <title>Buscar Artistas | Tuned Hive</title>
     <link rel="stylesheet" th:href="@{/estilos.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+    </style>
 </head>
 <body>
 <header style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; align-items: center; justify-content: space-between; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; padding: 0.5em 2em 0.5em 1.5em; border-radius: 0; margin: 0; position: fixed; top: 0; left: 0; z-index: 100;">
@@ -18,68 +32,94 @@
         <button class="btn-colmena info" style="margin: 0; position: static;" th:onclick="|window.location.href='@{/Inicio}'|">Cerrar Sesión</button>
     </div>
 </header>
+
 <nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
     <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
-        <li><a th:href="@{/Buscar}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Buscar Música</a></li>
-        <li><a th:href="@{/Playlists}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mis Playlist</a></li>
-        <li><a th:href="@{/Artistas}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Artistas</a></li>
-        <li><a th:href="@{/Micuenta}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mi Cuenta</a></li>
+        <li><a th:href="@{/Buscar}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Buscar Música</a></li>
+        <li><a th:href="@{/Playlists}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mis Playlist</a></li>
+        <li><a th:href="@{/BuscarArtistas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Artistas</a></li>
+        <li><a th:href="@{/Micuenta}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mi Cuenta</a></li>
     </ul>
 </nav>
 
-<!-- Barra de Búsqueda (solo por nombre) -->
-<section style="margin-bottom: 2em;">
-    <form th:action="@{/BuscarArtistas}" method="get" style="display: flex; gap: 1em; align-items: center; max-width: 800px; margin: 0 auto;">
-        <input type="text" id="searchInput" name="query" placeholder="Buscar por nombre de artista..."
-               style="flex: 1; padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; font-size: 1em; background: #f5f5f5;">
-        <button type="submit" id="searchBtn" class="btn-colmena" style="padding: 0.8em 2em;">
-            <i class="fas fa-search"></i> Buscar
-        </button>
-    </form>
-</section>
+<main style="margin-top: 140px; padding: 2em; width: 100vw; box-sizing: border-box;">
+    <div style="display: grid; grid-template-columns: 70% 30%; gap: 2em;">
+        <!-- Columna izquierda: Lista de artistas -->
+        <section style="background:#fffbe6cc; border-radius:16px; padding:2em; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
+            <form th:action="@{/BuscarArtistas}" method="get" style="display:flex; gap:0.8em; margin-bottom:1.5em;">
+                <input type="text" name="query" placeholder="Buscar por nombre de artista..." style="flex:1; padding:0.6em; border:2px solid #bfa14a; border-radius:8px; background:#f5f5f5;">
+                <button type="submit" class="btn-colmena">Buscar</button>
+            </form>
 
-<!-- Lista de Artistas -->
-<section style="background: #fffbe6cc; border-radius: 16px; padding: 2em; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
-    <h2 style="color: #2d2d2d; margin-bottom: 1em; text-align: center;" id="tituloResultados">Todos los Artistas</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5em;">
-        <div th:each="artista : ${artistas}" class="artista-card"
-             style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 1.5em; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
-             onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.1)'"
-             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+            <h2 style="text-align:center; color:#2d2d2d; margin-bottom:1.5em;" id="tituloResultados">Todos los Artistas</h2>
 
-            <div style="margin-bottom: 1em; text-align: center;">
-                <i class="fas fa-user" style="font-size: 3em; color: #bfa14a;"></i>
-            </div>
-
-            <h3 th:text="${artista.nombre}" style="color: #6b3e13; margin-bottom: 0.5em; font-size: 1.1em;">Nombre Artista</h3>
-            <p th:text="${artista.descripcion} ?: 'Sin descripción disponible'"
-               style="color: #999; margin-bottom: 0.6em; font-size: 0.9em; min-height: 2.2em;">Descripción</p>
-
-            <p style="color: #999; margin-bottom: 0.3em; font-size: 0.9em;">
-                <i class="fas fa-globe"></i> <span th:text="${artista.nacionalidad} ?: 'Nacionalidad'">País</span>
-            </p>
-
-            <div style="margin-top: 1em; display: flex; gap: 0.5em;">
-                <a th:href="@{/Artistas/{id}(id=${artista.id})}" class="btn-colmena" style="flex: 1; padding: 0.6em; font-size: 0.9em; text-align:center; display:inline-block;">
-                    <i class="fas fa-eye"></i> Ver perfil
+            <div th:if="${artistas != null}" style="display:flex; flex-direction:column; gap:1em;">
+                <a th:each="artista : ${artistas}"
+                   th:if="${artista != null}"
+                   th:href="@{/BuscarArtistas(artistId=${artista.id})}"
+                   style="text-decoration:none; color:inherit;">
+                    <div class="artista-card" style="display:flex; gap:1em; align-items:center; background:#fffbe6; border:2px solid #bfa14a; border-radius:12px; padding:1.5em; transition:transform 0.2s, box-shadow 0.2s;"
+                         onmouseover="this.style.transform='translateX(5px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
+                         onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='none'">
+                        <div style="flex:0 0 56px; text-align:center;"><i class="fas fa-user" style="font-size:2em; color:#bfa14a;"></i></div>
+                        <div style="flex:1;">
+                            <h3 th:text="${artista.nombre}" style="margin:0 0 0.5em 0; color:#6b3e13; font-size:1.2em;">Nombre Artista</h3>
+                            <p th:text="${artista.descripcion} ?: 'Sin descripción'" style="margin:0.25em 0; color:#777; font-size:0.9em;">Descripción</p>
+                            <small style="color:#999;"><i class="fas fa-globe"></i> <span th:text="${artista.nacionalidad} ?: 'Nacionalidad'">País</span></small>
+                        </div>
+                        <div style="flex:0 0 90px; text-align:right;">
+                            <form th:action="@{/Artistas/seguir}" method="post" style="margin:0;">
+                                <input type="hidden" name="artistaId" th:value="${artista.id}">
+                                <button type="submit" class="btn-colmena" style="padding:0.6em 1.2em; font-size:0.9em;">Seguir</button>
+                            </form>
+                        </div>
+                    </div>
                 </a>
-                <form th:action="@{/Artistas/seguir}" method="post" style="flex: 1; margin: 0;">
-                    <input type="hidden" name="artistaId" th:value="${artista.id}" />
-                    <button type="submit" class="btn-colmena" style="width:100%; padding: 0.6em; font-size: 0.9em;">
-                        <i class="fas fa-plus"></i> Seguir
-                    </button>
-                </form>
             </div>
-        </div>
+
+            <div th:if="${artistas == null or #lists.isEmpty(artistas)}" style="text-align:center; padding:3em; color:#999;">
+                <i class="fas fa-search" style="font-size:3em; margin-bottom:0.5em; color:#bfa14a;"></i>
+                <p style="font-size:1.2em;">No se encontraron artistas</p>
+            </div>
+        </section>
+
+        <!-- Columna derecha: Lista de canciones -->
+        <section style="display:flex; flex-direction:column; gap:1.5em; margin-right:1em;">
+            <div style="background:#fffbe6; border:2px solid #bfa14a; border-radius:12px; padding:2em; text-align:center;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1em;">
+                    <h2 style="margin:0; color:#2d2d2d;" th:text="${artistaSeleccionado != null} ? ${artistaSeleccionado.nombre} : 'Canciones'">Canciones</h2>
+                    <div th:if="${artistaSeleccionado != null}" style="color:#6b3e13; font-weight:600;" th:text="${artistaSeleccionado.nacionalidad}">País</div>
+                </div>
+
+                <div th:if="${canciones != null and !#lists.isEmpty(canciones)}" style="text-align:left;">
+                    <div th:each="c : ${canciones}"
+                         th:if="${c != null}"
+                         style="display:flex; justify-content:space-between; align-items:center; padding:0.6em; border-bottom:1px solid rgba(0,0,0,0.04);">
+                        <div>
+                            <div style="font-weight:600;" th:text="${c.titulo}">Título canción</div>
+                            <div style="font-size:0.9em; color:#777;" th:text="${c.album} ?: 'Álbum'">Álbum</div>
+                        </div>
+                        <div style="display:flex; gap:0.5em; align-items:center;">
+                            <form th:action="@{/canciones/play}" method="post" style="margin:0;">
+                                <input type="hidden" name="cancionId" th:value="${c.id}">
+                                <button type="submit" class="btn-colmena" style="padding:0.6em 1.2em; font-size:0.9em;"><i class="fas fa-play"></i></button>
+                            </form>
+                            <form th:action="@{/Playlists/add}" method="post" style="margin:0;">
+                                <input type="hidden" name="cancionId" th:value="${c.id}">
+                                <button type="submit" class="btn-colmena" style="padding:0.6em 1.2em; font-size:0.9em;"><i class="fas fa-plus"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${canciones == null or #lists.isEmpty(canciones)}" style="text-align:center; padding:3em; color:#999;">
+                    <i class="fas fa-music" style="font-size:3em; margin-bottom:0.5em; color:#bfa14a;"></i>
+                    <p th:if="${artistaSeleccionado != null}" style="font-size:1.2em;">No hay canciones registradas para este artista</p>
+                    <p th:if="${artistaSeleccionado == null}" style="font-size:1.2em;">Selecciona un artista a la izquierda para ver sus canciones</p>
+                </div>
+            </div>
+        </section>
     </div>
-
-    <!-- Mensaje cuando no hay resultados -->
-    <div th:if="${#lists.isEmpty(artistas)}" style="text-align: center; padding: 3em; color: #999;">
-        <i class="fas fa-search" style="font-size: 3em; margin-bottom: 0.5em; color: #bfa14a;"></i>
-        <p style="font-size: 1.2em;">No se encontraron artistas</p>
-    </div>
-</section>
-
-
+</main>
 </body>
 </html>

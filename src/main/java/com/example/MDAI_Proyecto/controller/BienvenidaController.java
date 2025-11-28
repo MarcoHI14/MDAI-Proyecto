@@ -27,10 +27,4 @@ public class BienvenidaController {
         System.out.println("\t Recojo la petición de /Artistas");
         return "BuscarArtistas";
     }
-
-    @GetMapping("/Micuenta")
-    public String mostrarMiCuenta() {
-        System.out.println("\t Recojo la petición de /Micuenta");
-        return "MiCuenta";
-    }
 }
