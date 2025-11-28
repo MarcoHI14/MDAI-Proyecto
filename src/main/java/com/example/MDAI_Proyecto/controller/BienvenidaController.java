@@ -1,12 +1,18 @@
 package com.example.MDAI_Proyecto.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import com.example.MDAI_Proyecto.data.services.ArtistaService;
 
 @Controller
 public class BienvenidaController {
 
-    public BienvenidaController() {
+    private final ArtistaService artistaService;
+
+    public BienvenidaController(ArtistaService artistaService) {
+        this.artistaService = artistaService;
         System.out.println("\t BienvenidaController inicializado");
     }
 
@@ -18,7 +24,7 @@ public class BienvenidaController {
 
     @GetMapping("/Artistas")
     public String mostrarArtistas() {
-        System.out.println("\t Recojo la petición de /Artistas");
-        return "BuscarArtistas";
+        System.out.println("\t Recojo la petición de /Artistas -> redirigiendo a /BuscarArtistas");
+        return "redirect:/BuscarArtistas";
     }
 }

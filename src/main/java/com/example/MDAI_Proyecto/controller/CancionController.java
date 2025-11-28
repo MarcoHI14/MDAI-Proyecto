@@ -15,6 +15,8 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +26,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.List;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 public class CancionController {
@@ -183,4 +189,27 @@ public class CancionController {
         }
     }
 
-}
+    // API para obtener canciones por artista (por id)
+    @GetMapping("/api/artistas/{id}/canciones")
+    @ResponseBody
+    public List<Map<String,Object>> cancionesPorArtista(@PathVariable("id") Long id) {
+        System.out.println("\t API: solicitadas canciones por artista id=" + id);
+        Artista artista = artistaService.findById(id);
+        if (artista == null) return List.of();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        List<Map<String,Object>> out = new java.util.ArrayList<>();
+        for (Cancion c : artista.getCanciones()) {
+            java.util.Map<String,Object> m = new java.util.HashMap<>();
+            m.put("id", c.getIdCancion());
+            m.put("titulo", c.getTitulo());
+            m.put("genero", c.getGenero());
+            m.put("duracion", c.getDuracion());
+            m.put("archivoAudio", c.getArchivoAudio());
+            m.put("fechaSubida", c.getFechaSubida() != null ? c.getFechaSubida().format(fmt) : null);
+            m.put("artista", (c.getArtista()!=null && c.getArtista().getUsuario()!=null) ? c.getArtista().getUsuario().getUsername() : null);
+            out.add(m);
+        }
+        return out;
+     }
+
+ }

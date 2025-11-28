@@ -20,6 +20,64 @@
             width: 0;
             height: 0;
         }
+        /* simple table styles to match the site (moved here) */
+        #artists-table th, #artists-table td { padding:0.6em 0.8em; border-bottom:1px solid #eee; }
+        #artists-table tbody tr:hover { background: #fff8e6; }
+
+        /* Estilos del reproductor inferior (oculto por defecto) */
+        #bottom-player {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transform: translateY(110%);
+            transition: transform 300ms ease;
+            background: linear-gradient(180deg,#fffbe6, #fff9e0);
+            border-top: 1px solid #e6d8a8;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+            padding: 0.8em 1em;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 1em;
+        }
+        #bottom-player.show { transform: translateY(0); }
+        #player-info { flex: 1; min-width: 0; }
+        #player-title { font-weight: 700; color: #2d2d2d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .player-controls { display:flex; align-items:center; gap:0.6em; }
+        .player-btn { background:#6b3e13; color:white; border:none; padding:0.5em 0.8em; border-radius:8px; cursor:pointer; }
+        .player-progress-container { background: rgba(0,0,0,0.06); height:10px; border-radius:8px; cursor:pointer; margin-top:0.6em; width:100%; }
+        .player-progress-bar { height:100%; background:#bfa14a; width:0%; border-radius:8px; }
+        .player-times { font-size:0.9em; color:#444; margin-left:0.6em; min-width:70px; text-align:right; }
+
+        /* Popup / toast */
+        .popup {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            bottom: 20px;
+            min-width: 260px;
+            max-width: 90vw;
+            background: #fff;
+            color: #222;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            padding: 0.9em 1em;
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 220ms ease, transform 220ms ease;
+            z-index: 1200;
+        }
+        .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+        .popup .icon { width: 36px; height: 36px; border-radius: 8px; display:flex; align-items:center; justify-content:center; color: #fff; font-weight:700; }
+        .popup.error .icon { background:#d9534f; }
+        .popup.info .icon { background:#0275d8; }
+        .popup .msg { flex:1; font-size:0.95em; }
+        .popup .close { background: transparent; border: none; color: #666; font-size: 1.1em; cursor: pointer; }
+        @media (max-width:480px){ .popup { left: 50%; bottom: 12px; } }
     </style>
 </head>
 <body>
@@ -43,83 +101,247 @@
 </nav>
 
 <main style="margin-top: 140px; padding: 2em; width: 100vw; box-sizing: border-box;">
-    <div style="display: grid; grid-template-columns: 70% 30%; gap: 2em;">
+    <!-- Ajuste de columnas: artistas ocupa menos y canciones más (un poco más al panel de canciones) -->
+    <div style="display: grid; grid-template-columns: 58% 42%; gap: 2em;">
         <!-- Columna izquierda: Lista de artistas -->
         <section style="background:#fffbe6cc; border-radius:16px; padding:2em; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-            <form th:action="@{/BuscarArtistas}" method="get" style="display:flex; gap:0.8em; margin-bottom:1.5em;">
-                <input type="text" name="query" placeholder="Buscar por nombre de artista..." style="flex:1; padding:0.6em; border:2px solid #bfa14a; border-radius:8px; background:#f5f5f5;">
-                <button type="submit" class="btn-colmena">Buscar</button>
-            </form>
-
             <h2 style="text-align:center; color:#2d2d2d; margin-bottom:1.5em;" id="tituloResultados">Todos los Artistas</h2>
 
-            <div th:if="${artistas != null}" style="display:flex; flex-direction:column; gap:1em;">
-                <a th:each="artista : ${artistas}"
-                   th:if="${artista != null}"
-                   th:href="@{/BuscarArtistas(artistId=${artista.id})}"
-                   style="text-decoration:none; color:inherit;">
-                    <div class="artista-card" style="display:flex; gap:1em; align-items:center; background:#fffbe6; border:2px solid #bfa14a; border-radius:12px; padding:1.5em; transition:transform 0.2s, box-shadow 0.2s;"
-                         onmouseover="this.style.transform='translateX(5px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
-                         onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='none'">
-                        <div style="flex:0 0 56px; text-align:center;"><i class="fas fa-user" style="font-size:2em; color:#bfa14a;"></i></div>
-                        <div style="flex:1;">
-                            <h3 th:text="${artista.nombre}" style="margin:0 0 0.5em 0; color:#6b3e13; font-size:1.2em;">Nombre Artista</h3>
-                            <p th:text="${artista.descripcion} ?: 'Sin descripción'" style="margin:0.25em 0; color:#777; font-size:0.9em;">Descripción</p>
-                            <small style="color:#999;"><i class="fas fa-globe"></i> <span th:text="${artista.nacionalidad} ?: 'Nacionalidad'">País</span></small>
-                        </div>
-                        <div style="flex:0 0 90px; text-align:right;">
-                            <form th:action="@{/Artistas/seguir}" method="post" style="margin:0;">
-                                <input type="hidden" name="artistaId" th:value="${artista.id}">
-                                <button type="submit" class="btn-colmena" style="padding:0.6em 1.2em; font-size:0.9em;">Seguir</button>
-                            </form>
-                        </div>
-                    </div>
-                </a>
+            <!-- Controles de filtro/orden (tabla de artistas) -->
+            <div style="display:flex; gap:0.6em; align-items:center; margin-bottom:0.8em;">
+                <label for="filterTableArtists" style="position:absolute; left:-9999px;">Filtrar artistas</label>
+                <input id="filterTableArtists" type="text" placeholder="Filtrar tabla (nombre, usuario, país)..." style="flex:1; padding:0.6em; border:1px solid #e2d3a0; border-radius:8px; background:#fffdf6;">
+                <label for="sortArtistsSelect" style="position:absolute; left:-9999px;">Ordenar artistas</label>
+                <select id="sortArtistsSelect" style="padding:0.45em 0.6em; border-radius:8px; border:1px solid #e2d3a0; background:#fffdf6;">
+                    <option value="">Ordenar por...</option>
+                    <option value="usuario">Usuario</option>
+                    <option value="num">Nº Canciones</option>
+                </select>
+                <button id="applySortArtists" class="btn-colmena">Ordenar</button>
+                <button id="clearSearchArtists" class="btn-colmena" style="background:transparent; border:1px solid #e2d3a0; color:#6b3e13;">Limpiar</button>
             </div>
 
-            <div th:if="${artistas == null or #lists.isEmpty(artistas)}" style="text-align:center; padding:3em; color:#999;">
+            <!-- Tabla de artistas (similar a AdminArtistas) -->
+            <div th:if="${artistas != null and !#lists.isEmpty(artistas)}" style="overflow:auto; max-height:60vh;">
+                <table id="artists-table" style="width:100%; border-collapse:collapse; min-width:720px;">
+                    <thead>
+                        <tr style="background:#f7f3e6; text-align:left;">
+                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%">ID</th>
+                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8;">Usuario</th>
+                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8;">Biografía</th>
+                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:10%">Nº Canciones</th>
+                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:12%; text-align:center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="a : ${artistas}" th:if="${a != null}" th:attr="data-artista-id=${a.idArtista}" class="artist-row" style="cursor:pointer;">
+                            <td style="padding:0.6em 1em; vertical-align:middle;" th:text="${a.idArtista}">1</td>
+                            <td style="padding:0.6em 1em; vertical-align:middle;" th:text="${a.usuario != null ? a.usuario.username : 'Usuario'}">usuario</td>
+                            <td style="padding:0.6em 1em; vertical-align:middle; max-width:420px; white-space:normal; word-wrap:break-word;" th:text="${a.biografia}">Biografía corta...</td>
+                            <td style="padding:0.6em 1em; vertical-align:middle; text-align:center;" th:text="${a.canciones != null ? a.canciones.size() : 0}">0</td>
+                            <td style="padding:0.6em 1em; vertical-align:middle; text-align:right;">
+                                <!-- selección por fila: no acciones -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="noResultsArtists" th:if="${artistas == null or #lists.isEmpty(artistas)}" style="text-align:center; padding:3em; color:#999;">
                 <i class="fas fa-search" style="font-size:3em; margin-bottom:0.5em; color:#bfa14a;"></i>
                 <p style="font-size:1.2em;">No se encontraron artistas</p>
             </div>
-        </section>
 
-        <!-- Columna derecha: Lista de canciones -->
-        <section style="display:flex; flex-direction:column; gap:1.5em; margin-right:1em;">
+         </section>
+
+        <!-- Columna derecha: Lista de canciones (más ancha) -->
+        <section style="display:flex; flex-direction:column; gap:1.5em; margin-right:0; padding-left:1em;">
             <div style="background:#fffbe6; border:2px solid #bfa14a; border-radius:12px; padding:2em; text-align:center;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1em;">
                     <h2 style="margin:0; color:#2d2d2d;" th:text="${artistaSeleccionado != null} ? ${artistaSeleccionado.nombre} : 'Canciones'">Canciones</h2>
                     <div th:if="${artistaSeleccionado != null}" style="color:#6b3e13; font-weight:600;" th:text="${artistaSeleccionado.nacionalidad}">País</div>
                 </div>
 
-                <div th:if="${canciones != null and !#lists.isEmpty(canciones)}" style="text-align:left;">
-                    <div th:each="c : ${canciones}"
-                         th:if="${c != null}"
-                         style="display:flex; justify-content:space-between; align-items:center; padding:0.6em; border-bottom:1px solid rgba(0,0,0,0.04);">
-                        <div>
-                            <div style="font-weight:600;" th:text="${c.titulo}">Título canción</div>
-                            <div style="font-size:0.9em; color:#777;" th:text="${c.album} ?: 'Álbum'">Álbum</div>
-                        </div>
-                        <div style="display:flex; gap:0.5em; align-items:center;">
-                            <form th:action="@{/canciones/play}" method="post" style="margin:0;">
-                                <input type="hidden" name="cancionId" th:value="${c.id}">
-                                <button type="submit" class="btn-colmena" style="padding:0.6em 1.2em; font-size:0.9em;"><i class="fas fa-play"></i></button>
-                            </form>
-                            <form th:action="@{/Playlists/add}" method="post" style="margin:0;">
-                                <input type="hidden" name="cancionId" th:value="${c.id}">
-                                <button type="submit" class="btn-colmena" style="padding:0.6em 1.2em; font-size:0.9em;"><i class="fas fa-plus"></i></button>
-                            </form>
-                        </div>
+                <!-- Container dinámico para las canciones cargadas vía JS -->
+                <div id="songsContainer" style="text-align:left;">
+                    <div style="text-align:center; padding:3em; color:#999;">
+                        <i class="fas fa-music" style="font-size:3em; margin-bottom:0.5em; color:#bfa14a;"></i>
+                        <p style="font-size:1.2em;">Selecciona un artista a la izquierda para ver sus canciones</p>
                     </div>
-                </div>
-
-                <div th:if="${canciones == null or #lists.isEmpty(canciones)}" style="text-align:center; padding:3em; color:#999;">
-                    <i class="fas fa-music" style="font-size:3em; margin-bottom:0.5em; color:#bfa14a;"></i>
-                    <p th:if="${artistaSeleccionado != null}" style="font-size:1.2em;">No hay canciones registradas para este artista</p>
-                    <p th:if="${artistaSeleccionado == null}" style="font-size:1.2em;">Selecciona un artista a la izquierda para ver sus canciones</p>
                 </div>
             </div>
         </section>
     </div>
 </main>
+
+<!-- Reproductor inferior y popup (reutilizado de BuscarCanciones) -->
+<div id="bottom-player" aria-live="polite">
+    <div id="player-info">
+        <div id="player-title">Título de la canción</div>
+        <div class="player-progress-container" id="player-progress-container" title="Seek">
+            <div class="player-progress-bar" id="player-progress-bar"></div>
+        </div>
+    </div>
+    <div class="player-controls">
+        <button id="player-toggle" class="player-btn" aria-label="Reproducir/Pausar"><i class="fas fa-play"></i></button>
+        <div class="player-times"><span id="player-current">00:00</span> / <span id="player-duration">00:00</span></div>
+        <button id="player-close" class="player-btn" title="Cerrar" style="background:#bfa14a"><i class="fas fa-times"></i></button>
+    </div>
+</div>
+
+<!-- Popup / toast -->
+<div id="popup" class="popup" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="icon">!</div>
+    <div class="msg" id="popup-msg">Mensaje</div>
+    <button class="close" id="popup-close" aria-label="Cerrar">×</button>
+</div>
+
+<script>
+// Mantener la funcionalidad de filtrado/orden de la tabla (existente)
+document.addEventListener('DOMContentLoaded', function(){
+    const filterInput = document.getElementById('filterTableArtists');
+    const table = document.getElementById('artists-table');
+    const tbody = table ? table.tBodies[0] : null;
+    const sortSelect = document.getElementById('sortArtistsSelect');
+    const applySortBtn = document.getElementById('applySortArtists');
+    if(tbody){
+        function normalize(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,''); }
+        function filterTable(){
+            const q = normalize(filterInput.value.trim());
+            let visible = 0;
+            Array.from(tbody.rows).forEach(row => {
+                const usuario = normalize(row.cells[1].innerText);
+                const bio = normalize(row.cells[2].innerText);
+                const num = normalize(row.cells[3].innerText);
+                const hay = usuario + ' ' + bio + ' ' + num;
+                const show = !q || hay.indexOf(q) !== -1;
+                row.style.display = show ? '' : 'none';
+                if(show) visible++;
+            });
+            document.getElementById('noResultsArtists').style.display = (visible===0) ? 'block' : 'none';
+        }
+        function sortTableBy(key){
+            const rows = Array.from(tbody.rows);
+            let comp;
+            if(key === 'usuario') comp = (a,b) => a.cells[1].innerText.localeCompare(b.cells[1].innerText, undefined, {sensitivity:'base'});
+            else if(key === 'num') comp = (a,b) => (parseInt(a.cells[3].innerText)||0) - (parseInt(b.cells[3].innerText)||0);
+            else return;
+            rows.sort(comp);
+            rows.forEach(r => tbody.appendChild(r));
+        }
+        filterInput.addEventListener('input', function(){ setTimeout(filterTable, 120); });
+        applySortBtn.addEventListener('click', function(){ const key = sortSelect.value; if(key) sortTableBy(key); });
+        document.getElementById('clearSearchArtists').addEventListener('click', function(){ filterInput.value=''; filterTable(); filterInput.focus(); });
+
+        // Attach click handlers to rows to load songs
+        Array.from(tbody.querySelectorAll('tr[data-artista-id]')).forEach(row => {
+            row.addEventListener('click', function(){
+                const id = row.getAttribute('data-artista-id');
+                if(!id) return;
+                // visual selection
+                Array.from(tbody.querySelectorAll('tr')).forEach(r=>r.style.background='');
+                row.style.background = '#fff8e6';
+                fetch('/api/artistas/' + id + '/canciones')
+                    .then(r=>r.json())
+                    .then(list => renderSongsInPanel(list))
+                    .catch(e=>{ console.error(e); showPopup('No se pudieron cargar las canciones del artista.','error',5000); });
+            });
+        });
+    }
+
+    // Render songs into right panel
+    function renderSongsInPanel(list){
+        const container = document.getElementById('songsContainer');
+        if(!container) return;
+        if(!list || list.length===0){
+            container.innerHTML = '<div style="text-align:center; padding:3em; color:#999;">'+
+                '<i class="fas fa-music" style="font-size:3em; margin-bottom:0.5em; color:#bfa14a;"></i>'+
+                '<p style="font-size:1.2em;">No hay canciones registradas para este artista</p></div>';
+            return;
+        }
+        let html = '';
+        html += '<div style="text-align:left;">';
+        html += '<div style="width:100%; overflow:auto;">';
+        html += '<table class="full-table" style="width:100%; border-collapse: collapse;">';
+        html += '<thead><tr style="background:#f7f3e6; text-align:left;">'+
+            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%">Orden</th>'+
+            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8;">Título</th>'+
+            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:12%">Género</th>'+
+            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:10%">Duración</th>'+
+            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:16%">Artista</th>'+
+            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:14%">Fecha Subida</th>'+
+            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:8%; text-align:center;">Reproducir</th>'+
+            '</tr></thead><tbody>';
+        list.forEach((c,i)=>{
+            const id = c.id || ('new'+i);
+            const archivo = c.archivoAudio ? c.archivoAudio : ('/uploads/' + c.archivoAudio);
+            const artistaName = c.artista || '';
+            html += '<tr style="border-bottom:1px solid #eee;">';
+            html += '<td style="padding:0.8em 1em; vertical-align: middle; text-align:center;">'+(i+1)+'</td>';
+            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.titulo||'')+'</td>';
+            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.genero||'')+'</td>';
+            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.duracion||'—')+'</td>';
+            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+artistaName+'</td>';
+            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.fechaSubida||'—')+'</td>';
+            html += '<td style="padding:0.6em 0.8em; vertical-align: middle; text-align:center;">';
+            html += '<audio class="song-audio" id="audio-'+id+'" src="'+archivo+'" preload="metadata" style="display:none;" data-title="'+(c.titulo+' - '+artistaName)+'"></audio>';
+            html += '<button type="button" class="btn-colmena" id="btn-play-'+id+'" data-audioid="audio-'+id+'" data-src="'+archivo+'"><i class="fas fa-play"></i></button>';
+            html += '</td>';
+            html += '</tr>';
+        });
+        html += '</tbody></table></div></div>';
+        container.innerHTML = html;
+
+        // attach play handlers
+        container.querySelectorAll('button[id^="btn-play-"]').forEach(b=>{
+            b.addEventListener('click', function(e){
+                e.stopPropagation();
+                const aid = b.getAttribute('data-audioid');
+                const el = document.getElementById(aid);
+                if(!el) return;
+                // pause others
+                document.querySelectorAll('audio.song-audio').forEach(a=>{ if(a!==el){ try{ a.pause(); a.currentTime=0; }catch(e){} }});
+                showPlayerFor(aid.replace('audio-',''));
+            });
+        });
+    }
+
+    // -- Reproductor y utilidades (simplificadas de BuscarCanciones) --
+    function formatTime(sec){ if(!isFinite(sec)) return '00:00'; const s=Math.floor(sec%60).toString().padStart(2,'0'); const m=Math.floor(sec/60).toString().padStart(2,'0'); return m+':'+s; }
+    let currentAudio = null, currentId = null;
+    function showPlayerFor(id){
+        const audio = document.getElementById('audio-'+id);
+        const btn = document.getElementById('btn-play-'+id);
+        if(!audio) return;
+        const player = document.getElementById('bottom-player');
+        const titleEl = document.getElementById('player-title');
+        const progressBar = document.getElementById('player-progress-bar');
+        const progressContainer = document.getElementById('player-progress-container');
+        const currentEl = document.getElementById('player-current');
+        const durationEl = document.getElementById('player-duration');
+        const playerToggle = document.getElementById('player-toggle');
+        const playerClose = document.getElementById('player-close');
+        currentAudio = audio; currentId = id;
+        try{ const btnSrc = btn ? btn.getAttribute('data-src') : null; if(btnSrc && audio.src !== btnSrc) audio.src = btnSrc; }catch(e){}
+        const title = audio.getAttribute('data-title') || 'Título'; titleEl.textContent = title;
+        document.querySelectorAll('button[id^="btn-play-"]').forEach(b=>{ if(b!==btn) b.innerHTML = '<i class="fas fa-play"></i>'; }); if(btn) btn.innerHTML = '<i class="fas fa-pause"></i>';
+        player.classList.add('show');
+        audio.onerror = function(){ showPopup('No se pudo cargar la pista.','error',6000); if(btn) btn.innerHTML='<i class="fas fa-play"></i>'; player.classList.remove('show'); };
+        audio.onloadedmetadata = function(){ durationEl.textContent = formatTime(audio.duration); };
+        audio.ontimeupdate = function(){ const pct = audio.duration ? (audio.currentTime/audio.duration)*100 : 0; progressBar.style.width = pct + '%'; currentEl.textContent = formatTime(audio.currentTime); };
+        audio.onended = function(){ progressBar.style.width='0%'; currentEl.textContent='00:00'; if(btn) btn.innerHTML='<i class="fas fa-play"></i>'; playerToggle.innerHTML='<i class="fas fa-play"></i>'; };
+        try{ audio.load(); }catch(e){}
+        audio.play().then(()=>{ playerToggle.innerHTML = '<i class="fas fa-pause"></i>'; }).catch(err=>{ showPopup('No se pudo iniciar la reproducción.','error',5000); if(btn) btn.innerHTML='<i class="fas fa-play"></i>'; });
+        playerToggle.onclick = function(){ if(!currentAudio) return; if(currentAudio.paused) { currentAudio.play().catch(()=>{}); playerToggle.innerHTML='<i class="fas fa-pause"></i>'; const rb=document.getElementById('btn-play-'+currentId); if(rb) rb.innerHTML='<i class="fas fa-pause"></i>'; } else { currentAudio.pause(); playerToggle.innerHTML='<i class="fas fa-play"></i>'; const rb=document.getElementById('btn-play-'+currentId); if(rb) rb.innerHTML='<i class="fas fa-play"></i>'; } };
+        playerClose.onclick = function(){ if(currentAudio){ try{ currentAudio.pause(); currentAudio.currentTime=0; }catch(e){} } player.classList.remove('show'); progressBar.style.width='0%'; currentEl.textContent='00:00'; durationEl.textContent='00:00'; if(btn) btn.innerHTML='<i class="fas fa-play"></i>'; currentAudio=null; currentId=null; };
+        progressContainer.onclick = function(e){ if(!audio.duration) return; const rect=progressContainer.getBoundingClientRect(); const x = e.clientX-rect.left; const pct = Math.max(0, Math.min(1, x/rect.width)); audio.currentTime = pct * audio.duration; };
+    }
+    function showPopup(message, type='error', timeout=4500){ try{ const p=document.getElementById('popup'); const msg=document.getElementById('popup-msg'); msg.textContent = message||''; p.classList.remove('error','info'); p.classList.add(type||'error'); p.querySelector('.icon').textContent = type==='info' ? 'i' : '!'; p.classList.add('show'); if(p._hideTimeout) clearTimeout(p._hideTimeout); p._hideTimeout = setTimeout(()=>{ hidePopup(); }, timeout); }catch(e){} }
+    function hidePopup(){ try{ const p=document.getElementById('popup'); if(!p) return; p.classList.remove('show'); if(p._hideTimeout){ clearTimeout(p._hideTimeout); p._hideTimeout=null; } }catch(e){} }
+    document.addEventListener('click', function(e){ if(e.target && e.target.id === 'popup-close') hidePopup(); });
+    // ocultar player inicialmente
+    const existingPlayer = document.getElementById('bottom-player'); if(existingPlayer) existingPlayer.classList.remove('show');
+});
+</script>
 </body>
 </html>
