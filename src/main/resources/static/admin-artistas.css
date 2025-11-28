@@ -1,0 +1,13 @@
+/* Estilos aislados para AdministrarArtistas */
+.artistas-wrap { max-width: 1200px; margin: 0 auto; }
+#admin-artistas-table { width: 100%; border-collapse: collapse; background: #fffbe6; border-radius: 12px; overflow: hidden; }
+#admin-artistas-table thead th { background: #bfa14a; color: #fff; padding: 0.9em 1em; text-align: left; font-weight: 700; }
+#admin-artistas-table tbody td { padding: 0.8em 1em; color: #3a2a13; vertical-align: middle; }
+#admin-artistas-table tbody tr:nth-child(odd) { background: rgba(191,161,74,0.04); }
+#admin-artistas-table tbody tr:hover { background: rgba(191,161,74,0.08); }
+.btn-colmena.btn-eliminar { padding: 0.35em 0.7em; border-radius: 8px; }
+.empty-msg { padding: 1.25em; background: #fffbe6; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); color: #6b3e13; font-weight: 600; text-align: center; }
+
+/* Aislar estilos del header 'Volver' si es necesario */
+header .btn-colmena.info { background: linear-gradient(135deg, #ffe082 60%, #e2a84a 100%); color: #6b3e13; border: 2px solid #e2a84a; }
+

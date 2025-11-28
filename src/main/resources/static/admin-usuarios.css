@@ -1,0 +1,218 @@
+/* Estilos aislados para la página AdminUsuarios
+   Uso: incluido únicamente en AdminUsuarios.html
+   Todas las reglas están prefijadas con la clase .admin-usuarios o el id #admin-usuarios-* para minimizar el riesgo
+   de colisiones con CSS global del proyecto. */
+
+.admin-usuarios {
+  box-sizing: border-box;
+  /* Aumentado para dar más espacio a la tabla */
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2em;
+  margin-top: 8.5em; /* reserva espacio para header y menu-bar fijos */
+  color: #2d2d2d;
+  font-family: inherit;
+}
+
+.admin-usuarios .table-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  background: transparent;
+}
+
+#admin-usuarios-table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0;
+  background: #fffbe6 !important;
+  border-radius: 12px;
+  overflow: hidden;
+  min-width: 720px; /* permite scroll horizontal en pantallas pequeñas */
+}
+
+#admin-usuarios-table thead th {
+  background: #bfa14a !important;
+  color: #fff !important;
+  padding: 0.9em 1em !important;
+  text-align: left !important;
+  font-weight: 700 !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 3 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04) inset;
+}
+
+#admin-usuarios-table tbody td {
+  padding: 0.8em 1em !important;
+  vertical-align: middle !important;
+  color: #3a2a13 !important;
+}
+
+#admin-usuarios-table tbody tr:nth-child(odd) {
+  background: rgba(191,161,74,0.04) !important; /* suave zebra */
+}
+
+#admin-usuarios-table tbody tr:hover {
+  background: rgba(191,161,74,0.08) !important;
+}
+
+/* Visual feedback para fila seleccionada */
+#admin-usuarios-table tbody tr { cursor: pointer; }
+#admin-usuarios-table tbody tr.selected {
+  background: rgba(191,161,74,0.12) !important;
+  outline: 2px solid rgba(191,161,74,0.12) !important;
+}
+
+/* Columna de acciones con botones compactos */
+.admin-usuarios .acciones-td {
+  white-space: nowrap;
+}
+
+.admin-usuarios .btn-colmena {
+  font-size: 0.95rem !important;
+  padding: 0.35em 0.7em !important;
+  border-radius: 8px !important;
+  text-decoration: none !important;
+}
+
+.admin-usuarios .btn-colmena + .btn-colmena,
+.admin-usuarios form + .btn-colmena {
+  margin-left: 0.4em !important;
+}
+
+/* Layout: tabla a la izquierda, sidebar a la derecha */
+.admin-usuarios .admin-usuarios-layout {
+  display: flex;
+  /* Reducimos el gap para que la tabla tenga más espacio horizontal */
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+/* Asegurar que .table-wrap ocupe el espacio disponible */
+.admin-usuarios .table-wrap {
+  /* Permitir que la tabla crezca lo máximo posible */
+  flex: 1 1 0;
+}
+
+/* Sidebar específico para acciones de cambio */
+.admin-usuarios .admin-usuarios-sidebar {
+  /* Reducido ligeramente para dar más espacio a la tabla */
+  flex: 0 0 300px;
+  min-width: 220px;
+  background: rgba(255,251,230,0.9);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 6px 22px rgba(11,6,0,0.06);
+}
+
+.admin-usuarios .admin-usuarios-sidebar .panel {
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.9rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.admin-usuarios .admin-usuarios-sidebar .panel h3 {
+  margin: 0 0 0.6rem 0;
+  color: #6b3e13;
+  font-size: 1.02rem;
+}
+
+.admin-usuarios .admin-usuarios-sidebar label {
+  display: block;
+  font-weight: 600;
+  color: #3a2a13;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.admin-usuarios .admin-usuarios-sidebar input[type="text"],
+.admin-usuarios .admin-usuarios-sidebar input[type="email"],
+.admin-usuarios .admin-usuarios-sidebar input[type="password"] {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #e2d3a0;
+  background: #fffdf6;
+  margin-bottom: 0.6rem;
+  box-sizing: border-box;
+}
+
+.admin-usuarios .admin-usuarios-sidebar .btn-apply {
+  display: inline-block;
+  background: linear-gradient(135deg,#6b3e13 0%, #bfa14a 100%);
+  color: #fff;
+  padding: 0.45rem 0.8rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.admin-usuarios .admin-usuarios-sidebar .note {
+  font-size: 0.9rem;
+  color: #7a5c2b;
+  margin-bottom: 0.6rem;
+}
+
+/* Ajustes responsive */
+@media (max-width: 640px) {
+  .admin-usuarios { padding: 1em; margin-top: 9.2em; }
+  /* En pantallas pequeñas permitimos tablas más estrechas para mejor uso */
+  #admin-usuarios-table { min-width: 520px; }
+  .admin-usuarios .table-wrap { -webkit-overflow-scrolling: touch; }
+  #admin-usuarios-table thead th { font-size: 0.95rem; }
+}
+
+/* Pequeña ayuda visual para cuando no hay usuarios */
+.admin-usuarios .empty-msg {
+  padding: 1.25em;
+  background: #fffbe6;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  color: #6b3e13;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Responsive: apilar en pantallas pequeñas */
+@media (max-width: 900px) {
+  .admin-usuarios .admin-usuarios-layout {
+    flex-direction: column-reverse;
+    gap: 1rem;
+  }
+  .admin-usuarios .admin-usuarios-sidebar {
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+    padding: 0.8rem;
+  }
+}
+
+/* Forzar estilo del botón 'Volver' en el header de AdminUsuarios
+   Esto se añade en este archivo aislado para evitar que cambios globales
+   en el proyecto afecten la apariencia del botón en esta página. */
+header .btn-colmena.info {
+  /* Copiamos las propiedades visuales principales de .btn-colmena.info */
+  background: linear-gradient(135deg, #ffe082 60%, #e2a84a 100%);
+  color: #6b3e13;
+  border: 2px solid #e2a84a;
+  padding: 0.7em 1.7em;
+  font-size: 1.1em;
+  font-weight: 700;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px #0002;
+  text-decoration: none;
+}
+
+/* Mantener el hover/transform del botón para consistencia */
+header .btn-colmena.info:hover, header .btn-colmena.info:focus {
+  background: linear-gradient(135deg, #fffbe6 60%, #e2a84a 100%);
+  color: #3a2a13;
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 4px 18px #bfa14a55;
+  border-color: #e2a84a;
+}

@@ -4,35 +4,253 @@
   <meta charset="UTF-8">
   <title>Gestión Usuarios | Tuned Hive</title>
   <link rel="stylesheet" th:href="@{/estilos.css}">
+  <!-- Estilos aislados para la página AdminUsuarios -->
+  <link rel="stylesheet" th:href="@{/admin-usuarios.css}">
+  <!-- CSRF token para peticiones AJAX (si Spring Security lo proporciona) -->
+  <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
 </head>
 <body>
-  <header>
-    <a th:href="@{/admin}"><img th:src="@{/TunedHive.png}" alt="Logo" class="logo-colmena"></a>
-    <a th:href="@{/admin}">Volver</a>
+  <header style="position:fixed; top:0; left:0; right:0; width:100vw; box-sizing:border-box; display:flex; align-items:center; justify-content:space-between; background:#fffbe6cc; box-shadow:0 2px 12px #0001; padding:0.5em 2em 0.5em 1.5em; padding-right:0; border-radius:0; margin:0; z-index:100;">
+    <a th:href="@{/admin}" style="display:inline-block; line-height:0;"><img th:src="@{/TunedHive.png}" alt="Logo" class="logo-colmena" style="width:60px; height:auto; margin:0; cursor:pointer;"></a>
+    <div class="eslogan eslogan-top-right" style="pointer-events:none; position:static; margin:0; font-size:1.3em; font-weight:bold; color:#2d2d2d; letter-spacing:1px;">Gestión Usuarios</div>
+    <!-- Cambiado: usar las mismas clases/estilo del resto de páginas admin -->
+    <a class="btn-colmena info" th:href="@{/admin}" style="margin:0; position: static; text-decoration: none;">Volver</a>
   </header>
-  <main style="padding:2em;">
-    <h1>Usuarios</h1>
-    <div th:if="${usuarios == null or #lists.isEmpty(usuarios)}">No hay usuarios.</div>
-    <table th:if="${usuarios != null and !#lists.isEmpty(usuarios)}" style="width:100%; border-collapse:collapse;">
-      <thead>
-        <tr><th>ID</th><th>Username</th><th>Email</th><th>Es Artista</th><th>Acciones</th></tr>
-      </thead>
-      <tbody>
-        <tr th:each="u : ${usuarios}">
-          <td th:text="${u.id}">1</td>
-          <td th:text="${u.username}">usuario</td>
-          <td th:text="${u.email}">email@ejemplo</td>
-          <td th:text="${isArtistaByUserId[u.id] == true ? 'Sí' : 'No'}">No</td>
-          <td>
-            <a th:href="@{/admin/AdminUsuarios/{id}/edit(id=${u.id})}" class="btn-colmena" style="padding:0.3em 0.6em; text-decoration:none;">Editar</a>
-            <form th:action="@{/admin/AdminUsuarios/{id}/delete(id=${u.id})}" method="post" style="display:inline-block; margin-left:0.4em;">
-              <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-              <button type="submit" class="btn-colmena" style="background:#b33; color:#fff; border:none; padding:0.3em 0.6em; border-radius:6px;">Eliminar</button>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </main>
+  <nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
+    <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
+      <li><a th:href="@{/admin}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Panel de Control</a></li>
+      <li><a th:href="@{/admin/AdminUsuarios}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Gestión Usuarios</a></li>
+      <li><a th:href="@{/admin/estadisticas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Estadísticas</a></li>
+      <li><a th:href="@{/admin/AdminSolicitudes}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Solicitudes</a></li>
+      <li><a th:href="@{/admin/AdminArtistas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Administrar Artistas</a></li>
+      <li><a th:href="@{/admin/AdminCanciones}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Control Canciones</a></li>
+    </ul>
+  </nav>
+
+  <section class="admin-usuarios">
+    <div class="admin-usuarios-layout">
+      <div class="table-wrap">
+        <table id="admin-usuarios-table" th:if="${usuarios != null and !#lists.isEmpty(usuarios)}">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Es Artista</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="u : ${usuarios}">
+              <td th:text="${u.id}">1</td>
+              <td th:text="${u.username}">usuario</td>
+              <td th:text="${u.email}">email@ejemplo</td>
+              <td th:text="${isArtistaByUserId[u.id] == true ? 'Sí' : 'No'}">No</td>
+              <td class="acciones-td">
+                <!-- Botón Editar eliminado según petición; mantenemos Eliminar -->
+                <form th:action="@{/admin/AdminUsuarios/{id}/delete(id=${u.id})}" method="post" style="display:inline-block; margin-left:0.4em;">
+                  <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                  <button type="submit" class="btn-colmena btn-eliminar" style="background:#b33; color:#fff; border:none; padding:0.3em 0.6em; border-radius:6px;">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div th:if="${usuarios == null or #lists.isEmpty(usuarios)}" class="empty-msg">No hay usuarios.</div>
+      </div>
+
+      <aside class="admin-usuarios-sidebar">
+        <div class="panel" id="panel-username">
+          <h3>Cambiar Username</h3>
+          <p class="note">Selecciona un usuario en la tabla y cambia su username.</p>
+          <label for="cu-username">Nuevo username</label>
+          <input id="cu-username" type="text" placeholder="nuevo_username">
+          <button class="btn-apply" id="btn-cu-apply">Aplicar</button>
+        </div>
+
+        <div class="panel" id="panel-email">
+          <h3>Cambiar Email</h3>
+          <p class="note">Selecciona un usuario y actualiza su correo.</p>
+          <label for="cu-email">Nuevo email</label>
+          <input id="cu-email" type="email" placeholder="usuario@ejemplo.com">
+          <button class="btn-apply" id="btn-ce-apply">Aplicar</button>
+        </div>
+
+        <div class="panel" id="panel-pass">
+          <h3>Cambiar Contraseña</h3>
+          <p class="note">Selecciona un usuario y define su nueva contraseña.</p>
+          <label for="cu-pass">Nueva contraseña</label>
+          <input id="cu-pass" type="password" placeholder="********">
+          <label for="cu-pass-confirm">Confirmar contraseña</label>
+          <input id="cu-pass-confirm" type="password" placeholder="********">
+          <button class="btn-apply" id="btn-cp-apply">Aplicar</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <script>
+    // Placeholder JS: al hacer click en una fila marcamos el usuario seleccionado
+    document.addEventListener('DOMContentLoaded', function(){
+      const rows = document.querySelectorAll('#admin-usuarios-table tbody tr');
+      rows.forEach(r => {
+        r.addEventListener('click', function(){
+          rows.forEach(x=>x.classList.remove('selected'));
+          r.classList.add('selected');
+          // Llenar inputs del sidebar con datos del usuario seleccionado
+          try{
+            const id = r.querySelector('td:nth-child(1)').innerText.trim();
+            const username = r.querySelector('td:nth-child(2)').innerText.trim();
+            const email = r.querySelector('td:nth-child(3)').innerText.trim();
+            document.getElementById('cu-username').value = username;
+            document.getElementById('cu-email').value = email;
+            // guardamos el id en los botones para la futura lógica
+            document.getElementById('btn-cu-apply').dataset.userid = id;
+            document.getElementById('btn-ce-apply').dataset.userid = id;
+            document.getElementById('btn-cp-apply').dataset.userid = id;
+          }catch(e){ console.warn('No se pudieron leer datos de fila seleccionada', e); }
+        });
+      });
+
+      // Helper: mostrar mensaje temporal dentro de un panel
+      function showPanelMessage(panel, msg, isError=false) {
+        let el = panel.querySelector('.panel-msg');
+        if (!el) {
+          el = document.createElement('div');
+          el.className = 'panel-msg';
+          el.style.marginTop = '0.6rem';
+          el.style.fontWeight = '600';
+          panel.appendChild(el);
+        }
+        el.textContent = msg;
+        el.style.color = isError ? '#b33' : '#2a6b2a';
+        setTimeout(()=>{ el.textContent = ''; }, 3500);
+      }
+
+      // Helper: obtener header CSRF si existe
+      const csrfMeta = document.querySelector('meta[name="_csrf"]');
+      const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+      const CSRF = csrfMeta ? { header: (csrfHeaderMeta ? csrfHeaderMeta.content : 'X-CSRF-TOKEN'), token: csrfMeta.content } : null;
+
+      function addCsrf(headers) {
+        if (CSRF && CSRF.token) {
+          headers[CSRF.header] = CSRF.token;
+        }
+        return headers;
+      }
+
+      // DELETE via fetch para formularios de eliminar
+      document.querySelectorAll('form').forEach(form => {
+        // Sólo interceptar los formularios que contienen un botón eliminar
+        if (form.querySelector('.btn-eliminar')) {
+          form.addEventListener('submit', function(ev){
+            ev.preventDefault();
+            const tr = form.closest('tr');
+            // extraer id desde la fila (columna 1)
+            const id = tr.querySelector('td:nth-child(1)').innerText.trim();
+            const headers = addCsrf({ 'Accept': 'application/json', 'Content-Type': 'application/json' });
+            fetch(`/admin/api/users/${id}`, {
+              method: 'DELETE',
+              headers: headers
+            }).then(r=>r.json()).then(data=>{
+              if (data && data.status === 'deleted') {
+                // eliminar fila del DOM
+                tr.remove();
+                showPanelMessage(document.querySelector('#panel-username'), 'Usuario eliminado', false);
+              } else if (data && data.error) {
+                showPanelMessage(document.querySelector('#panel-username'), data.error, true);
+              }
+            }).catch(err => {
+              showPanelMessage(document.querySelector('#panel-username'), 'Error eliminando usuario', true);
+              console.error('Error DELETE', err);
+            });
+          });
+        }
+      });
+
+      // PUT username
+      document.getElementById('btn-cu-apply').addEventListener('click', function(){
+        const id = this.dataset.userid;
+        const nuevo = document.getElementById('cu-username').value.trim();
+        const panel = document.getElementById('panel-username');
+        if (!id) return showPanelMessage(panel, 'Selecciona primero un usuario', true);
+        if (!nuevo) return showPanelMessage(panel, 'Introduce un username válido', true);
+        const headersU = addCsrf({ 'Content-Type':'application/json', 'Accept':'application/json' });
+        fetch(`/admin/api/users/${id}/username`, {
+          method: 'PUT',
+          headers: headersU,
+          body: JSON.stringify({ username: nuevo })
+        }).then(r=>r.json()).then(data=>{
+          if (data && data.status === 'ok') {
+            showPanelMessage(panel, 'Username actualizado', false);
+            // actualizar tabla: buscar la fila con id
+            // alternativa: recorrer filas y comparar
+            document.querySelectorAll('#admin-usuarios-table tbody tr').forEach(tr=>{
+              if (tr.querySelector('td:nth-child(1)').innerText.trim() === id) {
+                tr.querySelector('td:nth-child(2)').innerText = nuevo;
+              }
+            });
+          } else if (data && data.error) {
+            showPanelMessage(panel, data.error, true);
+          }
+        }).catch(err=>{ showPanelMessage(panel, 'Error actualizando username', true); console.error(err); });
+      });
+
+      // PUT email
+      document.getElementById('btn-ce-apply').addEventListener('click', function(){
+        const id = this.dataset.userid;
+        const nuevo = document.getElementById('cu-email').value.trim();
+        const panel = document.getElementById('panel-email');
+        if (!id) return showPanelMessage(panel, 'Selecciona primero un usuario', true);
+        if (!nuevo) return showPanelMessage(panel, 'Introduce un email válido', true);
+        const headersE = addCsrf({ 'Content-Type':'application/json', 'Accept':'application/json' });
+        fetch(`/admin/api/users/${id}/email`, {
+          method: 'PUT',
+          headers: headersE,
+          body: JSON.stringify({ email: nuevo })
+        }).then(r=>r.json()).then(data=>{
+          if (data && data.status === 'ok') {
+            showPanelMessage(panel, 'Email actualizado', false);
+            document.querySelectorAll('#admin-usuarios-table tbody tr').forEach(tr=>{
+              if (tr.querySelector('td:nth-child(1)').innerText.trim() === id) {
+                tr.querySelector('td:nth-child(3)').innerText = nuevo;
+              }
+            });
+          } else if (data && data.error) {
+            showPanelMessage(panel, data.error, true);
+          }
+        }).catch(err=>{ showPanelMessage(panel, 'Error actualizando email', true); console.error(err); });
+      });
+
+      // PUT password
+      document.getElementById('btn-cp-apply').addEventListener('click', function(){
+        const id = this.dataset.userid;
+        const pwd = document.getElementById('cu-pass').value;
+        const confirm = document.getElementById('cu-pass-confirm').value;
+        const panel = document.getElementById('panel-pass');
+        if (!id) return showPanelMessage(panel, 'Selecciona primero un usuario', true);
+        if (!pwd) return showPanelMessage(panel, 'Introduce una contraseña', true);
+        if (pwd !== confirm) return showPanelMessage(panel, 'Las contraseñas no coinciden', true);
+        const headersP = addCsrf({ 'Content-Type':'application/json', 'Accept':'application/json' });
+        fetch(`/admin/api/users/${id}/password`, {
+          method: 'PUT',
+          headers: headersP,
+          body: JSON.stringify({ password: pwd, confirm: confirm })
+        }).then(r=>r.json()).then(data=>{
+          if (data && data.status === 'ok') {
+            showPanelMessage(panel, 'Contraseña actualizada', false);
+            // limpiar campos
+            document.getElementById('cu-pass').value = '';
+            document.getElementById('cu-pass-confirm').value = '';
+          } else if (data && data.error) {
+            showPanelMessage(panel, data.error, true);
+          }
+        }).catch(err=>{ showPanelMessage(panel, 'Error actualizando contraseña', true); console.error(err); });
+      });
+
+    });
+  </script>
 </body>
 </html>
