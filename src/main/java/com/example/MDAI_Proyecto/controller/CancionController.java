@@ -72,6 +72,7 @@ public class CancionController {
                                    @RequestParam(required = false) String genero,
                                    @RequestParam(required = false) String descripcion,
                                    @RequestParam("archivo") MultipartFile archivo,
+                                   @RequestParam(required = false) String duracion,
                                    RedirectAttributes redirectAttributes) {
 
         // Comprobar sesión
@@ -114,12 +115,8 @@ public class CancionController {
             System.out.println("\t Descripción proporcionada: " + descripcion);
         }
 
-        // Limitar tamaño (ej. 40 MB)
-        long maxBytes = 40L * 1024L * 1024L;
-        if (archivo.getSize() > maxBytes) {
-            redirectAttributes.addFlashAttribute("error", "El archivo es demasiado grande. Máx 40 MB.");
-            return "redirect:/Artista";
-        }
+        // NOTE: no se impone límite de tamaño en el controlador (gestionado por configuración del servidor).
+        // El usuario pidió no tener límite de subidas, por lo que no validamos aquí el tamaño del archivo.
 
         // Comprobar extensión y preparar nombre
         String origName = archivo.getOriginalFilename();
@@ -157,10 +154,18 @@ public class CancionController {
             cancion.setFechaSubida(LocalDateTime.now());
             cancion.setArtista(artista);
 
+            // Si el cliente nos pasó la duración (form), usarla; si no, dejar null
+            if (duracion != null && !duracion.isBlank()) {
+                cancion.setDuracion(duracion.trim());
+                System.out.println("\t Duración recibida desde cliente: " + duracion);
+            } else {
+                System.out.println("\t No se recibió duración desde el cliente para: " + filename);
+            }
+
             Cancion saved = cancionService.save(cancion);
-            System.out.println("\t Canción guardada con id: " + (saved != null ? saved.getIdCancion() : "(nulo)"));
-            redirectAttributes.addFlashAttribute("success", "Canción subida correctamente.");
-            return "redirect:/Artista";
+             System.out.println("\t Canción guardada con id: " + (saved != null ? saved.getIdCancion() : "(nulo)"));
+             redirectAttributes.addFlashAttribute("success", "Canción subida correctamente.");
+             return "redirect:/Artista";
 
         } catch (IOException ioex) {
             System.err.println("Error guardando archivo: " + ioex.getMessage());

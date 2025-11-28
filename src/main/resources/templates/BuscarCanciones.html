@@ -155,18 +155,20 @@
                         <td style="padding:0.6em 0.8em; vertical-align: middle; text-align:center;">
                             <!-- Caso A: el campo ya contiene la ruta completa (/uploads/...) -->
                             <div th:if="${c.archivoAudio != null and c.archivoAudio.startsWith('/uploads/')}">
-                                <audio class="song-audio" th:id="${'audio-' + c.idCancion}" th:src="${c.archivoAudio}" preload="metadata" style="display:none;" th:data-title="${c.titulo}"></audio>
+                                <audio class="song-audio" th:id="${'audio-' + c.idCancion}" th:src="${c.archivoAudio}" preload="metadata" style="display:none;" th:data-title="${c.titulo + (c.artista != null && c.artista.usuario != null ? ' - ' + c.artista.usuario.username : '')}"></audio>
                                 <button type="button" class="btn-colmena" th:attr="id=${'btn-play-' + c.idCancion}, data-audioid=${'audio-' + c.idCancion}, data-src=${c.archivoAudio}" th:onclick="|togglePlay(${c.idCancion})|" title="Reproducir">
                                     <i class="fas fa-play"></i>
                                 </button>
-                            </div>
+                                <a th:href="${c.archivoAudio}" target="_blank" style="margin-left:8px; font-size:0.85em; color:#6b3e13; text-decoration:underline">Abrir</a>
+                             </div>
                             <!-- Caso B: archivoAudio es sólo nombre/relative -> construir URL con @{...} -->
                             <div th:if="${c.archivoAudio == null or !c.archivoAudio.startsWith('/uploads/')}">
-                                <audio class="song-audio" th:id="${'audio-' + c.idCancion}" th:src="@{/uploads/{file}(file=${c.archivoAudio})}" preload="metadata" style="display:none;" th:data-title="${c.titulo}"></audio>
+                                <audio class="song-audio" th:id="${'audio-' + c.idCancion}" th:src="@{/uploads/{file}(file=${c.archivoAudio})}" preload="metadata" style="display:none;" th:data-title="${c.titulo + (c.artista != null && c.artista.usuario != null ? ' - ' + c.artista.usuario.username : '')}"></audio>
                                 <button type="button" class="btn-colmena" th:attr="id=${'btn-play-' + c.idCancion}, data-audioid=${'audio-' + c.idCancion}, data-src=@{/uploads/{file}(file=${c.archivoAudio})}" th:onclick="|togglePlay(${c.idCancion})|" title="Reproducir">
                                     <i class="fas fa-play"></i>
                                 </button>
-                            </div>
+                                <a th:href="@{/uploads/{file}(file=${c.archivoAudio})}" target="_blank" style="margin-left:8px; font-size:0.85em; color:#6b3e13; text-decoration:underline">Abrir</a>
+                             </div>
                          </td>
                     </tr>
                  </tbody>
