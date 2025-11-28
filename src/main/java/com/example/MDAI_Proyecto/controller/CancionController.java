@@ -5,6 +5,7 @@ import com.example.MDAI_Proyecto.data.model.Artista;
 import com.example.MDAI_Proyecto.data.services.CancionService;
 import com.example.MDAI_Proyecto.data.services.ArtistaService;
 import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
@@ -28,6 +30,9 @@ public class CancionController {
 
     private final CancionService cancionService;
     private final ArtistaService artistaService;
+
+    @Value("${uploads.dir:uploads}")
+    private String uploadsDir;
 
     public CancionController(CancionService cancionService, ArtistaService artistaService) {
         this.cancionService = cancionService;
@@ -127,11 +132,10 @@ public class CancionController {
             return "redirect:/Artista";
         }
 
-        // Guardar fichero en carpeta static/uploads
         try {
-            // Ubicación relativa al proyecto para desarrollo
-            String uploadsDir = "src/main/resources/static/uploads";
-            File uploadRoot = new File(uploadsDir);
+            // Guardar en carpeta configurable en filesystem (por defecto ./uploads)
+            Path uploadsPath = Paths.get(uploadsDir).toAbsolutePath().normalize();
+            File uploadRoot = uploadsPath.toFile();
             if (!uploadRoot.exists()) {
                 boolean created = uploadRoot.mkdirs();
                 if (!created) {
@@ -150,6 +154,7 @@ public class CancionController {
             cancion.setTitulo(titulo.trim());
             cancion.setGenero(genero != null ? genero.trim() : null);
             // descripcion no tiene campo en Cancion; se ignora o podría mapearse a otra entidad
+            // La URL pública será /uploads/{filename} (mapeado a filesystem por WebConfig)
             cancion.setArchivoAudio("/uploads/" + filename);
             cancion.setFechaSubida(LocalDateTime.now());
             cancion.setArtista(artista);
