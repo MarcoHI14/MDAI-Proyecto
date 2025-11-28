@@ -1,0 +1,174 @@
+/* Estilos aislados para tablas de administración
+   Archivo específico para evitar colisiones con CSS global de otros compañeros.
+   Uso principal: añadir la clase .admin-table al <table> o apuntar por id (#admin-canciones-table).
+*/
+
+/* Contenedor (si se usa) */
+.admin-table-wrap {
+  width: 100%;
+  display: block;
+  overflow-x: auto; /* mantener responsive en pantallas pequeñas */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tabla base, fondo y sombreado */
+.admin-table {
+  width: 100%;
+  min-width: 720px; /* forzar scroll horizontal en pantallas muy pequeñas */
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fffdf6;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  font-family: inherit;
+}
+
+.admin-table thead th {
+  background: #bfa14a;
+  color: #ffffff;
+  text-align: left;
+  padding: 0.9rem 1rem;
+  font-weight: 700;
+  font-size: 0.98rem;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  white-space: nowrap;
+}
+
+.admin-table tbody td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  color: #3a2a13;
+  font-size: 0.95rem;
+  border-top: 1px solid rgba(0,0,0,0.04);
+}
+
+/* Zebra rows */
+.admin-table tbody tr:nth-child(odd) {
+  background: #fffdf6;
+}
+.admin-table tbody tr:nth-child(even) {
+  background: #ffffff;
+}
+
+/* Hover */
+.admin-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(191,161,74,0.06), rgba(191,161,74,0.02));
+}
+
+/* Column sizing helpers */
+.admin-table th.col-id, .admin-table td.col-id { width: 6%; max-width: 80px; }
+.admin-table th.col-title, .admin-table td.col-title { width: 40%; min-width: 220px; }
+.admin-table th.col-artist, .admin-table td.col-artist { width: 20%; min-width: 140px; }
+.admin-table th.col-genre, .admin-table td.col-genre { width: 12%; }
+.admin-table th.col-duration, .admin-table td.col-duration { width: 8%; max-width: 90px; }
+.admin-table th.col-actions, .admin-table td.col-actions { width: 14%; text-align: center; }
+
+/* Allow wrapping in title or long text cells but keep a max height */
+.admin-table td.col-title { white-space: normal; word-break: break-word; max-width: 420px; }
+
+/* Buttons inside table - isolated */
+.admin-table .btn-eliminar {
+  background: #b33 !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 0.35em 0.7em !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  font-weight: 700;
+}
+.admin-table .btn-eliminar:hover { filter: brightness(0.9); }
+
+/* Small screens tweaks */
+@media (max-width: 900px) {
+  .admin-table { min-width: 640px; }
+  .admin-table th, .admin-table td { padding: 0.6rem 0.8rem; font-size: 0.9rem; }
+}
+
+/* Utility: truncated text with tooltip */
+.admin-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-truncate[title] { cursor: help; }
+
+/* Specific ID hook (optional) */
+#admin-canciones-table.admin-table { /* additional tweaks if needed */ }
+
+/* Toast notification (namespaced for AdminCanciones to avoid conflicts) */
+#admin-canciones-toast-container {
+  position: fixed !important;
+  bottom: 1rem !important;
+  right: 1rem !important;
+  top: auto !important;
+  left: auto !important;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column-reverse; /* newest on bottom */
+  gap: 0.6rem;
+  pointer-events: none;
+}
+
+.admin-canciones-toast {
+  min-width: 180px;
+  max-width: 360px;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  opacity: 0;
+  transform: translateY(6px); /* start slightly below */
+  transition: opacity 240ms ease, transform 240ms ease;
+  pointer-events: auto;
+}
+.admin-canciones-toast.show { opacity: 1; transform: translateY(0); }
+
+.admin-canciones-toast.info { background: #2b6cb0; } /* azul */
+.admin-canciones-toast.success { background: #2f855a; } /* verde */
+.admin-canciones-toast.error { background: #c53030; } /* rojo */
+
+/* little close X optional */
+.admin-canciones-toast .close-x { float: right; margin-left: 0.6rem; cursor: pointer; opacity: 0.9; }
+
+/* Decorative side images for AdminCanciones (isolated) */
+.admin-canciones-wrapper { display:flex; gap:1.5rem; align-items:stretch; justify-content:center; }
+.admin-canciones-deco {
+  position: static; /* ahora forman parte del flujo flex en el wrapper */
+  width: 220px; /* laterales más anchos para las siluetas */
+  flex: 0 0 220px;
+  display: flex;
+  align-items: center; /* centrar verticalmente */
+  justify-content: center;
+  z-index: 1;
+  pointer-events: none; /* no interfiere con clicks */
+  opacity: 1; /* mostrar completamente la imagen */
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.admin-canciones-deco img {
+  width: auto; /* mantener proporción */
+  max-width: 100%;
+  max-height: 70vh; /* ocupar la mayor parte de la altura visible */
+  display: block;
+  object-fit: contain;
+}
+
+.admin-canciones-deco.left { order: 0; }
+.admin-canciones-deco.center { order: 1; }
+.admin-canciones-deco.right { order: 2; }
+
+/* El contenedor central ocupa el espacio restante */
+.admin-canciones-content { flex: 1 1 720px; max-width: 820px; }
+
+/* Ocultar en pantallas pequeñas para evitar solapamientos */
+@media (max-width: 1000px) {
+  .admin-canciones-deco { display: none !important; }
+  .admin-canciones-content { max-width: 100%; padding: 0 1rem; }
+}
+
+/* Responsive tweak */
+@media (max-width: 480px) {
+  #admin-canciones-toast-container { left: 0.6rem; right: 0.6rem; bottom: 0.6rem !important; top: auto !important; }
+  .admin-canciones-toast { min-width: auto; width: auto; }
+}

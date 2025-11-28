@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Administrar Canciones | Tuned Hive</title>
+  <link rel="stylesheet" th:href="@{/estilos.css}">
+  <link rel="stylesheet" th:href="@{/admin-artistas.css}">
+  <link rel="stylesheet" th:href="@{/admin-tables.css}">
+  <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+</head>
+<body>
+  <header style="position:fixed; top:0; left:0; right:0; width:100vw; box-sizing:border-box; display:flex; align-items:center; justify-content:space-between; background:#fffbe6cc; box-shadow:0 2px 12px #0001; padding:0.5em 2em 0.5em 1.5em; padding-right:0; border-radius:0; margin:0; z-index:100;">
+    <a th:href="@{/admin}" style="display:inline-block; line-height:0;"><img th:src="@{/TunedHive.png}" alt="Logo" class="logo-colmena" style="width:60px; height:auto; margin:0; cursor:pointer;"></a>
+    <div class="eslogan eslogan-top-right" style="pointer-events:none; position:static; margin:0; font-size:1.3em; font-weight:bold; color:#2d2d2d; letter-spacing:1px;">Administrar Canciones</div>
+    <a class="btn-colmena info" th:href="@{/admin}" style="margin:0; position: static; text-decoration: none;">Volver</a>
+  </header>
+
+  <nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
+    <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
+      <li><a th:href="@{/admin}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Panel de Control</a></li>
+      <li><a th:href="@{/admin/AdminUsuarios}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Gestión Usuarios</a></li>
+      <li><a th:href="@{/admin/estadisticas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Estadísticas</a></li>
+      <li><a th:href="@{/admin/AdminSolicitudes}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Solicitudes</a></li>
+      <li><a th:href="@{/admin/AdminArtistas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Administrar Artistas</a></li>
+    </ul>
+  </nav>
+
+  <main style="margin-top: 8.5em; padding: 2em; max-width: 1200px; margin-left: auto; margin-right: auto;">
+    <div class="admin-canciones-wrapper" style="display:flex; gap:1.5rem; align-items:flex-start; justify-content:center;">
+      <div class="admin-canciones-deco left" aria-hidden="true">
+        <!-- Usar exactamente la imagen proporcionada (left.png) sin modificar -->
+        <!-- Ahora usamos la imagen disponible en /static: musico1.png -->
+        <img th:src="@{/musico1.png}" src="../static/musico1.png" alt="decoracion izquierda" style="width:100%; height:auto; display:block;" loading="lazy">
+      </div>
+
+      <div class="admin-canciones-content" style="flex:1 1 720px; max-width:920px;">
+        <h1 style="color: #6b3e13;">Administrar Canciones</h1>
+        <p style="color:#3a2a13;">Listado de canciones. Puedes eliminar canciones desde aquí o buscarlas por título.</p>
+
+        <div style="margin-top:1.2em; display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+          <label for="filtro-titulo" style="position:absolute; left:-9999px;">Filtrar por título</label>
+          <input id="filtro-titulo" type="text" aria-label="Filtrar por título" placeholder="Filtrar por título" style="padding:0.5em 0.8em; border-radius:8px; border:1px solid #e2d3a0; background:#fffdf6;">
+          <button id="btn-filtrar" class="btn-colmena" style="margin-left:0.6em;">Filtrar</button>
+          <!-- Controles de orden -->
+          <label for="sort-select" style="margin-left:1.2em; font-weight:600; color:#3a2a13;">Ordenar por:</label>
+          <select id="sort-select" style="margin-left:0.6em; padding:0.35em 0.6em; border-radius:8px; border:1px solid #e2d3a0; background:#fffdf6;">
+            <option value="">-- seleccionar --</option>
+            <option value="artist">Artista</option>
+            <option value="duration">Duración</option>
+            <option value="genre">Género</option>
+          </select>
+          <button id="btn-sort" class="btn-colmena" style="margin-left:0.6em;">Ordenar</button>
+          <button id="btn-sort-toggle" title="Alternar asc/desc" class="btn-colmena" style="margin-left:0.4em; padding:0.25em 0.5em;">↑↓</button>
+        </div>
+
+        <div class="artistas-wrap" style="margin-top:1.2em; overflow-x:auto;">
+          <table id="admin-canciones-table" class="admin-table" th:if="${canciones != null and !#lists.isEmpty(canciones)}">
+            <thead>
+              <tr>
+                <th class="col-id">ID</th>
+                <th class="col-title">Título</th>
+                <th class="col-artist" data-sortable="artist" style="cursor:pointer;">Artista</th>
+                <th class="col-genre" data-sortable="genre" style="cursor:pointer;">Género</th>
+                <th class="col-duration" data-sortable="duration" style="cursor:pointer;">Duración</th>
+                <th class="col-actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="admin-canciones-tbody">
+              <tr th:each="c : ${canciones}">
+                <td class="col-id" th:text="${c.idCancion}">1</td>
+                <td class="col-title" th:text="${c.titulo}" th:attr="title=${c.titulo}">Título</td>
+                <td class="col-artist" th:text="${c.artista != null ? c.artista.usuario.username : '—'}">Artista</td>
+                <td class="col-genre" th:text="${c.genero}">Género</td>
+                <td class="col-duration" th:text="${c.duracion}">00:00</td>
+                <td>
+                  <form th:action="@{/admin/AdminCanciones/{id}/delete(id=${c.idCancion})}" method="post" style="display:inline-block;">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn-colmena btn-eliminar" style="background:#b33; color:#fff; border:none; padding:0.35em 0.7em; border-radius:8px;">Eliminar</button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div th:if="${canciones == null or #lists.isEmpty(canciones)}" class="empty-msg">No hay canciones.</div>
+        </div>
+      </div>
+
+      <div class="admin-canciones-deco right" aria-hidden="true">
+        <!-- Ahora usamos la imagen disponible en /static: cantante1.png -->
+        <img th:src="@{/cantante1.png}" src="../static/cantante1.png" alt="decoracion derecha" style="width:100%; height:auto; display:block;" loading="lazy">
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast container (namespaced) -->
+  <div id="admin-canciones-toast-container" aria-live="polite" style="position:fixed; bottom:1rem; right:1rem; top:auto; left:auto;"></div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function(){
+    // Toast helper (namespaced)
+    const toastContainer = document.getElementById('admin-canciones-toast-container');
+    function showToast(type, message, timeout=2500) {
+      if (!toastContainer) return;
+      const el = document.createElement('div');
+      el.className = 'admin-canciones-toast ' + (type || 'info');
+      el.innerHTML = '<span>' + (message || '') + '</span>';
+      toastContainer.appendChild(el);
+      // force reflow then show
+      requestAnimationFrame(()=> el.classList.add('show'));
+      const tid = setTimeout(()=>{
+        el.classList.remove('show');
+        setTimeout(()=>{ try{ toastContainer.removeChild(el);}catch(e){} }, 260);
+      }, timeout);
+      // click to dismiss
+      el.addEventListener('click', ()=>{ clearTimeout(tid); el.classList.remove('show'); setTimeout(()=>{ try{ toastContainer.removeChild(el);}catch(e){} },260); });
+    }
+
+    // Sorting utilities
+    let sortAscending = true; // default
+    function parseDurationToSeconds(str) {
+      if (!str) return 0;
+      const parts = String(str).trim().split(':').map(x=>parseInt(x,10));
+      if (parts.some(isNaN)) return 0;
+      if (parts.length === 1) return parts[0];
+      if (parts.length === 2) return parts[0]*60 + parts[1];
+      if (parts.length === 3) return parts[0]*3600 + parts[1]*60 + parts[2];
+      return 0;
+    }
+
+    function getCellText(tr, selector) {
+      const td = tr.querySelector(selector);
+      return td ? td.innerText.trim() : '';
+    }
+
+    function sortTableBy(key) {
+      const tbody = document.getElementById('admin-canciones-tbody');
+      if (!tbody) return;
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      let comparator;
+      if (key === 'artist') {
+        comparator = (a,b) => getCellText(a, '.col-artist').localeCompare(getCellText(b, '.col-artist'), undefined, {sensitivity:'base'});
+      } else if (key === 'genre') {
+        comparator = (a,b) => getCellText(a, '.col-genre').localeCompare(getCellText(b, '.col-genre'), undefined, {sensitivity:'base'});
+      } else if (key === 'duration') {
+        comparator = (a,b) => parseDurationToSeconds(getCellText(a, '.col-duration')) - parseDurationToSeconds(getCellText(b, '.col-duration'));
+      } else {
+        return;
+      }
+      rows.sort((a,b) => sortAscending ? comparator(a,b) : comparator(b,a));
+      // Re-append in order
+      rows.forEach(r => tbody.appendChild(r));
+    }
+
+    // Header clicks: make headers sortable and show toast on toggle
+    document.querySelectorAll('th[data-sortable]').forEach(th => {
+      th.addEventListener('click', function(){
+        const key = th.getAttribute('data-sortable');
+        sortTableBy(key);
+        sortAscending = !sortAscending;
+        showToast('info', 'Orden: ' + (sortAscending ? 'Ascendente' : 'Descendente'));
+      });
+    });
+
+    // CSRF helper
+    const csrfMeta = document.querySelector('meta[name="_csrf"]');
+    const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+    const CSRF = csrfMeta ? { header: (csrfHeaderMeta ? csrfHeaderMeta.content : 'X-CSRF-TOKEN'), token: csrfMeta.content } : null;
+    function addCsrf(headers) { if (CSRF && CSRF.token) headers[CSRF.header] = CSRF.token; return headers; }
+
+    // DELETE via API for each row
+    document.querySelectorAll('form').forEach(form => {
+      if (form.querySelector('.btn-eliminar')) {
+        form.addEventListener('submit', function(ev){
+          ev.preventDefault();
+          const tr = form.closest('tr');
+          const id = tr.querySelector('td:nth-child(1)').innerText.trim();
+          const headers = addCsrf({ 'Accept':'application/json', 'Content-Type':'application/json' });
+          fetch(`/admin/api/canciones/${id}`, { method: 'DELETE', headers: headers })
+            .then(r=>r.json()).then(data=>{
+              if (data && data.status === 'deleted') {
+                tr.remove();
+                showToast('success', 'Canción eliminada');
+              } else {
+                showToast('error', data && data.error ? data.error : 'Error eliminando canción');
+              }
+            }).catch(err=>{ console.error(err); showToast('error', 'Error eliminando canción'); });
+        });
+      }
+    });
+
+    // Select + buttons
+    const btnSort = document.getElementById('btn-sort');
+    const btnSortToggle = document.getElementById('btn-sort-toggle');
+    const sortSelect = document.getElementById('sort-select');
+    if (btnSort) {
+      btnSort.addEventListener('click', function(){
+        const sel = sortSelect.value;
+        if (!sel) { showToast('error', 'Selecciona primero un criterio de orden'); return; }
+        sortTableBy(sel);
+        showToast('success', 'Orden aplicado: ' + (sel === 'artist' ? 'Artista' : sel === 'genre' ? 'Género' : 'Duración'));
+      });
+    }
+    if (btnSortToggle) {
+      btnSortToggle.addEventListener('click', function(){ sortAscending = !sortAscending; showToast('info', 'Orden: ' + (sortAscending ? 'Ascendente' : 'Descendente')); });
+    }
+
+    // Filtering (client-side simple)
+    const btnFiltrar = document.getElementById('btn-filtrar');
+    if (btnFiltrar) {
+      btnFiltrar.addEventListener('click', function(){
+        const q = document.getElementById('filtro-titulo').value.trim().toLowerCase();
+        let visible = 0;
+        document.querySelectorAll('#admin-canciones-table tbody tr').forEach(tr => {
+          const title = tr.querySelector('td:nth-child(2)').innerText.trim().toLowerCase();
+          const show = title.includes(q);
+          tr.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+        showToast('info', 'Resultados filtrados: ' + visible);
+      });
+    }
+  });
+  </script>
+
+  <!--[if lt IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <![endif]-->
+</body>
+</html>
