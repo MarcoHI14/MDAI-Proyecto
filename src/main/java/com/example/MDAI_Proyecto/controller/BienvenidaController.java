@@ -16,12 +16,6 @@ public class BienvenidaController {
         return "redirect:/BuscarCanciones";
     }
 
-    @GetMapping("/Playlists")
-    public String mostrarPlaylists() {
-        System.out.println("\t Recojo la petición de /Playlists");
-        return "GestorPlaylists";
-    }
-
     @GetMapping("/Artistas")
     public String mostrarArtistas() {
         System.out.println("\t Recojo la petición de /Artistas");

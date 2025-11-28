@@ -40,6 +40,7 @@
 </nav>
 
 <main style="margin-top: 140px; padding: 2em; width: 100vw; box-sizing: border-box;">
+    <input type="hidden" id="id_usuario" th:value="${id_usuario}" />
     <div style="display: grid; grid-template-columns: 70% 30%; gap: 2em;">
 
 
@@ -49,7 +50,14 @@
                 <i class="fas fa-list-music"></i> Mis Playlists
             </h2>
 
-            <div style="display: flex; flex-direction: column; gap: 1em;">
+            <!-- Campo de búsqueda insertado (respetando todo lo demás) -->
+            <div style="margin: 1em 0; display:flex; gap:0.5em; align-items:center;">
+                <input type="text" id="nombreBusqueda" name="nombre" placeholder="Buscar playlist por nombre"
+                       th:value="${nombreBusqueda}" style="flex:1; padding:0.6em; border-radius:8px; border:1px solid #ccc;">
+                <button class="btn-colmena" onclick="buscarPlaylist()" style="padding:0.6em 1em;">Buscar</button>
+            </div>
+
+            <div th:if="${playlists != null and !playlists.isEmpty()}" style="display: flex; flex-direction: column; gap: 1em;">
                 <div th:each="playlist : ${playlists}"
                      style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 1.5em; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; display: flex; justify-content: space-between; align-items: center;"
                      onmouseover="this.style.transform='translateX(5px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
@@ -77,7 +85,7 @@
             </div>
 
             <!-- Mensaje cuando no hay playlists -->
-            <div th:if="${#lists.isEmpty(playlists)}" style="text-align: center; padding: 3em; color: #999;">
+            <div th:if="${playlists == null or playlists.isEmpty()}" style="text-align: center; padding: 3em; color: #999;">
                 <i class="fas fa-music" style="font-size: 3em; margin-bottom: 0.5em; color: #bfa14a;"></i>
                 <p style="font-size: 1.2em;">No tienes playlists aún</p>
             </div>
@@ -88,6 +96,7 @@
 
             <!-- Crear Playlist -->
             <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
+                 onclick="crearPlaylist()"
                  onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
                  onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
                 <i class="fas fa-plus-circle" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
@@ -97,6 +106,7 @@
 
             <!-- Buscar Playlist -->
             <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
+                 onclick="buscarPlaylist()"
                  onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
                  onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
                 <i class="fas fa-search" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
@@ -106,6 +116,7 @@
 
             <!-- Buscar Álbum -->
             <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
+                 onclick="buscarAlbum()"
                  onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
                  onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
                 <i class="fas fa-compact-disc" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
@@ -115,6 +126,102 @@
         </section>
     </div>
 </main>
+<!-- Modal para crear playlist -->
+<div id="modalCrearPlaylist" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: #fffbe6; border-radius: 16px; padding: 2.5em; max-width: 500px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.3); position: relative;">
+        <button onclick="cerrarModal()" style="position: absolute; top: 1em; right: 1em; background: none; border: none; font-size: 1.5em; color: #6b3e13; cursor: pointer; padding: 0; line-height: 1;">
+            <i class="fas fa-times"></i>
+        </button>
 
+        <h2 style="color: #6b3e13; margin-bottom: 1.5em; text-align: center;">
+            <i class="fas fa-plus-circle"></i> Crear Nueva Playlist
+        </h2>
+
+        <form id="formCrearPlaylist" onsubmit="enviarPlaylist(event)" style="display: flex; flex-direction: column; gap: 1.5em;">
+            <div>
+                <label for="nombrePlaylist" style="display: block; color: #6b3e13; font-weight: 600; margin-bottom: 0.5em;">
+                    Nombre de la Playlist <span style="color: #d32f2f;">*</span>
+                </label>
+                <input type="text" id="nombrePlaylist" name="nombre" required
+                       style="width: 100%; padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; font-size: 1em; box-sizing: border-box;"
+                       placeholder="Ej: Mis favoritas de 2025">
+            </div>
+
+            <div>
+                <label for="descripcionPlaylist" style="display: block; color: #6b3e13; font-weight: 600; margin-bottom: 0.5em;">
+                    Descripción (opcional)
+                </label>
+                <textarea id="descripcionPlaylist" name="descripcion" rows="3"
+                          style="width: 100%; padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; font-size: 1em; resize: vertical; box-sizing: border-box;"
+                          placeholder="Describe tu playlist..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 1em; justify-content: flex-end;">
+                <button type="button" onclick="cerrarModal()"
+                        style="padding: 0.8em 1.5em; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; color: #666; transition: background 0.2s;"
+                        onmouseover="this.style.background='#d0d0d0'"
+                        onmouseout="this.style.background='#e0e0e0'">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-colmena" style="padding: 0.8em 1.5em;">
+                    <i class="fas fa-check"></i> Crear Playlist
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function verPlaylist(playlistId) {
+        window.location.href = '/Playlist/' + playlistId;
+    }
+
+    function editarPlaylist(playlistId) {
+        window.location.href = '/EditarPlaylist/' + playlistId;
+    }
+
+    function crearPlaylist() {
+        document.getElementById('modalCrearPlaylist').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+        document.getElementById('modalCrearPlaylist').style.display = 'none';
+        document.getElementById('formCrearPlaylist').reset();
+    }
+
+    function enviarPlaylist(event) {
+        event.preventDefault();
+        const idUsuario = document.getElementById('id_usuario').value;
+        const nombre = document.getElementById('nombrePlaylist').value.trim();
+        const descripcion = document.getElementById('descripcionPlaylist').value.trim();
+
+        fetch('/CrearPlaylist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `id_usuario=${encodeURIComponent(idUsuario)}&nombre=${encodeURIComponent(nombre)}&descripcion=${encodeURIComponent(descripcion)}`
+        })
+        .then(response => {
+            if (response.ok) {
+                cerrarModal();
+                window.location.reload();
+            } else {
+                alert('Error al crear la playlist');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al crear la playlist');
+        });
+    }
+
+    function buscarPlaylist() {
+        const input = document.getElementById('nombreBusqueda');
+        const q = input && input.value ? encodeURIComponent(input.value.trim()) : '';
+        window.location.href = '/BuscarPlaylist' + (q ? '?nombre=' + q : '');
+    }
+
+    function buscarAlbum() {
+        window.location.href = '/BuscarAlbum';
+    }
+</script>
 </body>
 </html>
