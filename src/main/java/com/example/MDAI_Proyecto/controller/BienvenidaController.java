@@ -12,8 +12,8 @@ public class BienvenidaController {
 
     @GetMapping("/Buscar")
     public String mostrarBuscar() {
-        System.out.println("\t Recojo la petición de /Buscar");
-        return "BuscarCanciones";
+        System.out.println("\t Recojo la petición de /Buscar -> redirigiendo a /BuscarCanciones");
+        return "redirect:/BuscarCanciones";
     }
 
     @GetMapping("/Playlists")
