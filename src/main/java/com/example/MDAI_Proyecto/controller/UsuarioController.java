@@ -1,6 +1,7 @@
 package com.example.MDAI_Proyecto.controller;
 
 import com.example.MDAI_Proyecto.data.model.Usuario;
+import com.example.MDAI_Proyecto.data.services.ArtistaService;
 import com.example.MDAI_Proyecto.data.services.UsuarioService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final ArtistaService artistaService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    // Inyectar ArtistaService además de UsuarioService
+    public UsuarioController(UsuarioService usuarioService, ArtistaService artistaService) {
         this.usuarioService = usuarioService;
+        this.artistaService = artistaService;
         System.out.println("\t UsuarioController inicializado");
     }
 
@@ -52,7 +56,22 @@ public class UsuarioController {
                 System.out.println("\t [SESSION] id_usuario guardado en sesión: " + idUsuario);
             }
             redirectAttributes.addFlashAttribute("username", usuario.getUsername());
-            return "redirect:/Bienvenida";
+            // Comprobar si el usuario es artista y redirigir a la vista adecuada
+            try {
+                boolean esArtista = false;
+                if (usuario.getId() != null) {
+                    esArtista = (artistaService.findByUsuarioId(usuario.getId()) != null);
+                }
+                if (esArtista) {
+                    return "redirect:/Artista"; // ControllerArtista mapea a BienvenidaArtista
+                } else {
+                    return "redirect:/Bienvenida"; // InicioController mostrará BienvenidaUsuario
+                }
+            } catch (Exception ex) {
+                System.err.println("Error comprobando rol de artista: " + ex.getMessage());
+                // Fallback: llevar a la bienvenida genérica
+                return "redirect:/Bienvenida";
+            }
         } else {
             redirectAttributes.addFlashAttribute("error", "Credenciales inválidas");
             return "redirect:/users/login";

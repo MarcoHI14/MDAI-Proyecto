@@ -19,6 +19,59 @@
             width: 0;
             height: 0;
         }
+        /* Estilos del reproductor inferior */
+        #bottom-player {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transform: translateY(110%);
+            transition: transform 300ms ease;
+            background: linear-gradient(180deg,#fffbe6, #fff9e0);
+            border-top: 1px solid #e6d8a8;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+            padding: 0.8em 1em;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 1em;
+        }
+        #bottom-player.show { transform: translateY(0); }
+        #player-info { flex: 1; min-width: 0; }
+        #player-title { font-weight: 700; color: #2d2d2d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .player-controls { display:flex; align-items:center; gap:0.6em; }
+        .player-btn { background:#6b3e13; color:white; border:none; padding:0.5em 0.8em; border-radius:8px; cursor:pointer; }
+        .player-progress-container { background: rgba(0,0,0,0.06); height:10px; border-radius:8px; cursor:pointer; margin-top:0.6em; width:100%; }
+        .player-progress-bar { height:100%; background:#bfa14a; width:0%; border-radius:8px; }
+        .player-times { font-size:0.9em; color:#444; margin-left:0.6em; min-width:70px; text-align:right; }
+        /* Popup / toast */
+        .popup {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            bottom: 20px;
+            min-width: 260px;
+            max-width: 90vw;
+            background: #fff;
+            color: #222;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            padding: 0.9em 1em;
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 220ms ease, transform 220ms ease;
+            z-index: 1200;
+        }
+        .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+        .popup .icon { width: 36px; height: 36px; border-radius: 8px; display:flex; align-items:center; justify-content:center; color: #fff; font-weight:700; }
+        .popup.error .icon { background:#d9534f; }
+        .popup.info .icon { background:#0275d8; }
+        .popup .msg { flex:1; font-size:0.95em; }
+        .popup .close { background: transparent; border: none; color: #666; font-size: 1.1em; cursor: pointer; }
+        @media (max-width:480px){ .popup { left: 50%; bottom: 12px; } }
     </style>
 </head>
 <body>
@@ -46,6 +99,8 @@
             <!-- Barra de Búsqueda (Izquierda) -->
             <form th:action="@{/BuscarCanciones}" method="get" style="display: flex; gap: 1em; align-items: center; flex: 1;">
                 <input type="hidden" id="filtroTipo" name="filtroTipo" value="">
+                <!-- etiqueta accesible (off-screen) -->
+                <label for="searchInput" style="position:absolute; left:-9999px;">Buscar</label>
                 <input type="text" id="searchInput" name="query" placeholder="Selecciona un filtro para buscar..." disabled
                        style="flex: 1; padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; font-size: 1em; background: #f5f5f5; margin-right: 1.5em;">
                 <button type="submit" id="searchBtn" class="btn-colmena" disabled style="padding: 0.8em 2em;">
@@ -74,47 +129,86 @@
     <!-- Lista de Canciones -->
     <section style="background: #fffbe6cc; border-radius: 16px; padding: 1.5em; box-shadow: 0 2px 12px rgba(0,0,0,0.05); min-height: calc(100vh - 180px);">
     <h2 style="color: #2d2d2d; margin-bottom: 1em; text-align: center;" id="tituloResultados">Todas las Canciones</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1em;">
-            <div th:each="cancion : ${canciones}" class="cancion-card"
-                 style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 1.5em; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
-                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.1)'"
-                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+        <!-- Contenedor a ancho completo para que la tabla ocupe todo el ancho del panel -->
+        <div style="width:100%; overflow:auto;">
+            <table class="full-table" style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background:#f7f3e6; text-align:left;">
+                        <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%">Orden</th>
+                        <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8;">Título</th>
+                        <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:12%">Género</th>
+                        <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:10%">Duración</th>
+                        <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:16%">Artista</th>
+                        <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:14%">Fecha Subida</th>
+                        <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:8%; text-align:center;">Reproducir</th>
+                     </tr>
+                 </thead>
+                 <tbody>
+                    <tr th:each="c, iterStat : ${canciones}" style="border-bottom:1px solid #eee;">
+                        <td style="padding:0.8em 1em; vertical-align: middle; text-align:center;" th:text="${iterStat.index + 1}">1</td>
+                        <td style="padding:0.8em 1em; vertical-align: middle;" th:text="${c.titulo}">Título</td>
+                        <td style="padding:0.8em 1em; vertical-align: middle;" th:text="${c.genero}">Género</td>
+                        <td style="padding:0.8em 1em; vertical-align: middle;" th:text="${c.duracion != null ? c.duracion : '—'}">00:00</td>
+                        <td style="padding:0.8em 1em; vertical-align: middle;" th:text="${c.artista != null && c.artista.usuario != null ? c.artista.usuario.username : '—'}">Artista</td>
+                        <td style="padding:0.8em 1em; vertical-align: middle;" th:text="${c.fechaSubida != null ? (#temporals.format(c.fechaSubida,'dd/MM/yyyy')) : '—'}">Fecha</td>
+                        <!-- audio oculto y botón reproducir -->
+                        <td style="padding:0.6em 0.8em; vertical-align: middle; text-align:center;">
+                            <!-- Caso A: el campo ya contiene la ruta completa (/uploads/...) -->
+                            <div th:if="${c.archivoAudio != null and c.archivoAudio.startsWith('/uploads/')}">
+                                <audio class="song-audio" th:id="${'audio-' + c.idCancion}" th:src="${c.archivoAudio}" preload="metadata" style="display:none;" th:data-title="${c.titulo + (c.artista != null && c.artista.usuario != null ? ' - ' + c.artista.usuario.username : '')}"></audio>
+                                <button type="button" class="btn-colmena" th:attr="id=${'btn-play-' + c.idCancion}, data-audioid=${'audio-' + c.idCancion}, data-src=${c.archivoAudio}" th:onclick="|togglePlay(${c.idCancion})|" title="Reproducir">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <a th:href="${c.archivoAudio}" target="_blank" style="margin-left:8px; font-size:0.85em; color:#6b3e13; text-decoration:underline">Abrir</a>
+                             </div>
+                            <!-- Caso B: archivoAudio es sólo nombre/relative -> construir URL con @{...} -->
+                            <div th:if="${c.archivoAudio == null or !c.archivoAudio.startsWith('/uploads/')}">
+                                <audio class="song-audio" th:id="${'audio-' + c.idCancion}" th:src="@{/uploads/{file}(file=${c.archivoAudio})}" preload="metadata" style="display:none;" th:data-title="${c.titulo + (c.artista != null && c.artista.usuario != null ? ' - ' + c.artista.usuario.username : '')}"></audio>
+                                <button type="button" class="btn-colmena" th:attr="id=${'btn-play-' + c.idCancion}, data-audioid=${'audio-' + c.idCancion}, data-src=@{/uploads/{file}(file=${c.archivoAudio})}" th:onclick="|togglePlay(${c.idCancion})|" title="Reproducir">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <a th:href="@{/uploads/{file}(file=${c.archivoAudio})}" target="_blank" style="margin-left:8px; font-size:0.85em; color:#6b3e13; text-decoration:underline">Abrir</a>
+                             </div>
+                         </td>
+                    </tr>
+                 </tbody>
+             </table>
+         </div>
 
-                <div style="margin-bottom: 1em; text-align: center;">
-                    <i class="fas fa-compact-disc" style="font-size: 3em; color: #bfa14a;"></i>
-                </div>
-
-                <h3 th:text="${cancion.nombre}" style="color: #6b3e13; margin-bottom: 0.5em; font-size: 1.1em;">Título</h3>
-                <p style="color: #999; margin-bottom: 0.3em; font-size: 0.9em;">
-                    <i class="fas fa-user"></i> <span th:text="${cancion.artista.nombre}">Artista</span>
-                </p>
-                <p style="color: #999; margin-bottom: 0.3em; font-size: 0.9em;">
-                    <i class="fas fa-record-vinyl"></i> <span th:text="${cancion.album}">Álbum</span>
-                </p>
-                <p style="color: #bfa14a; font-size: 0.9em; font-weight: 600;">
-                    <i class="fas fa-music"></i> <span th:text="${cancion.genero}">Género</span>
-                </p>
-
-                <div style="margin-top: 1em; display: flex; gap: 0.5em;">
-                    <button class="btn-colmena" style="flex: 1; padding: 0.6em; font-size: 0.9em;">
-                        <i class="fas fa-play"></i> Reproducir
-                    </button>
-                    <button class="btn-colmena" style="flex: 1; padding: 0.6em; font-size: 0.9em;">
-                        <i class="fas fa-plus"></i> Agregar
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mensaje cuando no hay resultados -->
-        <div th:if="${#lists.isEmpty(canciones)}" style="text-align: center; padding: 3em; color: #999;">
-            <i class="fas fa-search" style="font-size: 3em; margin-bottom: 0.5em; color: #bfa14a;"></i>
-            <p style="font-size: 1.2em;">No se encontraron canciones</p>
-        </div>
-    </section>
+         <!-- Mensaje cuando no hay resultados -->
+         <div th:if="${#lists.isEmpty(canciones)}" style="text-align: center; padding: 3em; color: #999;">
+             <i class="fas fa-search" style="font-size: 3em; margin-bottom: 0.5em; color: #bfa14a;"></i>
+             <p style="font-size: 1.2em;">No se encontraron canciones</p>
+         </div>
+     </section>
 </main>
+
+<!-- Reproductor inferior: título, progreso y controles -->
+<div id="bottom-player" aria-live="polite">
+    <div id="player-info">
+        <div id="player-title">Título de la canción</div>
+        <div class="player-progress-container" id="player-progress-container" title="Seek">
+            <div class="player-progress-bar" id="player-progress-bar"></div>
+        </div>
+    </div>
+    <div class="player-controls">
+        <button id="player-toggle" class="player-btn" aria-label="Reproducir/Pausar"><i class="fas fa-play"></i></button>
+        <div class="player-times"><span id="player-current">00:00</span> / <span id="player-duration">00:00</span></div>
+        <button id="player-close" class="player-btn" title="Cerrar" style="background:#bfa14a"><i class="fas fa-times"></i></button>
+    </div>
+</div>
+
+<!-- Popup / toast para errores e información -->
+<div id="popup" class="popup" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="icon">!</div>
+    <div class="msg" id="popup-msg">Mensaje</div>
+    <button class="close" id="popup-close" aria-label="Cerrar">×</button>
+</div>
+
 <script>
-    let filtroActivo = null;
+     let filtroActivo = null;
+     let currentAudio = null;
+     let currentId = null;
 
     function activarFiltro(tipo) {
         const toggles = document.querySelectorAll('.toggle-btn');
@@ -172,7 +266,233 @@
         }
         searchInput.focus();
     }
-</script>
 
+    // Formatea segundos a mm:ss
+    function formatTime(sec) {
+        if (!isFinite(sec)) return '00:00';
+        const s = Math.floor(sec % 60).toString().padStart(2,'0');
+        const m = Math.floor(sec / 60).toString().padStart(2,'0');
+        return m + ':' + s;
+    }
+
+    // Mostrar el reproductor inferior con la información de la canción
+    function showPlayerFor(id) {
+        const audio = document.getElementById('audio-' + id);
+        const btn = document.getElementById('btn-play-' + id);
+        if (!audio) {
+            console.error('No se encontró <audio> para id:', id);
+            return;
+        }
+
+        const player = document.getElementById('bottom-player');
+        const titleEl = document.getElementById('player-title');
+        const progressBar = document.getElementById('player-progress-bar');
+        const progressContainer = document.getElementById('player-progress-container');
+        const currentEl = document.getElementById('player-current');
+        const durationEl = document.getElementById('player-duration');
+        const playerToggle = document.getElementById('player-toggle');
+        const playerClose = document.getElementById('player-close');
+
+        // Guardar referencias
+        currentAudio = audio;
+        currentId = id;
+
+        // Forzar que el elemento audio tenga la URL correcta tomada del atributo data-src del botón
+        try {
+            const btnSrc = btn ? btn.getAttribute('data-src') : null;
+            if (btnSrc) {
+                if (audio.src !== btnSrc) {
+                    console.log('Asignando src al elemento <audio> desde data-src del botón:', btnSrc);
+                    audio.src = btnSrc;
+                }
+            } else {
+                console.log('No se encontró data-src en el botón; audio.src actual =', audio.src);
+            }
+        } catch (e) {
+            console.warn('Error asignando data-src al audio', e);
+        }
+
+         // Setear título desde data-attribute o desde la celda si no existe
+         const title = audio.getAttribute('data-title') || (btn && btn.closest('tr') ? btn.closest('tr').querySelector('td:nth-child(2)').innerText.trim() : 'Título');
+         titleEl.textContent = title;
+
+        // Actualizar iconos de botón de fila
+        document.querySelectorAll('button[id^="btn-play-"]').forEach(b=> { if(b!==btn) b.innerHTML = '<i class="fas fa-play"></i>'; });
+        if (btn) btn.innerHTML = '<i class="fas fa-pause"></i>';
+
+        // Mostrar reproductor
+        player.classList.add('show');
+
+        // Manejo de errores de carga
+        audio.onerror = function(e){
+            console.error('Error cargando audio', audio.src, e);
+            // Mostrar popup amigable
+            showPopup('No se pudo cargar la pista. Revisa que el archivo exista en uploads.', 'error', 6000);
+            // Restaurar iconos
+            if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
+            player.classList.remove('show');
+            currentAudio = null; currentId = null;
+        };
+
+        // cuando se cargue metadata, mostrar duración
+        audio.onloadedmetadata = function(){
+            durationEl.textContent = formatTime(audio.duration);
+        };
+
+        // actualizar progreso
+        audio.ontimeupdate = function(){
+            const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+            progressBar.style.width = pct + '%';
+            currentEl.textContent = formatTime(audio.currentTime);
+        };
+
+        // cuando termine
+        audio.onended = function(){
+            progressBar.style.width = '0%';
+            currentEl.textContent = '00:00';
+            if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
+            playerToggle.innerHTML = '<i class="fas fa-play"></i>';
+        };
+
+        // Forzar carga del recurso antes de reproducir
+        try {
+            if (!audio.src) {
+                console.error('El elemento audio no tiene src para id', id);
+            }
+            audio.load();
+        } catch (e) {
+            console.warn('audio.load() falló', e);
+        }
+
+        // play
+        audio.play().then(()=>{
+            console.log('Reproduciendo', audio.src);
+            playerToggle.innerHTML = '<i class="fas fa-pause"></i>';
+        }).catch(err=>{
+            console.error('Reproducción fallida:', err);
+            // Mostrar popup amigable
+            showPopup('No se pudo iniciar la reproducción. Inténtelo más tarde.', 'error', 5000);
+            if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
+        });
+
+        // toggle del reproductor inferior
+        playerToggle.onclick = function(){
+            if (!currentAudio) return;
+            if (currentAudio.paused) {
+                currentAudio.play().catch(e => { console.error('play fallo en toggle', e); });
+                playerToggle.innerHTML = '<i class="fas fa-pause"></i>';
+                const rowBtn = document.getElementById('btn-play-' + currentId);
+                if (rowBtn) rowBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                currentAudio.pause();
+                playerToggle.innerHTML = '<i class="fas fa-play"></i>';
+                const rowBtn = document.getElementById('btn-play-' + currentId);
+                if (rowBtn) rowBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        };
+
+        // cerrar reproductor
+        playerClose.onclick = function(){
+            if (currentAudio) { try { currentAudio.pause(); currentAudio.currentTime = 0; } catch(e){} }
+            player.classList.remove('show');
+            progressBar.style.width = '0%';
+            currentEl.textContent = '00:00';
+            durationEl.textContent = '00:00';
+            if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
+            const rowBtn = document.getElementById('btn-play-' + currentId);
+            if (rowBtn) rowBtn.innerHTML = '<i class="fas fa-play"></i>';
+            currentAudio = null; currentId = null;
+        };
+
+        // permitir seek clicando en la barra
+        progressContainer.onclick = function(e){
+            if (!audio.duration) return;
+            const rect = progressContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const pct = Math.max(0, Math.min(1, x / rect.width));
+            audio.currentTime = pct * audio.duration;
+        };
+    }
+
+    // Reproductor por fila: reproduce/pausa y actualiza icono; pausa otros audios
+    function togglePlay(id) {
+        console.log('togglePlay invoked for id', id);
+        try {
+            const audio = document.getElementById('audio-' + id);
+            const btn = document.getElementById('btn-play-' + id);
+            if (!audio || !btn) {
+                console.error('togglePlay: audio or btn missing for id', id);
+                return;
+            }
+
+            // Pausar otros audios
+            document.querySelectorAll('audio.song-audio').forEach(a => {
+                if (a !== audio) {
+                    try { a.pause(); a.currentTime = 0; } catch(e){}
+                    const otherId = a.id ? a.id.replace('audio-','') : null;
+                    if (otherId) {
+                        const otherBtn = document.getElementById('btn-play-' + otherId);
+                        if (otherBtn) otherBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    }
+                }
+            });
+
+            if (audio.paused) {
+                // si viene desde pause de otro audio, reproducimos y mostramos player
+                showPlayerFor(id);
+            } else {
+                audio.pause();
+                btn.innerHTML = '<i class="fas fa-play"></i>';
+                const playerToggle = document.getElementById('player-toggle');
+                if (playerToggle) playerToggle.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        } catch (e) {
+            console.error('Error en togglePlay:', e);
+        }
+    }
+
+    // Mostrar un popup tipo toast
+    function showPopup(message, type = 'error', timeout = 4500) {
+        try {
+            const p = document.getElementById('popup');
+            const msg = document.getElementById('popup-msg');
+            msg.textContent = message || '';
+            p.classList.remove('error','info');
+            p.classList.add(type || 'error');
+            // icon
+            p.querySelector('.icon').textContent = type === 'info' ? 'i' : '!';
+            p.classList.add('show');
+            // auto hide
+            if (p._hideTimeout) clearTimeout(p._hideTimeout);
+            p._hideTimeout = setTimeout(()=>{ hidePopup(); }, timeout);
+        } catch(e){ console.warn('showPopup error', e); }
+    }
+
+    function hidePopup(){
+        try {
+            const p = document.getElementById('popup');
+            if (!p) return;
+            p.classList.remove('show');
+            if (p._hideTimeout) { clearTimeout(p._hideTimeout); p._hideTimeout = null; }
+        } catch(e){ console.warn(e); }
+    }
+
+    document.addEventListener('click', function(e){
+        if (e.target && e.target.id === 'popup-close') hidePopup();
+    });
+
+    // Inicialización: ocultar reproductor y deshabilitar botón de búsqueda
+    document.addEventListener('DOMContentLoaded', function() {
+        const player = document.getElementById('bottom-player');
+        if (player) {
+            player.classList.remove('show');
+        }
+
+        const searchBtn = document.getElementById('searchBtn');
+        if (searchBtn) {
+            searchBtn.disabled = true;
+        }
+    });
+</script>
 </body>
 </html>
