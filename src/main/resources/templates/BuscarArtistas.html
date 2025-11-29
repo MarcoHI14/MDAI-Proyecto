@@ -101,8 +101,8 @@
 </nav>
 
 <main style="margin-top: 140px; padding: 2em; width: 100vw; box-sizing: border-box;">
-    <!-- Ajuste de columnas: artistas ocupa menos y canciones más (un poco más al panel de canciones) -->
-    <div style="display: grid; grid-template-columns: 58% 42%; gap: 2em;">
+    <!-- Ajuste de columnas: reducir columna de artistas y ampliar la de canciones para que se vea completa -->
+    <div style="display: grid; grid-template-columns: 40% 60%; gap: 2em;">
         <!-- Columna izquierda: Lista de artistas -->
         <section style="background:#fffbe6cc; border-radius:16px; padding:2em; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
             <h2 style="text-align:center; color:#2d2d2d; margin-bottom:1.5em;" id="tituloResultados">Todos los Artistas</h2>
@@ -123,7 +123,7 @@
 
             <!-- Tabla de artistas (similar a AdminArtistas) -->
             <div th:if="${artistas != null and !#lists.isEmpty(artistas)}" style="overflow:auto; max-height:60vh;">
-                <table id="artists-table" style="width:100%; border-collapse:collapse; min-width:720px;">
+                <table id="artists-table" style="width:100%; border-collapse:collapse; min-width:0;">
                     <thead>
                         <tr style="background:#f7f3e6; text-align:left;">
                             <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%">ID</th>
@@ -155,7 +155,7 @@
          </section>
 
         <!-- Columna derecha: Lista de canciones (más ancha) -->
-        <section style="display:flex; flex-direction:column; gap:1.5em; margin-right:0; padding-left:1em;">
+        <section style="display:flex; flex-direction:column; gap:1.5em; margin-right:0; padding-left:1em; padding-right:1.5em; box-sizing:border-box;">
             <div style="background:#fffbe6; border:2px solid #bfa14a; border-radius:12px; padding:2em; text-align:center;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1em;">
                     <h2 style="margin:0; color:#2d2d2d;" th:text="${artistaSeleccionado != null} ? ${artistaSeleccionado.nombre} : 'Canciones'">Canciones</h2>
@@ -264,31 +264,46 @@ document.addEventListener('DOMContentLoaded', function(){
         html += '<div style="width:100%; overflow:auto;">';
         html += '<table class="full-table" style="width:100%; border-collapse: collapse;">';
         html += '<thead><tr style="background:#f7f3e6; text-align:left;">'+
-            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%">Orden</th>'+
-            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8;">Título</th>'+
-            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:12%">Género</th>'+
-            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:10%">Duración</th>'+
-            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:16%">Artista</th>'+
-            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:14%">Fecha Subida</th>'+
-            '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:8%; text-align:center;">Reproducir</th>'+
-            '</tr></thead><tbody>';
+             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%">Orden</th>'+
+             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8;">Título</th>'+
+             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:12%">Género</th>'+
+             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:10%">Duración</th>'+
+             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:16%">Artista</th>'+
+             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:14%">Fecha Subida</th>'+
+             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%; text-align:center;">Añadir</th>'+
+             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:8%; text-align:center;">Reproducir</th>'+
+             '</tr></thead><tbody>';
         list.forEach((c,i)=>{
-            const id = c.id || ('new'+i);
-            const archivo = c.archivoAudio ? c.archivoAudio : ('/uploads/' + c.archivoAudio);
-            const artistaName = c.artista || '';
+            // compatibilidad con la API que devuelve idCancion y objeto artista
+            const id = (c.idCancion !== undefined && c.idCancion !== null) ? c.idCancion : (c.id !== undefined && c.id !== null ? c.id : ('new'+i));
+            // archivoAudio puede venir ya con /uploads/ o solo el nombre
+            const archivo = (c.archivoAudio && c.archivoAudio.startsWith('/uploads/')) ? c.archivoAudio : (c.archivoAudio ? ('/uploads/' + c.archivoAudio) : '');
+            // título y nombre de artista: manejar objetos anidados
+            const titulo = c.titulo || c.nombre || '';
+            let artistaName = '';
+            try{
+                if(c.artista){
+                    if(typeof c.artista === 'string') artistaName = c.artista;
+                    else if(c.artista.usuario && c.artista.usuario.username) artistaName = c.artista.usuario.username;
+                    else if(c.artista.nombre) artistaName = c.artista.nombre;
+                } else if(c.artistaNombre) artistaName = c.artistaNombre;
+            }catch(e){ artistaName = '' }
             html += '<tr style="border-bottom:1px solid #eee;">';
             html += '<td style="padding:0.8em 1em; vertical-align: middle; text-align:center;">'+(i+1)+'</td>';
-            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.titulo||'')+'</td>';
+            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(titulo || '')+'</td>';
             html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.genero||'')+'</td>';
-            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.duracion||'—')+'</td>';
+            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.duracion||c.duracionStr||'—')+'</td>';
             html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+artistaName+'</td>';
-            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.fechaSubida||'—')+'</td>';
+            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.fechaSubida||c.fecha ||'—')+'</td>';
+            // columna añadir a playlist (muestra antes de reproducir para más visibilidad)
             html += '<td style="padding:0.6em 0.8em; vertical-align: middle; text-align:center;">';
-            html += '<audio class="song-audio" id="audio-'+id+'" src="'+archivo+'" preload="metadata" style="display:none;" data-title="'+(c.titulo+' - '+artistaName)+'"></audio>';
-            html += '<button type="button" class="btn-colmena" id="btn-play-'+id+'" data-audioid="audio-'+id+'" data-src="'+archivo+'"><i class="fas fa-play"></i></button>';
+            html += '<button type="button" class="btn-colmena add-to-playlist" data-cancionid="'+id+'" style="background:#bfa14a; padding:0.45em 0.55em;" title="Añadir a playlist"><i class="fas fa-plus"></i></button>';
             html += '</td>';
-            html += '</tr>';
-        });
+            html += '<td style="padding:0.6em 0.8em; vertical-align: middle; text-align:center;">';
+            html += '<audio class="song-audio" id="audio-'+id+'" src="'+archivo+'" preload="metadata" style="display:none;" data-title="'+(titulo + (artistaName ? ' - ' + artistaName : ''))+'"></audio>';
+            html += '<button type="button" class="btn-colmena btn-play-row" id="btn-play-'+id+'" data-audioid="audio-'+id+'" data-src="'+archivo+'"><i class="fas fa-play"></i></button>';
+             html += '</td>';
+         });
         html += '</tbody></table></div></div>';
         container.innerHTML = html;
 
@@ -304,6 +319,75 @@ document.addEventListener('DOMContentLoaded', function(){
                 showPlayerFor(aid.replace('audio-',''));
             });
         });
+        // attach add-to-playlist handlers
+        container.querySelectorAll('button.add-to-playlist').forEach(b => {
+            b.addEventListener('click', function(e){
+                e.stopPropagation();
+                openAddToPlaylistModal(this);
+            });
+        });
+    }
+
+    // Modal para añadir a playlist (inserción en DOM estática) y funciones
+    // Insertar el modal HTML justo después del popup si no existe
+    (function ensureAddModal(){
+        if(document.getElementById('modalAddToPlaylist')) return;
+        const html = '\n<div id="modalAddToPlaylist" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background: rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1500;">' +
+            '<div style="background:white; padding:1.2em; border-radius:8px; width: 90%; max-width:420px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">' +
+            '<h3 style="margin-top:0; color:#6b3e13;">Añadir a playlist</h3>' +
+            '<p id="modal-song-title" style="margin:0 0 0.8em 0; color:#444; font-weight:600;">Canción</p>' +
+            '<label for="select-playlists" style="position:absolute; left:-9999px;">Selecciona una playlist</label>' +
+            '<select id="select-playlists" style="width:100%; padding:0.6em; border:1px solid #ccc; border-radius:6px; margin-bottom:0.8em;"></select>' +
+            '<div style="display:flex; gap:0.5em; justify-content:flex-end;">' +
+            '<button id="cancelAddBtn" class="btn-colmena" style="background:#e0e0e0; color:#444;">Cancelar</button>' +
+            '<button id="confirmAddBtn" class="btn-colmena" style="background:#6b3e13; color:white;">Añadir</button>' +
+            '</div></div></div>\n';
+        document.body.insertAdjacentHTML('beforeend', html);
+        // attach listeners to the newly created modal buttons
+        const attach = function(){
+            const cancel = document.getElementById('cancelAddBtn');
+            const confirm = document.getElementById('confirmAddBtn');
+            if(cancel) cancel.addEventListener('click', function(e){ e.preventDefault(); closeAddModal(); });
+            if(confirm) confirm.addEventListener('click', function(e){ e.preventDefault(); confirmAddToPlaylist(); });
+        };
+        // small timeout to ensure elements are in DOM
+        setTimeout(attach, 0);
+    })();
+
+    // candidate song id
+    let _candidateSongId = null;
+    function openAddToPlaylistModal(btn){
+        try{
+            const cancionId = btn.getAttribute('data-cancionid');
+            _candidateSongId = cancionId;
+            const row = btn.closest('tr');
+            const title = row ? (row.querySelector('td:nth-child(2)') ? row.querySelector('td:nth-child(2)').innerText.trim() : 'Canción') : 'Canción';
+            document.getElementById('modal-song-title').textContent = title;
+            const sel = document.getElementById('select-playlists');
+            sel.innerHTML = '';
+            fetch('/api/misplaylists').then(r=>r.json()).then(list=>{
+                if(!list || list.length===0){ const opt=document.createElement('option'); opt.value=''; opt.textContent='(No tienes playlists)'; sel.appendChild(opt); }
+                else{ list.forEach(p=>{ const opt=document.createElement('option'); opt.value = p.idPlaylist; opt.textContent = p.nombre; sel.appendChild(opt); }); }
+                document.getElementById('modalAddToPlaylist').style.display = 'flex';
+            }).catch(e=>{ console.error('Error cargando playlists', e); showPopup('No se pudieron cargar tus playlists.','error',4000); });
+        }catch(e){ console.error(e); }
+    }
+
+    function closeAddModal(){ document.getElementById('modalAddToPlaylist').style.display = 'none'; _candidateSongId = null; }
+
+    function confirmAddToPlaylist(){
+        const sel = document.getElementById('select-playlists');
+        const pid = sel ? sel.value : '';
+        if(!pid){ showPopup('Selecciona una playlist válida','error',3000); return; }
+        const body = 'cancionId=' + encodeURIComponent(_candidateSongId || '');
+        // optimistically close
+        closeAddModal();
+        fetch('/api/playlists/' + encodeURIComponent(pid) + '/add', {
+            method: 'POST', headers: { 'Content-Type':'application/x-www-form-urlencoded' }, body: body
+        }).then(r=>r.json()).then(j=>{
+            if(j && j.ok){ showPopup('Canción añadida a la playlist','info',3000); }
+            else{ const msg = j && j.error ? j.error : 'Error añadiendo canción'; showPopup(msg,'error',4000); }
+        }).catch(e=>{ console.error('Error al añadir canción', e); showPopup('Error de comunicación','error',4000); });
     }
 
     // -- Reproductor y utilidades (simplificadas de BuscarCanciones) --

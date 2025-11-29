@@ -17,6 +17,31 @@
             width: 0;
             height: 0;
         }
+        /* Estilos para tarjetas de acción (crear, buscar playlist, buscar álbum) */
+        .action-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            background: #fffbe6;
+            border: 2px solid #bfa14a;
+            border-radius: 12px;
+            padding: 2em;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: inherit;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .action-card .icon { font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s; }
+        .action-card h3 { color: #6b3e13; margin-bottom: 0.5em; transition: color 0.2s; }
+        .action-card p { color: #999; font-size: 0.9em; transition: color 0.2s; }
+        .action-card:hover { background: #6b3e13; }
+        .action-card:hover .icon { color: white; }
+        .action-card:hover h3 { color: white; }
+        .action-card:hover p { color: #fffbe6; }
+        .action-card:focus { outline: 3px solid rgba(191,161,74,0.35); }
     </style>
 </head>
 <body>
@@ -47,41 +72,55 @@
         <!-- Columna Izquierda: Lista de Playlists -->
         <section style="background: #fffbe6cc; border-radius: 16px; padding: 2em; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
             <h2 style="color: #2d2d2d; margin-bottom: 1.5em; text-align: center;">
-                <i class="fas fa-list-music"></i> Mis Playlists
+                <i class="fas fa-list-music"></i>
+                <span th:text="${mostrarAlbumes == true} ? 'Álbumes de Artistas' : 'Mis Playlists'">Mis Playlists</span>
             </h2>
 
-            <!-- Campo de búsqueda insertado (respetando todo lo demás) -->
-            <div style="margin: 1em 0; display:flex; gap:0.5em; align-items:center;">
+            <!-- Campo de búsqueda convertido en formulario GET con action dinámico -->
+            <form id="formBusqueda" method="get" th:action="@{/BuscarPlaylist}" style="margin: 1em 0; display:flex; gap:0.5em; align-items:center; position: relative;">
+                <label for="nombreBusqueda" style="position:absolute; left:-9999px;">Buscar playlist</label>
                 <input type="text" id="nombreBusqueda" name="nombre" placeholder="Buscar playlist por nombre"
                        th:value="${nombreBusqueda}" style="flex:1; padding:0.6em; border-radius:8px; border:1px solid #ccc;">
-                <button class="btn-colmena" onclick="buscarPlaylist()" style="padding:0.6em 1em;">Buscar</button>
-            </div>
+                <button type="submit" class="btn-colmena" style="padding:0.6em 1em;">Buscar</button>
+                <!-- Indicador si la vista está mostrando álbumes de artistas -->
+                <input type="hidden" id="modo_albumes" name="modo_albumes" th:value="${mostrarAlbumes == true} ? '1' : '0'" />
+            </form>
 
-            <div th:if="${playlists != null and !playlists.isEmpty()}" style="display: flex; flex-direction: column; gap: 1em;">
-                <div th:each="playlist : ${playlists}"
-                     style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 1.5em; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; display: flex; justify-content: space-between; align-items: center;"
-                     onmouseover="this.style.transform='translateX(5px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
-                     onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='none'">
-
-                    <div>
-                        <h3 th:text="${playlist.nombre}" style="color: #6b3e13; margin-bottom: 0.5em; font-size: 1.2em;">
-                            Nombre Playlist
-                        </h3>
-                        <p style="color: #999; font-size: 0.9em;">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span th:text="${playlist.fechaCreacion}">Fecha de creación</span>
-                        </p>
-                    </div>
-
-                    <div style="display: flex; gap: 0.5em;">
-                        <button class="btn-colmena" style="padding: 0.6em 1.2em; font-size: 0.9em;">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        <button class="btn-colmena" style="padding: 0.6em 1.2em; font-size: 0.9em;">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                    </div>
-                </div>
+            <!-- Tabla de playlists (reemplaza la lista de tarjetas) -->
+            <div th:if="${playlists != null and !playlists.isEmpty()}" style="width:100%; overflow:auto;">
+                <table style="width:100%; border-collapse: collapse; min-width: 720px;">
+                    <thead>
+                        <tr style="background: #f7f5ec;">
+                            <th style="text-align:left; padding: 0.75em 1em; color:#6b3e13;">#</th>
+                            <!-- Columna Artista solo si se muestran álbumes de artistas -->
+                            <th th:if="${mostrarAlbumes == true}" style="text-align:left; padding: 0.75em 1em; color:#6b3e13;">Artista</th>
+                            <th style="text-align:left; padding: 0.75em 1em; color:#6b3e13;">Nombre</th>
+                            <th style="text-align:left; padding: 0.75em 1em; color:#6b3e13;">Descripción</th>
+                            <th style="text-align:left; padding: 0.75em 1em; color:#6b3e13; width:8%;">Canciones</th>
+                            <th style="text-align:left; padding: 0.75em 1em; color:#6b3e13;">Fecha creación</th>
+                            <th style="text-align:center; padding: 0.75em 1em; color:#6b3e13;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="playlist, stat : ${playlists}" th:attr="data-playlistid=${playlist.idPlaylist}" style="border-bottom:1px solid #eee; background: #fffbe6;">
+                            <td style="padding: 0.75em 1em; vertical-align: middle; width:48px;" th:text="${stat.index + 1}">1</td>
+                            <td th:if="${mostrarAlbumes == true}" style="padding: 0.75em 1em; vertical-align: middle; color:#444; font-weight:600;" th:text="${playlist.usuario != null ? playlist.usuario.username : '-'}">Artista</td>
+                            <td class="pl-name" style="padding: 0.75em 1em; vertical-align: middle;" th:text="${playlist.nombre}">Nombre Playlist</td>
+                            <td class="pl-desc" style="padding: 0.75em 1em; vertical-align: middle; color:#666; font-size:0.95em;" th:text="${playlist.descripcion != null && playlist.descripcion != '' ? playlist.descripcion : '-'}">Descripción</td>
+                            <td style="padding: 0.75em 1em; vertical-align: middle; color:#444; font-weight:600;" th:text="${playlist.cancionPlaylists != null ? playlist.cancionPlaylists.size() : 0}">0</td>
+                            <td style="padding: 0.75em 1em; vertical-align: middle; color:#666; font-size:0.95em;" th:text="${playlist.fechaCreacion != null ? #temporals.format(playlist.fechaCreacion, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2025</td>
+                            <td style="padding: 0.75em 1em; vertical-align: middle; text-align:center;">
+                                <button class="btn-colmena" style="padding:0.4em 0.6em; margin-right:0.3em;" th:onclick="|verPlaylist(${playlist.idPlaylist})|">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <!-- Mostrar botón editar sólo cuando NO estamos en modo álbumes (mis playlists) -->
+                                <button th:if="${mostrarAlbumes == false}" class="btn-colmena" style="padding:0.4em 0.6em; margin-right:0.3em;" th:attr="data-playlistid=${playlist.idPlaylist}" onclick="openEditPlaylistModal(this)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Mensaje cuando no hay playlists -->
@@ -95,34 +134,25 @@
         <section style="display: flex; flex-direction: column; gap: 1.5em; margin-right: 1em;">
 
             <!-- Crear Playlist -->
-            <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
-                 onclick="crearPlaylist()"
-                 onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
-                 onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
-                <i class="fas fa-plus-circle" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
-                <h3 style="color: #6b3e13; margin-bottom: 0.5em; transition: color 0.2s;">Crear Playlist</h3>
-                <p style="color: #999; font-size: 0.9em; transition: color 0.2s;">Nueva lista de reproducción</p>
+            <div class="action-card" onclick="crearPlaylist()">
+                <i class="fas fa-plus-circle icon"></i>
+                <h3>Crear Playlist</h3>
+                <p>Nueva lista de reproducción</p>
             </div>
 
-            <!-- Buscar Playlist -->
-            <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
-                 onclick="buscarPlaylist()"
-                 onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
-                 onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
-                <i class="fas fa-search" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
-                <h3 style="color: #6b3e13; margin-bottom: 0.5em; transition: color 0.2s;">Buscar Playlist</h3>
-                <p style="color: #999; font-size: 0.9em; transition: color 0.2s;">Playlists creadas por ti</p>
-            </div>
+            <!-- Buscar Playlist: llamar a setMode(0) y navegar explícitamente; usar clase action-card para hover coherente -->
+            <a href="#" class="action-card" onclick="setMode(0); window.location.href='/Playlists'; return false;">
+                <i class="fas fa-search icon"></i>
+                <h3>Buscar Playlist</h3>
+                <p>Playlists creadas por ti</p>
+            </a>
 
-            <!-- Buscar Álbum -->
-            <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
-                 onclick="buscarAlbum()"
-                 onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
-                 onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
-                <i class="fas fa-compact-disc" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
-                <h3 style="color: #6b3e13; margin-bottom: 0.5em; transition: color 0.2s;">Buscar Álbum</h3>
-                <p style="color: #999; font-size: 0.9em; transition: color 0.2s;">Playlists creadas por artistas</p>
-            </div>
+            <!-- Buscar Álbum: llamar a setMode(1) y navegar explícitamente; usar clase action-card para hover coherente -->
+            <a href="#" class="action-card" onclick="setMode(1); window.location.href='/BuscarAlbum'; return false;">
+                <i class="fas fa-compact-disc icon"></i>
+                <h3>Buscar Álbum</h3>
+                <p>Playlists creadas por artistas</p>
+            </a>
         </section>
     </div>
 </main>
@@ -138,6 +168,10 @@
         </h2>
 
         <form id="formCrearPlaylist" onsubmit="enviarPlaylist(event)" style="display: flex; flex-direction: column; gap: 1.5em;">
+            <!-- CSRF tokens (si están presentes en el model) -->
+            <input type="hidden" id="_csrf_parameter" th:if="${_csrf != null}" th:value="${_csrf.parameterName}" />
+            <input type="hidden" id="_csrf_token" th:if="${_csrf != null}" th:value="${_csrf.token}" />
+
             <div>
                 <label for="nombrePlaylist" style="display: block; color: #6b3e13; font-weight: 600; margin-bottom: 0.5em;">
                     Nombre de la Playlist <span style="color: #d32f2f;">*</span>
@@ -170,13 +204,35 @@
         </form>
     </div>
 </div>
+<!-- Modal para editar playlist (Nombre / Descripción) -->
+<div id="modalEditarPlaylist" style="display:none; position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,0.6); z-index:1200; align-items:center; justify-content:center;">
+    <div style="background:#fffbe6; padding:1.4em; border-radius:10px; width:90%; max-width:520px; box-shadow:0 10px 30px rgba(0,0,0,0.25);">
+        <button onclick="closeEditModal()" style="position:absolute; right:12px; top:12px; background:none; border:none; font-size:1.2em; color:#6b3e13;">&times;</button>
+        <h3 style="margin-top:0; color:#6b3e13;">Editar Playlist</h3>
+        <input type="hidden" id="edit_playlist_id" />
+        <!-- CSRF hidden (si existe en el model) -->
+        <input type="hidden" id="_csrf_parameter_edit" th:if="${_csrf != null}" th:value="${_csrf.parameterName}" />
+        <input type="hidden" id="_csrf_token_edit" th:if="${_csrf != null}" th:value="${_csrf.token}" />
+        <div style="display:flex; flex-direction:column; gap:0.8em;">
+            <label for="edit_nombre" style="color:#6b3e13; font-weight:600;">Nombre</label>
+            <input id="edit_nombre" type="text" style="padding:0.6em; border:1px solid #ccc; border-radius:8px; width:100%; box-sizing:border-box;" />
+            <label for="edit_descripcion" style="color:#6b3e13; font-weight:600;">Descripción</label>
+            <textarea id="edit_descripcion" rows="4" style="padding:0.6em; border:1px solid #ccc; border-radius:8px; width:100%; box-sizing:border-box;"></textarea>
+            <div style="display:flex; gap:0.6em; justify-content:flex-end; margin-top:0.6em;">
+                <button class="btn-colmena" onclick="closeEditModal()" type="button" style="background:#e0e0e0; color:#444;">Cancelar</button>
+                <button class="btn-colmena" onclick="submitEditPlaylist()" type="button" style="background:#6b3e13; color:#fff;">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     function verPlaylist(playlistId) {
         window.location.href = '/Playlist/' + playlistId;
     }
 
     function editarPlaylist(playlistId) {
-        window.location.href = '/EditarPlaylist/' + playlistId;
+        // antiguo: navegaba a otra vista; ahora usamos modal. Esta función queda sin uso pero la mantenemos por compatibilidad.
+        openEditPlaylistById(playlistId);
     }
 
     function crearPlaylist() {
@@ -194,14 +250,29 @@
         const nombre = document.getElementById('nombrePlaylist').value.trim();
         const descripcion = document.getElementById('descripcionPlaylist').value.trim();
 
+        // Preparar cuerpo x-www-form-urlencoded
+        let body = `id_usuario=${encodeURIComponent(idUsuario)}&nombre=${encodeURIComponent(nombre)}&descripcion=${encodeURIComponent(descripcion)}`;
+        // Adjuntar CSRF si existe
+        const csrfParamEl = document.getElementById('_csrf_parameter');
+        const csrfTokenEl = document.getElementById('_csrf_token');
+        if (csrfParamEl && csrfTokenEl && csrfParamEl.value) {
+            body += `&${encodeURIComponent(csrfParamEl.value)}=${encodeURIComponent(csrfTokenEl.value)}`;
+        }
+
         fetch('/CrearPlaylist', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `id_usuario=${encodeURIComponent(idUsuario)}&nombre=${encodeURIComponent(nombre)}&descripcion=${encodeURIComponent(descripcion)}`
+            body: body,
+            redirect: 'follow'
         })
         .then(response => {
+            // Si el servidor redirige, fetch sigue la redirección y response.redirected puede ser true
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
             if (response.ok) {
-                cerrarModal();
+                // Si la respuesta final es OK, recargamos
                 window.location.reload();
             } else {
                 alert('Error al crear la playlist');
@@ -213,15 +284,104 @@
         });
     }
 
-    function buscarPlaylist() {
-        const input = document.getElementById('nombreBusqueda');
-        const q = input && input.value ? encodeURIComponent(input.value.trim()) : '';
-        window.location.href = '/BuscarPlaylist' + (q ? '?nombre=' + q : '');
+    function openEditPlaylistModal(btn) {
+        const pid = btn.getAttribute('data-playlistid');
+        openEditPlaylistById(pid);
     }
 
-    function buscarAlbum() {
-        window.location.href = '/BuscarAlbum';
+    function openEditPlaylistById(pid) {
+        if (!pid) return;
+        const tr = document.querySelector('tr[data-playlistid="' + pid + '"]');
+        const nameEl = tr ? tr.querySelector('.pl-name') : null;
+        const descEl = tr ? tr.querySelector('.pl-desc') : null;
+        document.getElementById('edit_playlist_id').value = pid;
+        document.getElementById('edit_nombre').value = nameEl ? nameEl.innerText.trim() : '';
+        document.getElementById('edit_descripcion').value = descEl ? (descEl.innerText.trim() === ' - ' ? '' : descEl.innerText.trim()) : '';
+        document.getElementById('modalEditarPlaylist').style.display = 'flex';
     }
+
+    function closeEditModal(){
+        document.getElementById('modalEditarPlaylist').style.display = 'none';
+    }
+
+    function submitEditPlaylist(){
+        const pid = document.getElementById('edit_playlist_id').value;
+        if (!pid) { showPopup('Playlist inválida','error',3000); return; }
+        const nombre = document.getElementById('edit_nombre').value || '';
+        const descripcion = document.getElementById('edit_descripcion').value || '';
+        // construir body x-www-form-urlencoded
+        let body = 'nombre=' + encodeURIComponent(nombre) + '&descripcion=' + encodeURIComponent(descripcion);
+        // CSRF si existe
+        const csrfParam = document.getElementById('_csrf_parameter_edit');
+        const csrfToken = document.getElementById('_csrf_token_edit');
+        if (csrfParam && csrfToken && csrfParam.value) {
+            body += '&' + encodeURIComponent(csrfParam.value) + '=' + encodeURIComponent(csrfToken.value);
+        }
+        // Optimistic: cerrar modal y desactivar botón para evitar doble envío
+        const saveBtn = document.querySelector('#modalEditarPlaylist .btn-colmena[onclick="submitEditPlaylist()"]');
+        // fallback: el botón puede no coincidir el selector; desactivar todos los botones dentro del modal
+        if (saveBtn) { saveBtn.disabled = true; }
+        document.querySelectorAll('#modalEditarPlaylist button').forEach(b=>{ if(b !== saveBtn) b.disabled = true; });
+        closeEditModal();
+        fetch('/api/playlists/' + encodeURIComponent(pid) + '/edit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body
+        }).then(r=>r.json()).then(j=>{
+            if (j && j.ok) {
+                // actualizar DOM
+                const tr = document.querySelector('tr[data-playlistid="' + pid + '"]');
+                if (tr) {
+                    const nameEl = tr.querySelector('.pl-name');
+                    const descEl = tr.querySelector('.pl-desc');
+                    if (nameEl) nameEl.innerText = nombre || '-';
+                    if (descEl) descEl.innerText = descripcion && descripcion.trim() !== '' ? descripcion : '-';
+                }
+                showPopup('Playlist actualizada','info',3000);
+            } else {
+                const msg = j && j.error ? j.error : 'Error actualizando playlist';
+                showPopup(msg,'error',4000);
+                // si hubo error, reabrir modal para que el usuario corrija
+                openEditPlaylistById(pid);
+            }
+        }).catch(e=>{
+            console.error('Error edit playlist', e);
+            showPopup('Error de comunicación','error',4000);
+            // reabrir modal si falla la comunicación
+            openEditPlaylistById(pid);
+        }).finally(()=>{
+            // reactivar botones dentro del modal
+            if (saveBtn) { saveBtn.disabled = false; }
+            document.querySelectorAll('#modalEditarPlaylist button').forEach(b=> b.disabled = false);
+        });
+    }
+
+    // La búsqueda ahora se realiza mediante el formulario GET `formBusqueda`.
+    // setMode ajusta la acción del formulario para que envíe a /BuscarAlbum o /BuscarPlaylist según el modo.
+    function setMode(mode) {
+        const form = document.getElementById('formBusqueda');
+        const modoEl = document.getElementById('modo_albumes');
+        if (!form) return;
+        if (mode === 1 || mode === '1') {
+            form.action = '/BuscarAlbum';
+            if (modoEl) modoEl.value = '1';
+        } else {
+            form.action = '/BuscarPlaylist';
+            if (modoEl) modoEl.value = '0';
+        }
+    }
+
+    // Inicializar el formulario según el modo actual cuando cargue la página
+    (function() {
+        try {
+            const modoEl = document.getElementById('modo_albumes');
+            if (modoEl && modoEl.value === '1') {
+                setMode(1);
+            } else {
+                setMode(0);
+            }
+        } catch (e) { /* noop */ }
+    })();
 </script>
 </body>
 </html>

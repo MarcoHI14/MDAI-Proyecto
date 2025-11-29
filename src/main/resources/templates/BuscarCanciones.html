@@ -141,6 +141,7 @@
                         <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:16%">Artista</th>
                         <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:14%">Fecha Subida</th>
                         <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:8%; text-align:center;">Reproducir</th>
+                        <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%; text-align:center;">Añadir</th>
                      </tr>
                  </thead>
                  <tbody>
@@ -153,23 +154,29 @@
                         <td style="padding:0.8em 1em; vertical-align: middle;" th:text="${c.fechaSubida != null ? (#temporals.format(c.fechaSubida,'dd/MM/yyyy')) : '—'}">Fecha</td>
                         <!-- audio oculto y botón reproducir -->
                         <td style="padding:0.6em 0.8em; vertical-align: middle; text-align:center;">
-                            <!-- Caso A: el campo ya contiene la ruta completa (/uploads/...) -->
-                            <div th:if="${c.archivoAudio != null and c.archivoAudio.startsWith('/uploads/')}">
-                                <audio class="song-audio" th:id="${'audio-' + c.idCancion}" th:src="${c.archivoAudio}" preload="metadata" style="display:none;" th:data-title="${c.titulo + (c.artista != null && c.artista.usuario != null ? ' - ' + c.artista.usuario.username : '')}"></audio>
-                                <button type="button" class="btn-colmena" th:attr="id=${'btn-play-' + c.idCancion}, data-audioid=${'audio-' + c.idCancion}, data-src=${c.archivoAudio}" th:onclick="|togglePlay(${c.idCancion})|" title="Reproducir">
-                                    <i class="fas fa-play"></i>
-                                </button>
-                                <a th:href="${c.archivoAudio}" target="_blank" style="margin-left:8px; font-size:0.85em; color:#6b3e13; text-decoration:underline">Abrir</a>
-                             </div>
-                            <!-- Caso B: archivoAudio es sólo nombre/relative -> construir URL con @{...} -->
-                            <div th:if="${c.archivoAudio == null or !c.archivoAudio.startsWith('/uploads/')}">
-                                <audio class="song-audio" th:id="${'audio-' + c.idCancion}" th:src="@{/uploads/{file}(file=${c.archivoAudio})}" preload="metadata" style="display:none;" th:data-title="${c.titulo + (c.artista != null && c.artista.usuario != null ? ' - ' + c.artista.usuario.username : '')}"></audio>
-                                <button type="button" class="btn-colmena" th:attr="id=${'btn-play-' + c.idCancion}, data-audioid=${'audio-' + c.idCancion}, data-src=@{/uploads/{file}(file=${c.archivoAudio})}" th:onclick="|togglePlay(${c.idCancion})|" title="Reproducir">
-                                    <i class="fas fa-play"></i>
-                                </button>
-                                <a th:href="@{/uploads/{file}(file=${c.archivoAudio})}" target="_blank" style="margin-left:8px; font-size:0.85em; color:#6b3e13; text-decoration:underline">Abrir</a>
-                             </div>
-                         </td>
+                             <!-- Caso A: el campo ya contiene la ruta completa (/uploads/...) -->
+                             <div th:if="${c.archivoAudio != null and c.archivoAudio.startsWith('/uploads/')}">
+                                 <audio class="song-audio" th:id="${'audio-' + c.idCancion}" th:src="${c.archivoAudio}" preload="metadata" style="display:none;" th:data-title="${c.titulo + (c.artista != null && c.artista.usuario != null ? ' - ' + c.artista.usuario.username : '')}"></audio>
+                                 <button type="button" class="btn-colmena" th:attr="id=${'btn-play-' + c.idCancion}, data-audioid=${'audio-' + c.idCancion}, data-src=${c.archivoAudio}" th:onclick="|togglePlay(${c.idCancion})|" title="Reproducir">
+                                     <i class="fas fa-play"></i>
+                                 </button>
+                                  <a th:href="${c.archivoAudio}" target="_blank" style="margin-left:8px; font-size:0.85em; color:#6b3e13; text-decoration:underline">Abrir</a>
+                              </div>
+                             <!-- Caso B: archivoAudio es sólo nombre/relative -> construir URL con @{...} -->
+                             <div th:if="${c.archivoAudio == null or !c.archivoAudio.startsWith('/uploads/')}">
+                                 <audio class="song-audio" th:id="${'audio-' + c.idCancion}" th:src="@{/uploads/{file}(file=${c.archivoAudio})}" preload="metadata" style="display:none;" th:data-title="${c.titulo + (c.artista != null && c.artista.usuario != null ? ' - ' + c.artista.usuario.username : '')}"></audio>
+                                 <button type="button" class="btn-colmena" th:attr="id=${'btn-play-' + c.idCancion}, data-audioid=${'audio-' + c.idCancion}, data-src=@{/uploads/{file}(file=${c.archivoAudio})}" th:onclick="|togglePlay(${c.idCancion})|" title="Reproducir">
+                                     <i class="fas fa-play"></i>
+                                 </button>
+                                  <a th:href="@{/uploads/{file}(file=${c.archivoAudio})}" target="_blank" style="margin-left:8px; font-size:0.85em; color:#6b3e13; text-decoration:underline">Abrir</a>
+                              </div>
+                          </td>
+                        <!-- Nueva columna: botón añadir a playlist -->
+                        <td style="padding:0.6em 0.8em; vertical-align: middle; text-align:center;">
+                            <button type="button" class="btn-colmena" style="background:#bfa14a; padding:0.45em 0.55em;" th:attr="data-cancionid=${c.idCancion}" onclick="openAddToPlaylistModal(this)" title="Añadir a playlist">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </td>
                     </tr>
                  </tbody>
              </table>
@@ -203,6 +210,20 @@
     <div class="icon">!</div>
     <div class="msg" id="popup-msg">Mensaje</div>
     <button class="close" id="popup-close" aria-label="Cerrar">×</button>
+</div>
+
+<!-- Modal para añadir canción a playlist -->
+<div id="modalAddToPlaylist" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background: rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1500;">
+    <div style="background:white; padding:1.2em; border-radius:8px; width: 90%; max-width:420px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+        <h3 style="margin-top:0; color:#6b3e13;">Añadir a playlist</h3>
+        <p id="modal-song-title" style="margin:0 0 0.8em 0; color:#444; font-weight:600;">Canción</p>
+        <label for="select-playlists" style="position:absolute; left:-9999px;">Selecciona una playlist</label>
+        <select id="select-playlists" aria-labelledby="modal-song-title" style="width:100%; padding:0.6em; border:1px solid #ccc; border-radius:6px; margin-bottom:0.8em;"></select>
+        <div style="display:flex; gap:0.5em; justify-content:flex-end;">
+            <button onclick="closeAddModal()" class="btn-colmena" style="background:#e0e0e0; color:#444;">Cancelar</button>
+            <button onclick="confirmAddToPlaylist()" class="btn-colmena" style="background:#6b3e13; color:white;">Añadir</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -493,6 +514,58 @@
             searchBtn.disabled = true;
         }
     });
+
+    // Modal para añadir a playlist
+    let _candidateSongId = null;
+
+    function openAddToPlaylistModal(btn) {
+        const cancionId = btn.getAttribute('data-cancionid');
+        _candidateSongId = cancionId;
+        // set title
+        const row = btn.closest('tr');
+        const title = row ? row.querySelector('td:nth-child(2)').innerText.trim() : 'Canción';
+        document.getElementById('modal-song-title').textContent = title;
+        // Load user's playlists
+        fetch('/api/misplaylists').then(r=>r.json()).then(list=>{
+            const sel = document.getElementById('select-playlists');
+            sel.innerHTML = '';
+            if (!list || list.length === 0) {
+                const opt = document.createElement('option'); opt.value=''; opt.textContent='(No tienes playlists)'; sel.appendChild(opt);
+            } else {
+                list.forEach(p=>{
+                    const opt = document.createElement('option'); opt.value = p.idPlaylist; opt.textContent = p.nombre; sel.appendChild(opt);
+                });
+            }
+            document.getElementById('modalAddToPlaylist').style.display = 'flex';
+        }).catch(e=>{
+            console.error('Error cargando playlists', e);
+            showPopup('No se pudieron cargar tus playlists.', 'error', 4000);
+        });
+    }
+
+    function closeAddModal(){ document.getElementById('modalAddToPlaylist').style.display = 'none'; _candidateSongId = null; }
+
+    function confirmAddToPlaylist(){
+        const sel = document.getElementById('select-playlists');
+        const pid = sel.value;
+        if (!pid) { showPopup('Selecciona una playlist válida', 'error', 3000); return; }
+        fetch('/api/playlists/' + encodeURIComponent(pid) + '/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'cancionId=' + encodeURIComponent(_candidateSongId)
+        }).then(r=>r.json()).then(j=>{
+            if (j && j.ok) {
+                showPopup('Canción añadida a la playlist', 'info', 3000);
+                closeAddModal();
+            } else {
+                const msg = j && j.error ? j.error : 'Error añadiendo canción';
+                showPopup(msg, 'error', 4000);
+            }
+        }).catch(e=>{
+            console.error('Error al añadir canción', e);
+            showPopup('Error de comunicación', 'error', 4000);
+        });
+    }
 </script>
 </body>
 </html>
