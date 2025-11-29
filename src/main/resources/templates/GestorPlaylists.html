@@ -611,7 +611,13 @@
     function formatTime(sec){ if(!isFinite(sec)) return '00:00'; const s=Math.floor(sec%60).toString().padStart(2,'0'); const m=Math.floor(sec/60).toString().padStart(2,'0'); return m+':'+s; }
 
     function ensureBottomPlayer(){
-        if(document.getElementById('mp-bottom-player')) return;
+        const existingPlayer = document.getElementById('mp-bottom-player');
+        if(existingPlayer){
+            // si ya existe, asegurarse de que esté visible
+            existingPlayer.style.display = 'flex';
+            _mp_audio = document.getElementById('mp-audio') || _mp_audio;
+            return;
+        }
         const html = '\n<div id="mp-bottom-player" style="position:fixed; left:0; right:0; bottom:0; background:linear-gradient(180deg,#fffbe6,#fff9e0); border-top:1px solid #e6d8a8; box-shadow:0 -4px 10px rgba(0,0,0,0.06); padding:0.6em 1em; display:flex; gap:0.8em; align-items:center; z-index:1600;">' +
             '<div style="flex:1; min-width:0;">' +
             '<div id="mp-player-title" style="font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#2d2d2d;">Título</div>' +
@@ -632,18 +638,39 @@
         // audio events
         if(_mp_audio){
             _mp_audio.addEventListener('timeupdate', function(){ const bar = document.getElementById('mp-player-bar'); const cur = document.getElementById('mp-current'); if(_mp_audio.duration){ const pct = (_mp_audio.currentTime/_mp_audio.duration)*100; if(bar) bar.style.width = pct + '%'; if(cur) cur.textContent = formatTime(_mp_audio.currentTime); } });
-            _mp_audio.addEventListener('loadedmetadata', function(){ const dur = document.getElementById('mp-duration'); if(dur) dur.textContent = formatTime(_mp_audio.duration); });
-            _mp_audio.addEventListener('ended', function(){ playNextInQueue(); });
-            _mp_audio.addEventListener('play', function(){ document.getElementById('mp-toggle').innerHTML = '<i class="fas fa-pause"></i>'; });
-            _mp_audio.addEventListener('pause', function(){ document.getElementById('mp-toggle').innerHTML = '<i class="fas fa-play"></i>'; });
+            _mp_audio.addEventListener('loadedmetadata', function(){ const dur = document.getElementById('mp-duration'); if(dur) dur.textContent = formatTime(_mp_audio.duration); console.debug('mp: loaded metadata, duration=', _mp_audio.duration); });
+            // 'ended' puede dispararse prematuramente en algunos navegadores/streams; comprobamos antes de avanzar
+            _mp_audio.addEventListener('ended', function(){
+                console.debug('mp: ended event fired, currentTime=', _mp_audio.currentTime, 'duration=', _mp_audio.duration, 'index=', _mp_index);
+                setTimeout(function(){
+                    try{
+                        // si la pista realmente no ha llegado al final (debido a metadatos faltantes o streaming), reintentar play
+                        if(_mp_audio && isFinite(_mp_audio.duration) && (_mp_audio.currentTime < Math.max(0, _mp_audio.duration - 0.5))){
+                            console.debug('mp: ended fired but not reached end; retrying play for same track');
+                            // reintentar reproducir la misma pista
+                            try{ _mp_audio.play().catch(()=>{}); }catch(e){}
+                            return;
+                        }
+                    }catch(e){ console.error('mp: error checking ended', e); }
+                    // avanzar a la siguiente
+                    console.debug('mp: confirmed track ended, advancing to next');
+                    playNextInQueue();
+                }, 150);
+            });
+            _mp_audio.addEventListener('error', function(e){ console.error('mp: audio error', e); // saltar a la siguiente pista si hay error
+                playNextInQueue();
+            });
+            _mp_audio.addEventListener('play', function(){ document.getElementById('mp-toggle').innerHTML = '<i class="fas fa-pause"></i>'; console.debug('mp: play event, src=', _mp_audio.src); });
+            _mp_audio.addEventListener('pause', function(){ document.getElementById('mp-toggle').innerHTML = '<i class="fas fa-play"></i>'; console.debug('mp: pause event'); });
         }
-    }
+     }
 
     function startPlaylistPlayback(shuffle){
         const modal = document.getElementById('modalVerPlaylist');
         if(!modal) return; const px = modal._lastPlaylist; if(!px || !px.canciones || !Array.isArray(px.canciones) || px.canciones.length===0){ alert('No hay canciones para reproducir'); return; }
         // build queue
         _mp_queue = px.canciones.map(c => ({ id: c.idCancion, titulo: c.titulo, genero: c.genero, duracion: c.duracion, archivoAudio: c.archivoAudio, artista: c.artista }));
++        console.debug('mp: startPlaylistPlayback, shuffle=', shuffle, 'queue length=', _mp_queue.length);
         // create order
         _mp_order = _mp_queue.map((_,i)=>i);
         if(shuffle){ for(let i=_mp_order.length-1;i>0;i--){ const r=Math.floor(Math.random()*(i+1)); const tmp=_mp_order[i]; _mp_order[i]=_mp_order[r]; _mp_order[r]=tmp; } }
@@ -653,20 +680,46 @@
     }
 
     function playQueueAt(orderIndex){
-        if(!_mp_order || _mp_order.length===0) return; if(orderIndex<0 || orderIndex>=_mp_order.length) return; const idx = _mp_order[orderIndex]; const item = _mp_queue[idx]; if(!item) return; const src = (item.archivoAudio && item.archivoAudio.startsWith('/uploads/')) ? item.archivoAudio : (item.archivoAudio ? ('/uploads/' + item.archivoAudio) : ''); if(!src){ alert('La pista no tiene archivo'); return; }
-        const audio = _mp_audio || document.getElementById('mp-audio'); if(!audio) { ensureBottomPlayer(); }
+        if (!_mp_order || _mp_order.length === 0) return;
+        if (orderIndex < 0 || orderIndex >= _mp_order.length) return;
+        const idx = _mp_order[orderIndex];
+        const item = _mp_queue[idx];
+        if (!item) return;
+        const src = (item.archivoAudio && item.archivoAudio.startsWith('/uploads/')) ? item.archivoAudio : (item.archivoAudio ? ('/uploads/' + item.archivoAudio) : '');
+        if (!src) { alert('La pista no tiene archivo'); return; }
+        // ensure audio element exists (may be created by ensureBottomPlayer)
+        let audio = _mp_audio || document.getElementById('mp-audio');
+        if (!audio) { ensureBottomPlayer(); audio = _mp_audio || document.getElementById('mp-audio'); }
         // set title
-        const titleEl = document.getElementById('mp-player-title'); if(titleEl) titleEl.textContent = (item.titulo || '') + (item.artista ? (' - ' + item.artista) : '');
+        const titleEl = document.getElementById('mp-player-title'); if (titleEl) titleEl.textContent = (item.titulo || '') + (item.artista ? (' - ' + item.artista) : '');
++        console.debug('mp: playQueueAt orderIndex=', orderIndex, 'queueIndex=', idx, 'title=', item.titulo, 'src=', src);
         // set src and play
-        audio.src = src; try{ audio.load(); audio.play().catch(()=>{}); }catch(e){ console.error('play error', e); }
+        try {
+            audio.src = src;
+            audio.load();
+            audio.play().catch(()=>{});
+        } catch (e) { console.error('play error', e); }
         // store current order index
         _mp_index = orderIndex;
     }
 
-    function playNextInQueue(){ if(_mp_index+1 < _mp_order.length) { playQueueAt(_mp_index+1); _mp_index++; } else { // end of queue
-            // reset UI
-            const bar = document.getElementById('mp-player-bar'); if(bar) bar.style.width='0%'; const cur=document.getElementById('mp-current'); if(cur) cur.textContent='00:00'; const dur=document.getElementById('mp-duration'); if(dur) dur.textContent='00:00';
-        } }
+    function playNextInQueue(){
+        if (!_mp_order || _mp_order.length === 0) return;
+         // advance index first, then play the new position
+         if (_mp_index + 1 < _mp_order.length) {
+            _mp_index++;
++            console.debug('mp: advancing to next index=', _mp_index);
+            playQueueAt(_mp_index);
+         } else {
+             // end of queue: reset UI and index
+             const bar = document.getElementById('mp-player-bar'); if (bar) bar.style.width = '0%';
+             const cur = document.getElementById('mp-current'); if (cur) cur.textContent = '00:00';
+             const dur = document.getElementById('mp-duration'); if (dur) dur.textContent = '00:00';
+             _mp_index = -1;
+             _mp_queue = [];
+             _mp_order = [];
+         }
+     }
     function stopMpPlayback(){ if(_mp_audio){ try{ _mp_audio.pause(); _mp_audio.currentTime=0; }catch(e){} } const modal = document.getElementById('mp-bottom-player'); if(modal) modal.style.display='none'; }
 
     // attach listeners to the modal play buttons when modal is ensured
