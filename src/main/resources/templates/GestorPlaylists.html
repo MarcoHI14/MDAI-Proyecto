@@ -225,15 +225,234 @@
         </div>
     </div>
 </div>
+<!-- Modal para ver detalles de la playlist (nombre, descripción, canciones) -->
+<div id="modalVerPlaylist" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background: rgba(0,0,0,0.6); z-index:1500; align-items:center; justify-content:center;">
+    <div style="background:#fffbe6; padding:1.2em; border-radius:10px; width:95%; max-width:900px; box-shadow:0 10px 40px rgba(0,0,0,0.3); position:relative;">
+        <!-- Botón Cerrar a la izquierda dentro del modal -->
+        <button id="mp-close-left" style="position:absolute; left:18px; top:14px; background:#e0e0e0; border:none; padding:0.35em 0.6em; border-radius:8px; color:#444; cursor:pointer;">Cerrar</button>
+        <button id="mp-close" style="position:absolute; right:18px; top:14px; background:none; border:none; font-size:1.2em; color:#6b3e13;">&times;</button>
+        <h3 class="mp-title" style="margin-top:0; color:#6b3e13; text-align:center;">Playlist</h3>
+        <div style="display:flex; gap:1em; align-items:center; margin-bottom:0.8em;">
+            <div style="flex:1;">
+                <div><strong>Autor:</strong> <span class="mp-autor">-</span></div>
+                <div><strong>Canciones:</strong> <span class="mp-count">0</span></div>
+            </div>
+            <div style="flex:2; text-align:right;">
+                <div class="mp-desc" style="color:#666;">Descripción</div>
+            </div>
+        </div>
+        <div style="display:flex; gap:0.6em; justify-content:flex-end; margin-bottom:0.8em;">
+            <!-- botón reproducir secuencial (icono: dos flechas paralelas) -->
+            <button id="mp-play-seq" class="btn-colmena" title="Reproducir (orden)" style="padding:0.45em 0.65em; margin-left:auto;">
+                <i class="fas fa-forward" aria-hidden="true"></i>
+            </button>
+            <!-- botón reproducir aleatorio (icono: flechas entrelazadas) -->
+            <button id="mp-play-shuffle" class="btn-colmena" title="Reproducir (aleatorio)" style="padding:0.45em 0.65em; background:#bfa14a;">
+                <i class="fas fa-random" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div style="max-height:60vh; overflow:auto; border-top:1px solid #e6d8a8; padding-top:0.8em;">
+            <table style="width:100%; border-collapse:collapse;">
+                <thead><tr style="background:#f7f5ec; text-align:left;">
+                    <th style="padding:0.6em 0.8em; width:6%; text-align:center">#</th>
+                    <th style="padding:0.6em 0.8em;">Título</th>
+                    <th style="padding:0.6em 0.8em; width:14%">Género</th>
+                    <th style="padding:0.6em 0.8em; width:10%; text-align:center">Duración</th>
+                    <th style="padding:0.6em 0.8em; width:18%">Artista</th>
+                </tr></thead>
+                <tbody id="mp-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
 <script>
     function verPlaylist(playlistId) {
-        window.location.href = '/Playlist/' + playlistId;
+        // abrir modal con info de la playlist y sus canciones usando la API
+        if(!playlistId) return;
+        ensurePlaylistModal();
+        const modal = document.getElementById('modalVerPlaylist');
+        const title = modal.querySelector('.mp-title');
+        const desc = modal.querySelector('.mp-desc');
+        const autor = modal.querySelector('.mp-autor');
+        const count = modal.querySelector('.mp-count');
+        const tableBody = modal.querySelector('#mp-table-body');
+        // limpiar
+        title.textContent = 'Cargando...';
+        desc.textContent = '';
+        autor.textContent = '';
+        count.textContent = '';
+        tableBody.innerHTML = '';
+        modal.style.display = 'flex';
+        fetch('/api/playlists/' + encodeURIComponent(playlistId))
+            .then(r => r.json())
+            .then(j => {
+                if(j && j.nombre) {
+                    title.textContent = j.nombre || 'Playlist';
+                    desc.textContent = j.descripcion && j.descripcion.trim() !== '' ? j.descripcion : '-';
+                    autor.textContent = (j.autor && j.autor.username) ? j.autor.username : '-';
+                    count.textContent = (typeof j.numCanciones === 'number') ? j.numCanciones : (j.canciones ? j.canciones.length : 0);
+                    // store playlist on modal for playback
+                    try{ modal._lastPlaylist = j; }catch(e){}
+                     // render table rows
+                     if(j.canciones && Array.isArray(j.canciones) && j.canciones.length>0) {
+                        tableBody.innerHTML = '';
+                        j.canciones.forEach((c, idx) => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = '<td style="padding:0.6em 0.8em; text-align:center;">'+(idx+1)+'</td>'+
+                                '<td style="padding:0.6em 0.8em;">'+(c.titulo||'')+'</td>'+
+                                '<td style="padding:0.6em 0.8em;">'+(c.genero||'')+'</td>'+
+                                '<td style="padding:0.6em 0.8em; text-align:center;">'+(c.duracion||'—')+'</td>'+
+                                '<td style="padding:0.6em 0.8em;">'+(c.artista||'')+'</td>';
+                            tableBody.appendChild(tr);
+                        });
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="6" style="padding:1em; text-align:center; color:#999;">No hay canciones en esta playlist</td></tr>';
+                    }
+                } else {
+                    title.textContent = 'No se encontró la playlist';
+                    desc.textContent = '';
+                }
+            }).catch(e=>{
+                console.error('Error cargando playlist', e);
+                title.textContent = 'Error cargando playlist';
+                desc.textContent = '';
+            });
+     }
+
+    // asegurar existencia del modal y sus handlers
+    function ensurePlaylistModal(){
+        const existing = document.getElementById('modalVerPlaylist');
+        if(existing){
+            // si existe pero no inicializado, añadir handlers
+            if(!existing._init){
+                const closeBtn = document.getElementById('mp-close');
+                if(closeBtn) closeBtn.addEventListener('click', function(){ existing.style.display = 'none'; });
+                // si hay el botón 'Cerrar' también lo enlazamos para que cierre el modal y pare la reproducción
+                const mpCloseBtn = document.getElementById('mp-close-btn');
+                if (mpCloseBtn) mpCloseBtn.addEventListener('click', function(){ document.getElementById('modalVerPlaylist').style.display='none'; stopMpPlayback(); });
+                // delegación para botones añadir dentro del modal
+                document.body.addEventListener('click', function(e){
+                    if(e.target && e.target.classList && e.target.classList.contains('mp-add')){
+                        e.preventDefault(); const cid = e.target.getAttribute('data-cancionid'); if(!cid) return; openAddToPlaylistModal(e.target);
+                    }
+                });
+                existing._init = true;
+            }
+            return;
+        }
+        const html = '\n<div id="modalVerPlaylist" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background: rgba(0,0,0,0.6); z-index:1500; align-items:center; justify-content:center;>'+
+            '<div style="background:#fffbe6; padding:1.2em; border-radius:10px; width:95%; max-width:900px; box-shadow:0 10px 40px rgba(0,0,0,0.3); position:relative;">'+
+            '<button id="mp-close-left" style="position:absolute; left:18px; top:14px; background:#e0e0e0; border:none; padding:0.35em 0.6em; border-radius:8px; color:#444; cursor:pointer;">Cerrar</button>'+
+            '<button id="mp-close" style="position:absolute; right:18px; top:14px; background:none; border:none; font-size:1.2em; color:#6b3e13;">&times;</button>'+
+            '<h3 class="mp-title" style="margin-top:0; color:#6b3e13; text-align:center;">Playlist</h3>'+
+            '<div style="display:flex; gap:1em; align-items:center; margin-bottom:0.8em;">'+
+            '<div style="flex:1;">'+
+            '<div><strong>Autor:</strong> <span class="mp-autor">-</span></div>'+
+            '<div><strong>Canciones:</strong> <span class="mp-count">0</span></div>'+
+            '</div>'+
+            '<div style="flex:2; text-align:right;">'+
+            '<div class="mp-desc" style="color:#666;">Descripción</div>'+
+            '</div>'+
+            '</div>'+
+            '<div style="display:flex; gap:0.6em; justify-content:flex-end; margin-bottom:0.8em;">'+
+            // botón reproducir secuencial (icono: dos flechas paralelas)
+            '<button id="mp-play-seq" class="btn-colmena" title="Reproducir (orden)" style="padding:0.45em 0.65em; margin-left:auto;">'+
+                '<i class="fas fa-forward" aria-hidden="true"></i>'+
+            '</button>'+
+            // botón reproducir aleatorio (icono: flechas entrelazadas)
+            '<button id="mp-play-shuffle" class="btn-colmena" title="Reproducir (aleatorio)" style="padding:0.45em 0.65em; background:#bfa14a;">'+
+                '<i class="fas fa-random" aria-hidden="true"></i>'+
+            '</button>'+
+            '</div>'+
+            '<div style="max-height:60vh; overflow:auto; border-top:1px solid #e6d8a8; padding-top:0.8em;">'+
+            '<table style="width:100%; border-collapse:collapse;">'+
+            '<thead><tr style="background:#f7f5ec; text-align:left;">'+
+            '<th style="padding:0.6em 0.8em; width:6%; text-align:center">#</th>'+
+            '<th style="padding:0.6em 0.8em;">Título</th>'+
+            '<th style="padding:0.6em 0.8em; width:14%">Género</th>'+
+            '<th style="padding:0.6em 0.8em; width:10%; text-align:center">Duración</th>'+
+            '<th style="padding:0.6em 0.8em; width:18%">Artista</th>'+
+            '</tr></thead><tbody id="mp-table-body"></tbody></table>'+
+            '</div></div></div>\n';
+        document.body.insertAdjacentHTML('beforeend', html);
+        document.getElementById('mp-close').addEventListener('click', function(){ document.getElementById('modalVerPlaylist').style.display = 'none'; stopMpPlayback(); });
+        // enlazar el botón Cerrar a la izquierda si existe
+        const mpCloseLeft = document.getElementById('mp-close-left');
+        if (mpCloseLeft) mpCloseLeft.addEventListener('click', function(){ document.getElementById('modalVerPlaylist').style.display = 'none'; stopMpPlayback(); });
+        // enlazar botones de reproducción explícitamente para evitar depender de delegación
+        const btnSeq = document.getElementById('mp-play-seq');
+        const btnSh = document.getElementById('mp-play-shuffle');
+        if (btnSeq) btnSeq.addEventListener('click', function(){ startPlaylistPlayback(false); });
+        if (btnSh) btnSh.addEventListener('click', function(){ startPlaylistPlayback(true); });
+         // delegate clicks on add buttons inside modal
+         document.body.addEventListener('click', function(e){
+             if(e.target && e.target.classList && e.target.classList.contains('mp-add')){
+                 e.preventDefault(); const cid = e.target.getAttribute('data-cancionid'); if(!cid) return; openAddToPlaylistModal(e.target);
+             }
+         });
+     }
+    // si el modal ya estaba en la página estática, añadir listener al botónCerrar izquierdo y a los play buttons
+    (function(){
+        const leftClose = document.getElementById('mp-close-left'); if(leftClose) leftClose.addEventListener('click', function(){ const modal = document.getElementById('modalVerPlaylist'); if(modal) modal.style.display='none'; stopMpPlayback(); });
+        const seq = document.getElementById('mp-play-seq'); if(seq) seq.addEventListener('click', function(){ startPlaylistPlayback(false); });
+        const sh = document.getElementById('mp-play-shuffle'); if(sh) sh.addEventListener('click', function(){ startPlaylistPlayback(true); });
+    })();
+    // ----------------- Add to Playlist modal & functions (copied/adapted) -----------------
+    let _candidateSongId = null;
+    function openAddToPlaylistModal(btn){
+        // btn can be element or event target inside modal; accept both
+        const cancionId = btn.getAttribute ? btn.getAttribute('data-cancionid') : null;
+        _candidateSongId = cancionId;
+        // ensure modal markup
+        if(!document.getElementById('modalAddToPlaylist')){
+            const html = '\n<div id="modalAddToPlaylist" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background: rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1600;">' +
+                '<div style="background:white; padding:1.2em; border-radius:8px; width: 90%; max-width:420px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">' +
+                '<h3 style="margin-top:0; color:#6b3e13;">Añadir a playlist</h3>' +
+                '<p id="modal-song-title" style="margin:0 0 0.8em 0; color:#444; font-weight:600;">Canción</p>' +
+                '<label for="select-playlists" style="position:absolute; left:-9999px;">Selecciona una playlist</label>' +
+                '<select id="select-playlists" style="width:100%; padding:0.6em; border:1px solid #ccc; border-radius:6px; margin-bottom:0.8em;"></select>' +
+                '<div style="display:flex; gap:0.5em; justify-content:flex-end;">' +
+                '<button id="cancelAddBtn" class="btn-colmena" style="background:#e0e0e0; color:#444;">Cancelar</button>' +
+                '<button id="confirmAddBtn" class="btn-colmena" style="background:#6b3e13; color:white;">Añadir</button>' +
+                '</div></div></div>\n';
+            document.body.insertAdjacentHTML('beforeend', html);
+            // attach listeners
+            setTimeout(()=>{
+                const cancel = document.getElementById('cancelAddBtn');
+                const confirm = document.getElementById('confirmAddBtn');
+                if(cancel) cancel.addEventListener('click', function(e){ e.preventDefault(); closeAddModal(); });
+                if(confirm) confirm.addEventListener('click', function(e){ e.preventDefault(); confirmAddToPlaylist(); });
+            },0);
+        }
+        // set title
+        const row = btn.closest ? btn.closest('tr') : null;
+        const title = row ? (row.querySelector('td:nth-child(2)') ? row.querySelector('td:nth-child(2)').innerText.trim() : 'Canción') : 'Canción';
+        document.getElementById('modal-song-title').textContent = title;
+        // load playlists into select
+        fetch('/api/misplaylists').then(r=>r.json()).then(list=>{
+            const sel = document.getElementById('select-playlists'); sel.innerHTML='';
+            if(!list || list.length===0){ const opt=document.createElement('option'); opt.value=''; opt.textContent='(No tienes playlists)'; sel.appendChild(opt); }
+            else{ list.forEach(p=>{ const opt=document.createElement('option'); opt.value=p.idPlaylist; opt.textContent=p.nombre; sel.appendChild(opt); }); }
+            document.getElementById('modalAddToPlaylist').style.display='flex';
+        }).catch(e=>{ console.error('Error cargando playlists', e); alert('No se pudieron cargar tus playlists.'); });
     }
 
-    function editarPlaylist(playlistId) {
-        // antiguo: navegaba a otra vista; ahora usamos modal. Esta función queda sin uso pero la mantenemos por compatibilidad.
-        openEditPlaylistById(playlistId);
+    function closeAddModal(){ const m=document.getElementById('modalAddToPlaylist'); if(m) m.style.display='none'; _candidateSongId = null; }
+
+    function confirmAddToPlaylist(){
+        const sel = document.getElementById('select-playlists'); const pid = sel ? sel.value : '';
+        if(!pid){ alert('Selecciona una playlist válida'); return; }
+        const body = 'cancionId=' + encodeURIComponent(_candidateSongId || '');
+        // optimistic close
+        closeAddModal();
+        fetch('/api/playlists/' + encodeURIComponent(pid) + '/add',{
+            method:'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: body
+        }).then(r=>r.json()).then(j=>{
+            if(j && j.ok){ alert('Canción añadida a la playlist'); }
+            else{ const msg = j && j.error ? j.error : 'Error añadiendo canción'; alert(msg); }
+        }).catch(e=>{ console.error('Error al añadir canción', e); alert('Error de comunicación'); });
     }
+    // ------------------------------------------------------------------------------------
 
     function crearPlaylist() {
         document.getElementById('modalCrearPlaylist').style.display = 'flex';
@@ -251,12 +470,12 @@
         const descripcion = document.getElementById('descripcionPlaylist').value.trim();
 
         // Preparar cuerpo x-www-form-urlencoded
-        let body = `id_usuario=${encodeURIComponent(idUsuario)}&nombre=${encodeURIComponent(nombre)}&descripcion=${encodeURIComponent(descripcion)}`;
+        let body = 'id_usuario=' + encodeURIComponent(idUsuario) + '&nombre=' + encodeURIComponent(nombre) + '&descripcion=' + encodeURIComponent(descripcion);
         // Adjuntar CSRF si existe
         const csrfParamEl = document.getElementById('_csrf_parameter');
         const csrfTokenEl = document.getElementById('_csrf_token');
         if (csrfParamEl && csrfTokenEl && csrfParamEl.value) {
-            body += `&${encodeURIComponent(csrfParamEl.value)}=${encodeURIComponent(csrfTokenEl.value)}`;
+            body += '&' + encodeURIComponent(csrfParamEl.value) + '=' + encodeURIComponent(csrfTokenEl.value);
         }
 
         fetch('/CrearPlaylist', {
@@ -265,7 +484,7 @@
             body: body,
             redirect: 'follow'
         })
-        .then(response => {
+        .then(function(response){
             // Si el servidor redirige, fetch sigue la redirección y response.redirected puede ser true
             if (response.redirected) {
                 window.location.href = response.url;
@@ -278,7 +497,7 @@
                 alert('Error al crear la playlist');
             }
         })
-        .catch(error => {
+        .catch(function(error){
             console.error('Error:', error);
             alert('Error al crear la playlist');
         });
@@ -381,6 +600,82 @@
                 setMode(0);
             }
         } catch (e) { /* noop */ }
+    })();
+
+    // Reproductor para la cola de playlist
+    let _mp_queue = [];
+    let _mp_order = [];
+    let _mp_index = -1;
+    let _mp_audio = null;
+
+    function formatTime(sec){ if(!isFinite(sec)) return '00:00'; const s=Math.floor(sec%60).toString().padStart(2,'0'); const m=Math.floor(sec/60).toString().padStart(2,'0'); return m+':'+s; }
+
+    function ensureBottomPlayer(){
+        if(document.getElementById('mp-bottom-player')) return;
+        const html = '\n<div id="mp-bottom-player" style="position:fixed; left:0; right:0; bottom:0; background:linear-gradient(180deg,#fffbe6,#fff9e0); border-top:1px solid #e6d8a8; box-shadow:0 -4px 10px rgba(0,0,0,0.06); padding:0.6em 1em; display:flex; gap:0.8em; align-items:center; z-index:1600;">' +
+            '<div style="flex:1; min-width:0;">' +
+            '<div id="mp-player-title" style="font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#2d2d2d;">Título</div>' +
+            '<div style="height:10px; background:rgba(0,0,0,0.06); border-radius:8px; margin-top:6px;">' +
+            '<div id="mp-player-bar" style="height:100%; width:0%; background:#bfa14a; border-radius:8px;"></div>' +
+            '</div></div>' +
+            '<div style="display:flex; align-items:center; gap:0.6em;">' +
+            '<button id="mp-toggle" class="player-btn" style="background:#6b3e13; color:#fff; border:none; padding:0.45em 0.6em; border-radius:8px;"><i class="fas fa-play"></i></button>' +
+            '<div style="font-size:0.95em; color:#444;"><span id="mp-current">00:00</span> / <span id="mp-duration">00:00</span></div>' +
+            '<button id="mp-stop" class="player-btn" style="background:#bfa14a; color:#fff; border:none; padding:0.45em 0.6em; border-radius:8px;"><i class="fas fa-times"></i></button>' +
+            '</div>' +
+            '<audio id="mp-audio" style="display:none;"></audio>' +
+            '</div>\n';
+        document.body.insertAdjacentHTML('beforeend', html);
+        _mp_audio = document.getElementById('mp-audio');
+        document.getElementById('mp-toggle').addEventListener('click', function(){ if(!_mp_audio) return; if(_mp_audio.paused) _mp_audio.play(); else _mp_audio.pause(); });
+        document.getElementById('mp-stop').addEventListener('click', function(){ stopMpPlayback(); });
+        // audio events
+        if(_mp_audio){
+            _mp_audio.addEventListener('timeupdate', function(){ const bar = document.getElementById('mp-player-bar'); const cur = document.getElementById('mp-current'); if(_mp_audio.duration){ const pct = (_mp_audio.currentTime/_mp_audio.duration)*100; if(bar) bar.style.width = pct + '%'; if(cur) cur.textContent = formatTime(_mp_audio.currentTime); } });
+            _mp_audio.addEventListener('loadedmetadata', function(){ const dur = document.getElementById('mp-duration'); if(dur) dur.textContent = formatTime(_mp_audio.duration); });
+            _mp_audio.addEventListener('ended', function(){ playNextInQueue(); });
+            _mp_audio.addEventListener('play', function(){ document.getElementById('mp-toggle').innerHTML = '<i class="fas fa-pause"></i>'; });
+            _mp_audio.addEventListener('pause', function(){ document.getElementById('mp-toggle').innerHTML = '<i class="fas fa-play"></i>'; });
+        }
+    }
+
+    function startPlaylistPlayback(shuffle){
+        const modal = document.getElementById('modalVerPlaylist');
+        if(!modal) return; const px = modal._lastPlaylist; if(!px || !px.canciones || !Array.isArray(px.canciones) || px.canciones.length===0){ alert('No hay canciones para reproducir'); return; }
+        // build queue
+        _mp_queue = px.canciones.map(c => ({ id: c.idCancion, titulo: c.titulo, genero: c.genero, duracion: c.duracion, archivoAudio: c.archivoAudio, artista: c.artista }));
+        // create order
+        _mp_order = _mp_queue.map((_,i)=>i);
+        if(shuffle){ for(let i=_mp_order.length-1;i>0;i--){ const r=Math.floor(Math.random()*(i+1)); const tmp=_mp_order[i]; _mp_order[i]=_mp_order[r]; _mp_order[r]=tmp; } }
+        _mp_index = 0;
+        ensureBottomPlayer();
+        playQueueAt(_mp_index);
+    }
+
+    function playQueueAt(orderIndex){
+        if(!_mp_order || _mp_order.length===0) return; if(orderIndex<0 || orderIndex>=_mp_order.length) return; const idx = _mp_order[orderIndex]; const item = _mp_queue[idx]; if(!item) return; const src = (item.archivoAudio && item.archivoAudio.startsWith('/uploads/')) ? item.archivoAudio : (item.archivoAudio ? ('/uploads/' + item.archivoAudio) : ''); if(!src){ alert('La pista no tiene archivo'); return; }
+        const audio = _mp_audio || document.getElementById('mp-audio'); if(!audio) { ensureBottomPlayer(); }
+        // set title
+        const titleEl = document.getElementById('mp-player-title'); if(titleEl) titleEl.textContent = (item.titulo || '') + (item.artista ? (' - ' + item.artista) : '');
+        // set src and play
+        audio.src = src; try{ audio.load(); audio.play().catch(()=>{}); }catch(e){ console.error('play error', e); }
+        // store current order index
+        _mp_index = orderIndex;
+    }
+
+    function playNextInQueue(){ if(_mp_index+1 < _mp_order.length) { playQueueAt(_mp_index+1); _mp_index++; } else { // end of queue
+            // reset UI
+            const bar = document.getElementById('mp-player-bar'); if(bar) bar.style.width='0%'; const cur=document.getElementById('mp-current'); if(cur) cur.textContent='00:00'; const dur=document.getElementById('mp-duration'); if(dur) dur.textContent='00:00';
+        } }
+    function stopMpPlayback(){ if(_mp_audio){ try{ _mp_audio.pause(); _mp_audio.currentTime=0; }catch(e){} } const modal = document.getElementById('mp-bottom-player'); if(modal) modal.style.display='none'; }
+
+    // attach listeners to the modal play buttons when modal is ensured
+    (function(){
+        // delegate: listen for clicks on the modal's play buttons via body
+        document.body.addEventListener('click', function(e){
+            if(e.target && e.target.id === 'mp-play-seq'){ const modal = document.getElementById('modalVerPlaylist'); if(modal && modal._lastPlaylist) startPlaylistPlayback(false); }
+            if(e.target && e.target.id === 'mp-play-shuffle'){ const modal = document.getElementById('modalVerPlaylist'); if(modal && modal._lastPlaylist) startPlaylistPlayback(true); }
+        });
     })();
 </script>
 </body>

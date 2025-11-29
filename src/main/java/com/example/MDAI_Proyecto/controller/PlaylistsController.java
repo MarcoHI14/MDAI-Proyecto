@@ -261,4 +261,52 @@ public class PlaylistsController {
         }
         return ResponseEntity.ok(Map.of("ok",true));
     }
+
+    // Endpoint para obtener detalles de una playlist incluyendo sus canciones
+    @GetMapping("/api/playlists/{playlistId}")
+    @ResponseBody
+    public ResponseEntity<Map<String,Object>> getPlaylistApi(@PathVariable("playlistId") Long playlistId) {
+        Optional<Playlist> playlistOpt = playlistService.findById(playlistId);
+        if (playlistOpt.isEmpty()) return ResponseEntity.badRequest().body(Map.of("error","Playlist not found"));
+        Playlist p = playlistOpt.get();
+        Map<String,Object> out = new HashMap<>();
+        out.put("idPlaylist", p.getIdPlaylist());
+        out.put("nombre", p.getNombre());
+        out.put("descripcion", p.getDescripcion() != null ? p.getDescripcion() : "");
+        if (p.getUsuario() != null) {
+            Map<String,Object> autor = new HashMap<>();
+            autor.put("id", p.getUsuario().getId());
+            autor.put("username", p.getUsuario().getUsername());
+            out.put("autor", autor);
+        } else {
+            out.put("autor", Map.of());
+        }
+        // canciones asociadas (ordenadas)
+        List<Map<String,Object>> cancionesOut = new ArrayList<>();
+        var cpsOpt = cancionPlaylistService.findByPlaylistIdPlaylistOrderByOrdenAsc(playlistId);
+        if (cpsOpt.isPresent()) {
+            for (var cp : cpsOpt.get()) {
+                if (cp.getCancion() == null) continue;
+                Cancion c = cp.getCancion();
+                Map<String,Object> cm = new HashMap<>();
+                cm.put("idCancion", c.getIdCancion());
+                cm.put("titulo", c.getTitulo());
+                cm.put("genero", c.getGenero());
+                cm.put("duracion", c.getDuracion());
+                cm.put("archivoAudio", c.getArchivoAudio());
+                // artista asociado
+                if (c.getArtista() != null) {
+                    if (c.getArtista().getUsuario() != null) cm.put("artista", c.getArtista().getUsuario().getUsername());
+                    else cm.put("artista", "");
+                } else {
+                    cm.put("artista", "");
+                }
+                cm.put("orden", cp.getOrden());
+                cancionesOut.add(cm);
+            }
+        }
+        out.put("canciones", cancionesOut);
+        out.put("numCanciones", cancionesOut.size());
+        return ResponseEntity.ok(out);
+    }
 }
