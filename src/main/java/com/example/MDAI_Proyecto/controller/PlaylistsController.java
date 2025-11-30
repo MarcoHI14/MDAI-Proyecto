@@ -26,6 +26,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Optional;
 
+/**
+ * Controlador para manejar las solicitudes relacionadas con playlists.
+ */
 @Controller
 public class PlaylistsController {
 
@@ -34,6 +37,7 @@ public class PlaylistsController {
     private final CancionService cancionService;
     private final CancionPlaylistService cancionPlaylistService;
 
+    /** Inyectar los servicios necesarios para manejar playlists y usuarios */
     public PlaylistsController(UsuarioService usuarioService, PlaylistService playlistService,
                                CancionService cancionService, CancionPlaylistService cancionPlaylistService) {
         this.usuarioService = usuarioService;
@@ -43,6 +47,7 @@ public class PlaylistsController {
         System.out.println("\t PlaylistsController inicializado");
     }
 
+    /** Página para gestionar playlists */
     @GetMapping("/Playlists")
     public String mostrarPlaylists(Model model) {
         System.out.println("\t Recojo la petición de /Playlists");
@@ -71,6 +76,13 @@ public class PlaylistsController {
         return "GestorPlaylists";
     }
 
+    /**
+     * Maneja la creación de una nueva playlist.
+     * @param idUsuario
+     * @param nombre
+     * @param descripcion
+     * @return
+     */
     @PostMapping("/CrearPlaylist")
     public String crearPlaylist(@RequestParam("id_usuario") Long idUsuario,
                                 @RequestParam("nombre") String nombre,
@@ -92,6 +104,12 @@ public class PlaylistsController {
         return "redirect:/Playlists";
     }
 
+    /**
+     * Maneja la búsqueda de playlists por nombre.
+     * @param nombre
+     * @param model
+     * @return
+     */
     @GetMapping("/BuscarPlaylist")
     public String buscarPlaylist(@RequestParam(name = "nombre", required = false) String nombre, Model model) {
         RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
@@ -124,7 +142,12 @@ public class PlaylistsController {
         model.addAttribute("mostrarAlbumes", false);
         return "GestorPlaylists";
     }
-
+    /**
+     * Maneja la búsqueda de álbumes (playlists de artistas).
+     * @param nombre
+     * @param model
+     * @return
+     */
     @GetMapping("/BuscarAlbum")
     public String buscarAlbum(@RequestParam(name = "nombre", required = false) String nombre, Model model) {
         RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
@@ -158,7 +181,10 @@ public class PlaylistsController {
         return "GestorPlaylists";
     }
 
-    // --- API handlers movidos aquí para controlar desde PlaylistsController ---
+    /**
+     * fUNCIÓN para obtener las playlists del usuario autenticado.
+     * @return
+     */
     @GetMapping("/api/misplaylists")
     @ResponseBody
     public List<Map<String,Object>> misPlaylistsApi() {
@@ -181,6 +207,12 @@ public class PlaylistsController {
         return out;
     }
 
+    /**
+     * Endpoint para añadir una canción a una playlist vía AJAX
+     * @param playlistId
+     * @param cancionId
+     * @return
+     */
     @PostMapping("/api/playlists/{playlistId}/add")
     @ResponseBody
     public ResponseEntity<Map<String,Object>> addSongToPlaylistApi(@PathVariable("playlistId") Long playlistId,
@@ -226,7 +258,13 @@ public class PlaylistsController {
         return ResponseEntity.ok(Map.of("ok",true));
     }
 
-    // Endpoint para editar una playlist (nombre/descripcion) vía AJAX
+    /**
+     * Endpoint para editar los detalles de una playlist vía AJAX
+     * @param playlistId
+     * @param nombre
+     * @param descripcion
+     * @return
+     */
     @PostMapping("/api/playlists/{playlistId}/edit")
     @ResponseBody
     public ResponseEntity<Map<String,Object>> editPlaylistApi(@PathVariable("playlistId") Long playlistId,
@@ -262,7 +300,11 @@ public class PlaylistsController {
         return ResponseEntity.ok(Map.of("ok",true));
     }
 
-    // Endpoint para obtener detalles de una playlist incluyendo sus canciones
+    /**
+     * Endpoint para obtener los detalles de una playlist vía AJAX
+     * @param playlistId
+     * @return
+     */
     @GetMapping("/api/playlists/{playlistId}")
     @ResponseBody
     public ResponseEntity<Map<String,Object>> getPlaylistApi(@PathVariable("playlistId") Long playlistId) {

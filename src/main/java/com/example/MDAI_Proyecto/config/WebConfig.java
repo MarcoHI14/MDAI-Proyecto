@@ -11,8 +11,12 @@ import java.time.Duration;
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
+    /**
+     * Configura los manejadores de recursos estáticos,
+     * sirve archivos desde la carpeta uploads/ en el sistema de archivos
+     * bajo la ruta /uploads/** sin almacenamiento en caché.
+     */
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Servir archivos desde la carpeta uploads/ en filesystem en la ruta /uploads/**
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/")
                 .setCacheControl(CacheControl.noStore())

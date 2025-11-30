@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
-
+/**
+ * Controlador para manejar las solicitudes relacionadas con usuarios, incluyendo login, registro y administración.
+ */
 @Controller
 @RequestMapping("/users")
 public class UsuarioController {
@@ -18,19 +20,34 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
     private final ArtistaService artistaService;
 
-    // Inyectar ArtistaService además de UsuarioService
+    /**
+     * Constructor que inyecta los servicios necesarios.
+      * @param usuarioService
+     * @param artistaService
+     */
     public UsuarioController(UsuarioService usuarioService, ArtistaService artistaService) {
         this.usuarioService = usuarioService;
         this.artistaService = artistaService;
         System.out.println("\t UsuarioController inicializado");
     }
 
+    /**
+     * Muestra la página de inicio de sesión.
+      * @return Nombre de la vista "InicioSesion".
+     */
     @GetMapping("/login")
     public String mostrarLogin() {
         System.out.println("\t Recojo la petición de /users/login");
         return "InicioSesion";
     }
 
+    /**
+     * Procesa la solicitud de inicio de sesión.
+      * @param email Correo electrónico del usuario.
+     * @param password Contraseña del usuario.
+     * @param redirectAttributes Atributos para redirección con mensajes flash.
+     * @return Redirección a la página correspondiente según el rol del usuario.
+     */
     @PostMapping("/login")
     public String login(@RequestParam String email,
                         @RequestParam String password,
@@ -69,7 +86,7 @@ public class UsuarioController {
                 }
             } catch (Exception ex) {
                 System.err.println("Error comprobando rol de artista: " + ex.getMessage());
-                // Fallback: llevar a la bienvenida genérica
+                // llevar a la bienvenida genérica
                 return "redirect:/Bienvenida";
             }
         } else {
@@ -78,6 +95,10 @@ public class UsuarioController {
         }
     }
 
+    /**
+     * Muestra la página de administración para el usuario admin.
+      * @return Redirección a la ruta centralizada de administración.
+     */
     @GetMapping("/admin")
     public String BienvenidaAdmin() {
         System.out.println("\t Recojo la petición de /users/admin");
@@ -91,11 +112,25 @@ public class UsuarioController {
     // podemos mover o añadir un mapping específico, pero por ahora se delega al controlador
     // dedicado a solicitudes.
 
+    /**
+     * Muestra la página de registro de usuarios.
+      * @return Nombre de la vista "Registro".
+     */
     @GetMapping("/register")
     public String mostrarRegistro() {
         return "Registro";
     }
 
+    /**
+     * Procesa la solicitud de registro de un nuevo usuario.
+      * @param username Nombre de usuario.
+     * @param email Correo electrónico.
+     * @param password Contraseña.
+     * @param password2 Confirmación de contraseña.
+     * @param model Modelo para pasar atributos a la vista.
+     * @param redirectAttributes Atributos para redirección con mensajes flash.
+     * @return Redirección a la página de bienvenida o vuelta al registro con errores.
+     */
     @PostMapping("/register")
     public String register(@RequestParam String username,
                            @RequestParam String email,
@@ -151,7 +186,11 @@ public class UsuarioController {
         return "redirect:/Bienvenida";
     }
 
-    // Logout que elimina el atributo de sesión (sin usar jakarta)
+    /**
+     * Cierra la sesión del usuario eliminando el atributo de sesión correspondiente.
+      * @param redirectAttributes
+     * @return
+     */
     @GetMapping("/logout")
     public String logout(RedirectAttributes redirectAttributes) {
         RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
@@ -168,6 +207,11 @@ public class UsuarioController {
         return "redirect:/";
     }
 
+    /**
+     * Verifica si un nombre de usuario ya existe.
+      * @param username Nombre de usuario a verificar.
+     * @return "true" si existe, "false" en caso contrario.
+     */
     @GetMapping(value = "/exists/username", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public ResponseEntity<String> usernameExists(@RequestParam String username) {
@@ -181,6 +225,11 @@ public class UsuarioController {
         }
     }
 
+    /**
+     * Verifica si un correo electrónico ya existe.
+      * @param email Correo electrónico a verificar.
+     * @return "true" si existe, "false" en caso contrario.
+     */
     @GetMapping(value = "/exists/email", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public ResponseEntity<String> emailExists(@RequestParam String email) {
@@ -194,6 +243,10 @@ public class UsuarioController {
         }
     }
 
+    /**
+     * Devuelve el nombre de usuario del usuario actualmente autenticado en la sesión.
+      * @return Nombre de usuario o "ANONYMOUS" si no hay usuario autenticado.
+     */
     @GetMapping(value = "/whoami", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public ResponseEntity<String> whoami() {

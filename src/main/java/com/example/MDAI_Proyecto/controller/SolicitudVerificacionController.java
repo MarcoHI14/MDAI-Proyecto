@@ -13,26 +13,37 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-
+/**
+ * Controlador para manejar las solicitudes de verificación de usuarios.
+ */
 @Controller
 public class SolicitudVerificacionController {
 
     private final SolicitudVerificacionService solicitudService;
     private final UsuarioService usuarioService;
-
+    /** Inyectar los servicios necesarios */
     public SolicitudVerificacionController(SolicitudVerificacionService solicitudService, UsuarioService usuarioService) {
         this.solicitudService = solicitudService;
         this.usuarioService = usuarioService;
         System.out.println("\t SolicitudVerificacionController inicializado");
     }
 
-    // Redirigir las antiguas rutas /AdminSolicitudes a la nueva ubicación bajo /admin
+    /**
+     * Redirigir rutas antiguas de AdminSolicitudes a la nueva ruta agrupada.
+      * @return
+     */
     @org.springframework.web.bind.annotation.GetMapping({"/AdminSolicitudes","/AdminSolicitudes.html"})
     public String redirectOldAdminSolicitudes() {
         return "redirect:/admin/AdminSolicitudes";
     }
 
-    // Aceptar solicitud (simplificado)
+    /**
+     * Aprobar solicitud y crear artista si procede
+      * @param id
+     * @param estado
+     * @param redirectAttributes
+     * @return
+     */
     @PostMapping("/solicitudes/aceptar")
     public String aceptarSolicitud(@RequestParam Long id,
                                    @RequestParam(name = "estado", required = false) String estado,
@@ -59,7 +70,13 @@ public class SolicitudVerificacionController {
         return "redirect:/admin/AdminSolicitudes?estado=" + redirectEstado; // ir a la ruta agrupada
     }
 
-    // Rechazar solicitud (simplificado)
+    /**
+     * Rechazar solicitud
+      * @param id
+     * @param estado
+     * @param redirectAttributes
+     * @return
+     */
     @PostMapping("/solicitudes/rechazar")
     public String rechazarSolicitud(@RequestParam Long id,
                                      @RequestParam(name = "estado", required = false) String estado,
@@ -80,7 +97,13 @@ public class SolicitudVerificacionController {
         return "redirect:/admin/AdminSolicitudes?estado=" + redirectEstado; // ir a la ruta agrupada
     }
 
-    // Crear nueva solicitud desde BienvenidaUsuario
+    /**
+     * Crear nueva solicitud de verificación
+      * @param descripcion
+     * @param tipo
+     * @param redirectAttributes
+     * @return
+     */
     @PostMapping("/solicitudes/crear")
     public String crearSolicitud(@RequestParam(name = "descripcion", required = false) String descripcion,
                                  @RequestParam(name = "tipo", required = false) String tipo,

@@ -7,15 +7,24 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+/**
+ * Clase de asesoramiento de controlador para manejar atributos de sesión relacionados con el usuario.
+ */
 @ControllerAdvice
 public class SessionControllerAdvice {
 
     private final UsuarioService usuarioService;
 
+    /** Inyectar UsuarioService para operaciones relacionadas con usuarios */
     public SessionControllerAdvice(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
+    /**
+     * Proporciona el atributo "sessionUsuario" para los controladores.
+     * Obtiene el usuario actual de la sesión utilizando el ID almacenado en la sesión.
+     * @return El objeto Usuario correspondiente al ID de la sesión, o null si no se encuentra.
+     */
     @ModelAttribute("sessionUsuario")
     public Usuario sessionUsuario() {
         RequestAttributes attrs = RequestContextHolder.getRequestAttributes();

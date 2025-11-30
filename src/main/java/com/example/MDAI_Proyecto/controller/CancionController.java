@@ -31,21 +31,33 @@ import java.util.Map;
 import java.util.List;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Controlador para manejar las solicitudes relacionadas con canciones.
+ */
 @Controller
 public class CancionController {
 
     private final CancionService cancionService;
     private final ArtistaService artistaService;
 
+    /** Directorio base para subir archivos*/
     @Value("${uploads.dir:uploads}")
     private String uploadsDir;
 
+    /** Inyectar servicios necesarios */
     public CancionController(CancionService cancionService, ArtistaService artistaService) {
         this.cancionService = cancionService;
         this.artistaService = artistaService;
         System.out.println("\t CancionController inicializado");
     }
 
+    /**
+     * Página para buscar canciones
+     * @param filtroTipo
+     * @param query
+     * @param model
+     * @return
+     */
     @GetMapping("/BuscarCanciones")
     public String buscar(
             @RequestParam(required = false) String filtroTipo,
@@ -77,7 +89,16 @@ public class CancionController {
         return "BuscarCanciones";
     }
 
-    // Nuevo: manejar la subida/registro de canciones desde el formulario de artista
+    /**
+     * Registrar una nueva canción subida por un artista.
+     * @param titulo
+     * @param genero
+     * @param descripcion
+     * @param archivo
+     * @param duracion
+     * @param redirectAttributes
+     * @return
+     */
     @PostMapping("/canciones/registrar")
     public String registrarCancion(@RequestParam String titulo,
                                    @RequestParam(required = false) String genero,
@@ -126,8 +147,7 @@ public class CancionController {
             System.out.println("\t Descripción proporcionada: " + descripcion);
         }
 
-        // NOTE: no se impone límite de tamaño en el controlador (gestionado por configuración del servidor).
-        // El usuario pidió no tener límite de subidas, por lo que no validamos aquí el tamaño del archivo.
+        //  no se impone límite de tamaño en el controlador (gestionado por configuración del servidor).
 
         // Comprobar extensión y preparar nombre
         String origName = archivo.getOriginalFilename();
@@ -189,7 +209,11 @@ public class CancionController {
         }
     }
 
-    // API para obtener canciones por artista (por id)
+    /**
+     * Obtiene la lista de canciones asociadas a un artista dado su id.
+     * @param id
+     * @return
+     */
     @GetMapping("/api/artistas/{id}/canciones")
     @ResponseBody
     public List<Map<String,Object>> cancionesPorArtista(@PathVariable("id") Long id) {

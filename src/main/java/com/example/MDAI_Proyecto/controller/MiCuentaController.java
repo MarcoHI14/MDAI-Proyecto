@@ -17,6 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controlador para manejar las solicitudes relacionadas con la cuenta del usuario.
+ */
 @Controller
 @RequestMapping("/Micuenta")
 public class MiCuentaController {
@@ -24,12 +27,18 @@ public class MiCuentaController {
     private final UsuarioService usuarioService;
     private final SolicitudVerificacionService solicitudVerificacionService;
 
+    /** Inyectar servicios necesarios para operaciones relacionadas con usuarios y solicitudes de verificación */
     public MiCuentaController(UsuarioService usuarioService, SolicitudVerificacionService solicitudVerificacionService) {
         this.usuarioService = usuarioService;
         this.solicitudVerificacionService = solicitudVerificacionService;
         System.out.println("\t UsuarioController inicializado");
     }
 
+    /**
+     * Página de "Mi Cuenta"
+     * @param model
+     * @return
+     */
     @GetMapping
     public String mostrarMiCuenta(Model model) {
         RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
@@ -56,7 +65,7 @@ public class MiCuentaController {
         if (!solicitudes.isEmpty()) {
             // Obtener la última solicitud (asumiendo que están ordenadas cronológicamente)
             SolicitudVerificacion ultimaSolicitud = solicitudes.getLast();
-            estadoVerificacion = ultimaSolicitud.getEstado(); // O el método que tengas
+            estadoVerificacion = ultimaSolicitud.getEstado();
         }
 
         // Pasar datos al modelo
@@ -67,7 +76,12 @@ public class MiCuentaController {
         return "MiCuenta";
     }
 
-
+    /**
+     * Maneja la solicitud para cambiar el nombre de usuario.
+     * @param nuevoUsername El nuevo nombre de usuario proporcionado por el usuario.
+     * @param redirectAttributes Atributos para pasar mensajes flash en redirecciones.
+     * @return Redirige a la página de "Mi Cuenta" con un mensaje de éxito o error.
+     */
     @PostMapping("/cambiarUsername")
     public String cambiarUsername(@RequestParam("nuevoUsername") String nuevoUsername,
                                   RedirectAttributes redirectAttributes) {
@@ -94,6 +108,14 @@ public class MiCuentaController {
         return "redirect:/Micuenta";
     }
 
+    /**
+     * Maneja la solicitud para cambiar la contraseña del usuario.
+     * @param passwordActual La contraseña actual del usuario.
+     * @param nuevaPassword La nueva contraseña que el usuario desea establecer.
+     * @param confirmarPassword La confirmación de la nueva contraseña.
+     * @param redirectAttributes Atributos para pasar mensajes flash en redirecciones.
+     * @return Redirige a la página de "Mi Cuenta" con un mensaje de éxito o error.
+     */
     @PostMapping("/cambiarPassword")
     public String cambiarPassword(@RequestParam("passwordActual") String passwordActual,
                                   @RequestParam("nuevaPassword") String nuevaPassword,
@@ -131,7 +153,14 @@ public class MiCuentaController {
         return "redirect:/Micuenta";
     }
 
-
+    /**
+     * Maneja la solicitud para enviar una solicitud de verificación de artista.
+     * @param nombreArtistico El nombre artístico proporcionado por el usuario.
+     * @param nacionalidad La nacionalidad del usuario.
+     * @param biografia La biografía del usuario.
+     * @param redirectAttributes Atributos para pasar mensajes flash en redirecciones.
+     * @return Redirige a la página de "Mi Cuenta" con un mensaje de éxito o error.
+     */
     @PostMapping("/solicitarVerificacion")
     public String solicitarVerificacion(@RequestParam("nombreArtistico") String nombreArtistico,
                                         @RequestParam("nacionalidad") String nacionalidad,
