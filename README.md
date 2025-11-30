@@ -38,6 +38,11 @@ Dicho comando creará el contenedor de Docker necesario para el funcionamiento d
 Dicho comando creará el contenedor de Docker necesario para el funcionamiento de la app. 
 Posteriormente, la base de datos y sus tablas se generarán automáticamente gracias al archivo application.properties, en el que se encuentra la configuración del proyecto.
 
+<!-- Añadido: información sobre el volcado SQL y puerto de la app -->
+- Archivo con base de datos poblada: en el repositorio incluimos un volcado SQL con la base de datos poblada en `scripts/db-dump.sql`. Puedes restaurarlo siguiendo las instrucciones en `scripts/README.md` o usando `scripts/restore-db.ps1`.
+- Carpeta de samples: el proyecto incluye una carpeta de ejemplo con 20 canciones de prueba en `src/main/resources/samples` (útil para pruebas locales).
+- Puerto de la aplicación web: la app se sirve en el puerto 8084 por defecto; una vez levantada, accede en http://localhost:8084
+
 
 ### *EJECUCIÓN DE TESTS*
 *DISCLAIMER: PARA EJECUTAR LOS TESTS Y PROBAR EL FUNCIONAMIENTO DE LA APP DEBERÁS TENER ABIERTO EL CONTENEDOR DE DOCKER CORRESPONDIENTE*
