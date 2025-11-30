@@ -6,65 +6,86 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+/**
+ * Controlador para manejar las solicitudes de las páginas principales como Inicio, Registro, Información, etc.
+ */
 @Controller
 public class InicioController {
 
     private final ArtistaService artistaService;
 
-    // Inyectar ArtistaService para comprobar si el usuario es artista
+    /**
+     * Constructor que inyecta el servicio de artista.
+     * @param artistaService Servicio para operaciones relacionadas con artistas.
+     */
     public InicioController(ArtistaService artistaService) {
         this.artistaService = artistaService;
         System.out.println("\t InicioController inicializado");
     }
 
-    // Página principal
+    /**
+     * Página de inicio (raíz "/")
+      * @return
+     */
     @GetMapping("/")
     public String mostrarInicio() {
         System.out.println("\t Recojo la petición de inicio");
         return "Inicio"; // Thymeleaf buscará Inicio.html en /templates
     }
 
-    // Página de inicio explícita
+    /**
+     * Mapea las solicitudes GET para "/Inicio" y "/Inicio.html".
+     * @return Nombre de la vista "Inicio".
+     */
     @GetMapping({"/Inicio", "/Inicio.html"})
     public String mostrarInicioHtml() {
         System.out.println("\t Recojo la petición de /Inicio");
         return "Inicio";
     }
 
-    // Página de registro
+    /**
+     * Página de registro
+      * @return
+     */
     @GetMapping({"/Registro","/Registro.html"})
     public String mostrarRegistroHtml() {
         System.out.println("\t Recojo la petición de /Registro");
         return "Registro";
     }
 
-    // Página de información
+    /**
+     * Página de información
+      * @return
+     */
     @GetMapping({"/Información", "/Información.html"})
     public String mostrarInformacionHtml() {
         System.out.println("\t Recojo la petición de /Informacion");
         return "Información";
     }
 
-    // Página de inicio de sesión
+    /** Página de inicio de sesión
+      * @return
+     */
     @GetMapping({"/InicioSesion", "/InicioSesion.html"})
     public String mostrarInicioSesionHtml() {
         System.out.println("\t Recojo la petición de /InicioSesion");
         return "InicioSesion";
     }
 
-    // Página de administración
-    // Nota: el mapeo de AdminSolicitudes se gestiona en SolicitudVerificacionController
-    // para permitir cargar las solicitudes pendientes en el modelo.
-    // (Se dejó el comportamiento en un controlador dedicado).
-
-    // Página de bienvenida tras registro/inicio de sesión
+    /**
+     * Página de bienvenida para usuarios
+      * @return
+     */
     @GetMapping({"/Bienvenida", "/Bienvenida.html"})
     public String mostrarBienvenida() {
         System.out.println("\t Recojo la petición de /Bienvenida");
         return "BienvenidaUsuario";
     }
 
-    // Link del logo: comprueba si hay sesión y redirige a Inicio, BienvenidaUsuario o BienvenidaArtista
+    /**
+     * Página de logo/home que redirige según el estado de sesión
+      * @return
+     */
     @GetMapping({"/home","/home.html","/logo"})
     public String logoHome() {
         System.out.println("\t Recojo la petición de /home (logo)");

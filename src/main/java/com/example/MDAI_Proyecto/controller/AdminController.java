@@ -30,6 +30,11 @@ import com.example.MDAI_Proyecto.data.model.Artista;
 import com.example.MDAI_Proyecto.data.model.Cancion;
 import com.example.MDAI_Proyecto.data.services.CancionService;
 
+/**
+ * Controlador para las funcionalidades de administración del sistema.
+ * Maneja rutas bajo /admin para gestionar usuarios, artistas, canciones,
+ * playlists y solicitudes de verificación.
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -40,6 +45,7 @@ public class AdminController {
     private final PlaylistService playlistService;
     private final SolicitudVerificacionService solicitudService;
 
+    /** Inyección de dependencias de los servicios necesarios */
     public AdminController(UsuarioService usuarioService,
                            ArtistaService artistaService,
                            CancionService cancionService,
@@ -52,14 +58,22 @@ public class AdminController {
         this.solicitudService = solicitudService;
     }
 
-    // GET /admin  -> panel de control (redirige a bienvenida admin o muestra resumen)
+    /**
+     * Muestra el panel de control del administrador.
+     * @return Nombre de la vista html de bienvenida del administrador.
+     */
     @GetMapping({"/",""})
     public String panelControl() {
-        // devolver la vista de bienvenida del administrador
         return "BienvenidaAdmin";
     }
 
-    // GET /admin/AdminSolicitudes -> listar solicitudes para admin
+    /**
+     * Lista las solicitudes de verificación para el administrador.
+     * Permite filtrar por estado (PENDIENTE, APROBADA, RECHAZADA, ALL).
+     * @param estado Estado de las solicitudes a listar (opcional).
+     * @param model Modelo para pasar datos a la vista.
+     * @return Nombre de la vista html que muestra las solicitudes.
+     */
     @GetMapping({"/AdminSolicitudes","/AdminSolicitudes.html"})
     public String listarSolicitudesAdmin(@RequestParam(name = "estado", required = false) String estado, Model model) {
         System.out.println("\t Recojo la petición de /admin/AdminSolicitudes (AdminController) estado=" + estado);
@@ -88,7 +102,11 @@ public class AdminController {
         return "AdminSolicitudes";
     }
 
-    // GET /admin/estadisticas -> página de estadísticas
+    /**
+     * Muestra las estadísticas básicas del sistema para el administrador.
+     * @param model Modelo para pasar datos a la vista.
+     * @return Nombre de la vista html que muestra las estadísticas.
+     */
     @GetMapping({"/estadisticas","/estadisticas.html"})
     public String mostrarEstadisticas(Model model) {
         // Calcular estadísticas básicas
@@ -139,7 +157,12 @@ public class AdminController {
         return "AdminEstadisticas";
     }
 
-    // --- Gestión de Usuarios integrada en AdminController ---
+    /**
+     * Lista los usuarios para administración.
+     * Añade al modelo un mapa que indica si cada usuario es artista o no.
+     * @param model Modelo para pasar datos a la vista.
+     * @return Nombre de la vista html que muestra los usuarios.
+     */
     @GetMapping({"/AdminUsuarios","/AdminUsuarios.html"})
     public String listarUsuarios(Model model) {
         System.out.println("\t Recojo la petición de /admin/AdminUsuarios");
@@ -166,7 +189,12 @@ public class AdminController {
         return "AdminUsuarios";
     }
 
-    // API: eliminar usuario por id (DELETE)
+
+    /**
+     * Función para eliminar un usuario por su id.
+     * @param id
+     * @return
+     */
     @DeleteMapping("/api/users/{id}")
     @ResponseBody
     public ResponseEntity<?> apiEliminarUsuario(@PathVariable("id") Long id) {
@@ -182,7 +210,12 @@ public class AdminController {
         }
     }
 
-    // API: eliminar artista por id (DELETE)
+
+    /**
+     * Función para eliminar un artista por su id.
+     * @param id
+     * @return
+     */
     @DeleteMapping("/api/artistas/{id}")
     @ResponseBody
     public ResponseEntity<?> apiEliminarArtista(@PathVariable("id") Long id) {
@@ -198,7 +231,11 @@ public class AdminController {
         }
     }
 
-    // API: eliminar canción por id (DELETE)
+    /**
+     * Elimina una canción por su id.
+     * @param id Id de la canción a eliminar.
+     * @return ResponseEntity con el resultado de la operación.
+     */
     @DeleteMapping("/api/canciones/{id}")
     @ResponseBody
     public ResponseEntity<?> apiEliminarCancion(@PathVariable("id") Long id) {
@@ -213,7 +250,12 @@ public class AdminController {
         }
     }
 
-    // API: actualizar username
+    /**
+     * Función actualizar username
+     * @param id
+     * @param body
+     * @return
+     */
     @PutMapping("/api/users/{id}/username")
     @ResponseBody
     public ResponseEntity<?> apiActualizarUsername(@PathVariable("id") Long id, @RequestBody Map<String, String> body) {
@@ -234,7 +276,12 @@ public class AdminController {
         }
     }
 
-    // API: actualizar email
+    /**
+     * Función actualizar email
+      * @param id
+     * @param body
+     * @return
+     */
     @PutMapping("/api/users/{id}/email")
     @ResponseBody
     public ResponseEntity<?> apiActualizarEmail(@PathVariable("id") Long id, @RequestBody Map<String, String> body) {
@@ -255,7 +302,12 @@ public class AdminController {
         }
     }
 
-    // API: actualizar contraseña
+    /**
+     * Función actualizar password
+     * @param id
+     * @param body
+     * @return
+     */
     @PutMapping("/api/users/{id}/password")
     @ResponseBody
     public ResponseEntity<?> apiActualizarPassword(@PathVariable("id") Long id, @RequestBody Map<String, String> body) {
@@ -274,7 +326,11 @@ public class AdminController {
         }
     }
 
-    // GET /admin/AdminArtistas -> listar artistas para administración (URL canonical)
+    /**
+     * Lista los artistas para administración.
+     * @param model Modelo para pasar datos a la vista.
+     * @return Nombre de la vista html que muestra los artistas.
+     */
     @GetMapping({"/AdminArtistas","/AdminArtistas.html"})
     public String listarArtistas(Model model) {
         System.out.println("\t Recojo la petición de /admin/AdminArtistas");
@@ -285,17 +341,24 @@ public class AdminController {
             System.err.println("Error obteniendo artistas: " + ex.getMessage());
         }
         model.addAttribute("artistas", artistas);
-        // Devolver la vista cuyo fichero es src/main/resources/templates/AdminArtistas.html
+        // Devolver  src/main/resources/templates/AdminArtistas.html
         return "AdminArtistas";
     }
 
-    // Redirigir rutas antiguas /AdministrarArtistas a la URL canonical /AdminArtistas
+    /**
+     * Redirige las solicitudes de /AdministrarArtistas a /admin/AdminArtistas.
+     * @return Redirección a la ruta canonical.
+     */
     @GetMapping({"/AdministrarArtistas","/AdministrarArtistas.html"})
     public String redirectAdministrarArtistas() {
         return "redirect:/admin/AdminArtistas";
     }
 
-    // GET /admin/AdminCanciones -> listar canciones para administración
+    /**
+     * Lista las canciones para administración.
+     * @param model Modelo para pasar datos a la vista.
+     * @return Nombre de la vista html que muestra las canciones.
+     */
     @GetMapping({"/AdminCanciones","/AdminCanciones.html"})
     public String listarCanciones(Model model) {
         System.out.println("\t Recojo la petición de /admin/AdminCanciones");
