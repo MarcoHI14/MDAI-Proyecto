@@ -2,36 +2,92 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Iniciar sesión | Tuned Hive</title>
-  <!-- Usar Thymeleaf para resolver el CSS servido desde /estilos.css -->
-  <link rel="stylesheet" th:href="@{/estilos.css}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Bootstrap CSS desde WebJars -->
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}" />
+  <!-- Estilos unificados -->
+  <link rel="stylesheet" th:href="@{/landing.css(v=8)}" />
 </head>
 <body>
-<button class="btn-colmena info info-top-left" onclick="window.location.href='/Inicio.html'">Volver al inicio</button>
-  <h1 style="margin-top: 80px;">Inicia sesión en Tuned Hive</h1>
-  <div class="subtitulo" style="max-width: 600px; margin: 0 auto 2em auto;">
-    Accede a tu cuenta y sigue compartiendo tu música con la comunidad.
+
+<!-- Navbar (copiado de Inicio.html) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+      <img th:src="@{/TunedHive.png}" alt="TunedHive" width="44" height="44" class="d-inline-block align-text-top me-2 navbar-logo" />
+      <span class="h6 mb-0">Tuned Hive</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" th:href="@{/BuscarCanciones}">Explorar</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/BuscarArtistas}">Artistas</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/GestorPlaylists}">Playlists</a></li>
+        <li class="nav-item ms-2"><a class="btn btn-outline-light btn-sm" th:href="@{/users/login}">Iniciar sesión</a></li>
+        <li class="nav-item ms-2"><a class="btn btn-warning btn-sm text-dark" th:href="@{/users/register}">Registrarse</a></li>
+      </ul>
+    </div>
   </div>
+</nav>
 
-  <!-- Mostrar mensaje de error (flash attribute) si existe -->
-  <div th:if="${error}" style="max-width:400px;margin:0 auto 1em auto;padding:0.5em 1em;border-radius:10px;background:#ffdede;color:#7a1a1a;font-weight:600;text-align:center;">
-    <span th:text="${error}"></span>
+<main class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-6">
+        <div class="text-center mb-4">
+          <h1 class="h3">Inicia sesión en Tuned Hive</h1>
+          <p class="subtitulo">Accede a tu cuenta y sigue compartiendo tu música con la comunidad.</p>
+        </div>
+
+        <!-- Mensaje de error flash -->
+        <div th:if="${error}" class="mb-3">
+          <div class="alert alert-danger text-center" th:text="${error}"></div>
+        </div>
+
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <form th:action="@{/users/login}" method="post" class="row g-3">
+              <div class="col-12">
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" id="email" name="email" required class="form-control" placeholder="tucorreo@ejemplo.com" />
+              </div>
+
+              <div class="col-12">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" id="password" name="password" required class="form-control" placeholder="Contraseña" />
+              </div>
+
+              <div class="col-12 d-flex justify-content-between align-items-center">
+                <a class="text-muted" th:href="@{/Registro}">¿No tienes cuenta? <strong class="ms-1" style="color:var(--colmena-dark);">Regístrate</strong></a>
+                <div>
+                  <a class="btn btn-outline-secondary me-2" th:href="@{/}"><i class="fas fa-arrow-left me-1"></i> Volver</a>
+                  <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
+</main>
 
-  <form style="max-width: 400px; margin: 0 auto; background: #fffbe6cc; padding: 2em 2em 1.5em 2em; border-radius: 18px; box-shadow: 0 2px 12px #0001; display: flex; flex-direction: column; gap: 1.2em;"
-        th:action="@{/users/login}" method="post">
-
-    <label for="email" style="font-weight: 500; color: #3a2a13;">Correo electrónico</label>
-    <input type="email" id="email" name="email" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
-
-    <label for="password" style="font-weight: 500; color: #3a2a13;">Contraseña</label>
-    <input type="password" id="password" name="password" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
-
-    <button type="submit" class="btn-colmena login" style="margin-top: 0.5em;">Iniciar sesión</button>
-  </form>
-  <div style="text-align: center; margin-top: 1.5em;">
-    ¿No tienes cuenta? <a th:href="@{/Registro}" style="color: #6b3e13; font-weight: bold; text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#bfa14a'" onmouseout="this.style.color='#6b3e13'">Regístrate</a>
+<!-- Footer (copiado de Inicio.html) -->
+<footer class="bg-dark text-light py-4">
+  <div class="container text-center">
+    <p class="mb-1">© Tuned Hive 2025</p>
+    <small class="text-muted">20 samples incluidos en /samples</small>
   </div>
+</footer>
+
+<!-- Bootstrap Bundle JS -->
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

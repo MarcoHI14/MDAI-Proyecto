@@ -2,32 +2,91 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Información | Tuned Hive</title>
-  <!-- Usar Thymeleaf para resolver el CSS servido desde /estilos.css -->
-  <link rel="stylesheet" th:href="@{/estilos.css}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Bootstrap y FontAwesome desde WebJars para coherencia con Inicio.html -->
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+  <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}" />
+  <!-- Estilos colmena/unificados -->
+  <link rel="stylesheet" th:href="@{/landing.css(v=8)}" />
 </head>
 <body>
-  <!-- Usar th:onclick para que la URL se resuelva por Thymeleaf -->
-  <button class="btn-colmena info info-top-left" th:onclick="|window.location.href='@{/Inicio.html}'|">Volver al inicio</button>
-  <h1 style="margin-top: 80px;">¿Qué es Tuned Hive?</h1>
-  <div class="subtitulo" style="max-width: 600px; margin: 0 auto 2em auto;">
-    Tuned Hive es una plataforma colaborativa donde los usuarios pueden compartir, descubrir y valorar música de manera colectiva, como en una colmena. Aquí, cada usuario es una abeja que aporta y disfruta del trabajo común.
+
+<!-- Navbar (copiado de Inicio.html) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+      <img th:src="@{/TunedHive.png}" alt="TunedHive" width="44" height="44" class="d-inline-block align-text-top me-2 navbar-logo" />
+      <span class="h6 mb-0">Tuned Hive</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" th:href="@{/BuscarCanciones}">Explorar</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/BuscarArtistas}">Artistas</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/GestorPlaylists}">Playlists</a></li>
+        <li class="nav-item ms-2"><a class="btn btn-outline-light btn-sm" th:href="@{/users/login}">Iniciar sesión</a></li>
+        <li class="nav-item ms-2"><a class="btn btn-warning btn-sm text-dark" th:href="@{/users/register}">Registrarse</a></li>
+      </ul>
+    </div>
   </div>
-  <section style="max-width: 700px; margin: 0 auto;">
-    <h2>¿Qué puedes hacer?</h2>
-    <ul style="font-size: 1.1em; line-height: 1.7; color: #3a2a13;">
-      <li>Explorar canciones y playlists recomendadas por la comunidad.</li>
-      <li>Subir tus propias canciones o playlists y recibir valoraciones.</li>
-      <li>Valorar y comentar la música de otros usuarios.</li>
-      <li>Participar en rankings y retos musicales mensuales.</li>
-      <li>Personalizar tu perfil y seguir a otros usuarios.</li>
-      <li>Descubrir tendencias y novedades musicales de forma colaborativa.</li>
-    </ul>
-    <h2>¿Por qué "Tuned Hive"?</h2>
-    <p style="color: #6b3e13; font-size: 1.1em;">
-      Porque creemos en la fuerza de la comunidad: cada aportación suma y juntos creamos una experiencia musical más rica, variada y divertida. ¡Haz que tu música brille como la miel!
-    </p>
-  </section>
+</nav>
+
+<!-- Contenedor principal con estilo colmena -->
+<main class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10">
+        <section class="hive-hex">
+          <div class="hero-card p-4 p-md-5">
+            <div class="row">
+              <div class="col-12 text-center mb-3">
+                <img th:src="@{/TunedHive.png}" alt="logo" class="hero-logo" style="max-width:110px;" />
+              </div>
+
+              <div class="col-12">
+                <h1 class="hero-title">¿Qué es Tuned Hive?</h1>
+                <p class="hero-sub">Plataforma colaborativa para compartir, descubrir y valorar música — como una colmena donde cada abeja aporta.</p>
+
+                <p class="mb-3">Tuned Hive es una plataforma colaborativa donde los usuarios pueden compartir, descubrir y valorar música de manera colectiva. Aquí, cada usuario es una abeja que aporta y disfruta del trabajo común.</p>
+
+                <h4>¿Qué puedes hacer?</h4>
+                <ul class="list-group list-group-flush mt-2 mb-4">
+                  <li class="list-group-item">Explorar canciones y playlists recomendadas por la comunidad.</li>
+                  <li class="list-group-item">Subir tus propias canciones o playlists y recibir valoraciones.</li>
+                  <li class="list-group-item">Valorar y comentar la música de otros usuarios.</li>
+                  <li class="list-group-item">Participar en rankings y retos musicales mensuales.</li>
+                  <li class="list-group-item">Personalizar tu perfil y seguir a otros usuarios.</li>
+                  <li class="list-group-item">Descubrir tendencias y novedades musicales de forma colaborativa.</li>
+                </ul>
+
+                <h4>¿Por qué "Tuned Hive"?</h4>
+                <p class="text-muted">Porque creemos en la fuerza de la comunidad: cada aportación suma y juntos creamos una experiencia musical más rica, variada y divertida. ¡Haz que tu música brille como la miel!</p>
+
+                <div class="mt-4 text-end">
+                  <a class="btn btn-sm btn-outline-secondary" th:href="@{/}"><i class="fas fa-arrow-left me-1"></i> Volver</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Footer (copiado de Inicio.html) -->
+<footer class="bg-dark text-light py-4">
+  <div class="container text-center">
+    <p class="mb-1">© Tuned Hive 2025</p>
+    <small class="text-muted">20 samples incluidos en /samples</small>
+  </div>
+</footer>
+
+<!-- Bootstrap Bundle JS -->
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

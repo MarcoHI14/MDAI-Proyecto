@@ -192,29 +192,6 @@ h1 {
   box-shadow: 0 2px 12px #0001;
 }
 
-.abeja-voladora {
-  position: absolute;
-  left: 50%;
-  top: 30px; /* Más abajo del logo */
-  transform: translateX(-50%);
-  pointer-events: none;
-  z-index: 2;
-  transition: top 0.2s;
-}
-
-.abeja-voladora.volando {
-  animation: vuelo-abeja 1.2s cubic-bezier(.4,1.6,.6,1) 1;
-}
-
-@keyframes vuelo-abeja {
-  0%   { top: 30px; transform: translateX(-50%) rotate(-8deg); }
-  20%  { top: 10px; transform: translateX(-50%) rotate(8deg); }
-  40%  { top: 0;  transform: translateX(-50%) rotate(-8deg); }
-  60%  { top: 10px; transform: translateX(-50%) rotate(8deg); }
-  80%  { top: 30px; transform: translateX(-50%) rotate(-8deg); }
-  100% { top: 30px; transform: translateX(-50%) rotate(0deg); }
-}
-
 @media (max-width: 600px) {
   .logo-colmena { width: 120px; }
   h1 { font-size: 1.5rem; }
@@ -232,13 +209,6 @@ h1 {
     right: 10px;
     font-size: 0.95em;
     padding: 0;
-  }
-  .abeja-voladora {
-    width: 32px;
-    height: 32px;
-  }
-  .abeja-voladora.volando {
-    animation-duration: 1.3s;
   }
 }
 
@@ -273,8 +243,8 @@ html, body, * {
 html::-webkit-scrollbar,
 body::-webkit-scrollbar,
 *::-webkit-scrollbar {
-  width: 0px !important;
-  height: 0px !important;
+  width: 0 !important;
+  height: 0 !important;
   background: transparent !important;
 }
 /* Asegurar que el "thumb" y el track también estén transparentes */
@@ -300,7 +270,7 @@ html, body {
 /* Reservar un pequeño espacio a la derecha para evitar que scrollbars 'overlay' cubran contenido
    aplicable en pantallas anchas (escritorio). Ajusta --scrollbar-space si hace falta. */
 :root {
-  --scrollbar-space: 0px; /* eliminado el espacio reservado para barras de desplazamiento para permitir que header llegue al borde derecho */
+  --scrollbar-space: 0; /* eliminado el espacio reservado para barras de desplazamiento para permitir que header llegue al borde derecho */
 }
 html {
   scrollbar-gutter: stable both-edges;
