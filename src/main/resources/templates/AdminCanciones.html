@@ -30,10 +30,10 @@
     .empty-msg{ padding:1rem; background:#fffbe6; border-radius:8px; color:#bfa14a; font-weight:700; text-align:center; }
 
     /* Centrar y agrandar imágenes laterales */
-    .admin-canciones-deco{ display:flex; align-items:center; justify-content:center; padding:0.4rem 1rem; }
+    .admin-canciones-deco{ display:flex; align-items:center; justify-content:center; padding:1.25rem; }
     .admin-canciones-deco img{
-      max-width:280px;
-      max-height:240px;
+      max-width:320px;
+      max-height:320px;
       width:auto;
       height:auto;
       object-fit:contain;
@@ -62,7 +62,7 @@
   <div th:replace="fragments/admin_header :: adminHeader"></div>
 
   <main style="margin-top: 3.5rem; padding: 0.75rem 1.25rem; max-width: 1600px; margin-left: auto; margin-right: auto;">
-    <div class="admin-canciones-wrapper" style="display:flex; gap:1.5rem; align-items:center; justify-content:center;">
+    <div class="admin-canciones-wrapper" style="display:flex; gap:1.5rem; align-items:flex-start; justify-content:center;">
       <div class="admin-canciones-deco left" aria-hidden="true">
         <img th:src="@{/musico1.png}" src="../static/musico1.png" alt="decoracion izquierda" loading="lazy">
       </div>
@@ -189,9 +189,8 @@
         return;
       }
       rows.sort((a,b) => sortAscending ? comparator(a,b) : comparator(b,a));
-      // Re-append in order
       rows.forEach(r => tbody.appendChild(r));
-    }
+     }
 
     // Header clicks: make headers sortable and show toast on toggle
     document.querySelectorAll('th[data-sortable]').forEach(th => {
@@ -209,23 +208,24 @@
     const CSRF = csrfMeta ? { header: (csrfHeaderMeta ? csrfHeaderMeta.content : 'X-CSRF-TOKEN'), token: csrfMeta.content } : null;
     function addCsrf(headers) { if (CSRF && CSRF.token) headers[CSRF.header] = CSRF.token; return headers; }
 
-    // DELETE via API for each row
+    // DELETE via API for each row (intercept forms with delete buttons)
     document.querySelectorAll('form').forEach(form => {
-      if (form.querySelector('.btn-eliminar')) {
+      if (form.querySelector('.btn-danger')) {
         form.addEventListener('submit', function(ev){
           ev.preventDefault();
           const tr = form.closest('tr');
-          const id = tr.querySelector('td:nth-child(1)').innerText.trim();
+          const id = tr ? tr.querySelector('td:nth-child(1)').innerText.trim() : null;
+          if (!id) { showToast('error', 'ID no encontrado'); return; }
           const headers = addCsrf({ 'Accept':'application/json', 'Content-Type':'application/json' });
           fetch(`/admin/api/canciones/${id}`, { method: 'DELETE', headers: headers })
-            .then(r=>r.json()).then(data=>{
-              if (data && data.status === 'deleted') {
-                tr.remove();
-                showToast('success', 'Canción eliminada');
-              } else {
-                showToast('error', data && data.error ? data.error : 'Error eliminando canción');
-              }
-            }).catch(err=>{ console.error(err); showToast('error', 'Error eliminando canción'); });
+            .then(r => r.json()).then(data=>{
+               if (data && data.status === 'deleted') {
+                 tr.remove();
+                 showToast('success', 'Canción eliminada');
+               } else {
+                 showToast('error', data && data.error ? data.error : 'Error eliminando canción');
+               }
+             }).catch(err=>{ console.error(err); showToast('error', 'Error eliminando canción'); });
         });
       }
     });
