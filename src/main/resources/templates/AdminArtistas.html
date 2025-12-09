@@ -33,6 +33,25 @@
     @media (max-width: 768px){
       .admin-canciones-deco{ display:none; }
     }
+
+    /* Centrar y agrandar imágenes laterales para aprovechar espacios blancos */
+    .admin-canciones-deco{ display:flex; align-items:center; justify-content:center; padding:1.25rem; }
+    /* Margen extra para la imagen izquierda respecto a la tabla central */
+    .admin-canciones-deco.left{ padding-right:10rem; }
+    .admin-canciones-deco img{
+      max-width:320px; /* aumentado a 320px */
+      max-height:320px;
+      width:auto; /* preservar ratio */
+      height:auto;
+      object-fit:contain;
+      display:block;
+      transition: transform .18s ease, opacity .18s ease;
+    }
+    .admin-canciones-deco img:hover{ transform: scale(1.03); opacity:0.98; }
+
+    /* Más separación entre columnas: padding lateral en la columna central aumentado */
+    .admin-main-col{ padding-left:3rem; padding-right:3rem; }
+    @media (max-width: 991.98px){ .admin-main-col{ padding-left:0.5rem; padding-right:0.5rem; } }
   </style>
 </head>
 <body>
@@ -44,10 +63,10 @@
     <div class="container" style="max-width:1100px; margin-top:1.5rem;">
       <div class="row gx-4 align-items-start">
         <div class="col-12 col-lg-2 admin-canciones-deco left" aria-hidden="true">
-          <img th:src="@{/musico1.png}" alt="decoracion izquierda" style="width:100%; height:auto; display:block; max-width:140px;" loading="lazy">
+          <img th:src="@{/musico1.png}" alt="decoracion izquierda" loading="lazy">
         </div>
 
-        <div class="col-12 col-lg-8">
+        <div class="col-12 col-lg-8 admin-main-col">
           <div class="card admin-panel-card h-100 bg-white text-dark border shadow-sm rounded-3">
             <div class="card-body" style="background:#fffbe6;">
               <h2 class="mb-3"><i class="fas fa-microphone me-2 text-warning"></i>Administrar Artistas</h2>
@@ -106,7 +125,7 @@
         </div>
 
         <div class="col-12 col-lg-2 admin-canciones-deco right d-none d-lg-block" aria-hidden="true">
-          <img th:src="@{/cantante1.png}" alt="decoracion derecha" style="width:100%; height:auto; display:block; max-width:140px;" loading="lazy">
+          <img th:src="@{/cantante1.png}" alt="decoracion derecha" loading="lazy">
         </div>
       </div>
     </div>
