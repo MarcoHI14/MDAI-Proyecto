@@ -297,13 +297,20 @@ footer{
   border-bottom: 1px solid rgba(0,0,0,0.04);
 }
 .admin-menu ul{ display:flex; gap:2.2rem; list-style:none; margin:0; padding:0.6rem 0; justify-content:center; }
-.admin-menu ul li a{
-  color: var(--hive-honey-3);
-  text-decoration:none;
+.admin-menu .navbar-nav{ display:flex; gap:2.2rem; align-items:center; }
+.admin-menu .navbar-nav .nav-link{
+  color: var(--hive-honey-3) !important;
+  text-decoration:none !important;
   font-weight:600;
   transition: color 180ms ease, transform 120ms ease;
+  padding: 0.45rem 0.6rem;
 }
-.admin-menu ul li a:hover{ color: #6b3e13; transform: translateY(-2px); }
+.admin-menu .navbar-nav .nav-link:hover{ color: #6b3e13 !important; transform: translateY(-2px); }
+
+/* Toggler visible y estilizado (usa FontAwesome fallback) */
+.admin-menu .navbar-toggler{ border: none; }
+.admin-menu .navbar-toggler i{ font-size:1.1rem; color:var(--hive-dark); }
+.admin-menu .navbar-toggler:focus{ box-shadow: none; }
 
 /* Tarjetas laterales y contenedores */
 .admin-panel-card{

@@ -9,45 +9,60 @@
   <link rel="stylesheet" th:href="@{/landing.css(v=8)}" />
   <!-- Font Awesome desde WebJars (coherente con otras plantillas) -->
   <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}" />
+
+  <!-- Overrides específicos para la vista de administración: eliminar overlay blanquecino y asegurar tarjetas opacas -->
+  <style>
+    /* Quitar pseudo-elementos/overlays de .hive-hex en esta vista */
+    .hive-hex::after, .hive-hex::before { display: none !important; }
+
+    /* Forzar que las tarjetas admin estén por encima y completamente opacas (seguro y limitado) */
+    .admin-panel-card, .card.admin-panel-card {
+      background-color: #ffffff !important;
+      opacity: 1 !important;
+      box-shadow: 0 12px 30px rgba(20,20,40,0.08) !important;
+      border: 1px solid rgba(0,0,0,0.04) !important;
+    }
+
+    /* Nueva clase para el wrapper del admin: desactivar por completo cualquier overlay/pseudo-elemento de .hive-hex */
+    .admin-hive{ background: transparent !important; background-image: none !important; filter: none !important; }
+    .admin-hive::before, .admin-hive::after{ display: none !important; }
+  </style>
   <!-- Si quieres confetti, añade una copia local en /static/js/confetti.browser.min.js y referencia aquí:
        <script th:src="@{/js/confetti.browser.min.js}"></script>
   -->
 </head>
 <body>
-  <!-- Header fijo: logo / eslogan / cerrar sesión -->
-  <header class="admin-header">
-    <div class="container d-flex align-items-center justify-content-between">
-      <a th:href="@{/}" class="d-flex align-items-center text-decoration-none">
-        <img th:src="@{/TunedHive.png}" alt="TunedHive" class="brand-logo" />
-      </a>
-      <div class="text-center flex-fill">
-        <span class="admin-title">¡Bienvenido/a Administrador!</span>
-      </div>
-      <div class="text-end">
-        <a class="btn btn-outline-secondary" th:href="@{/InicioSesion}">Cerrar Sesión</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Barra de navegación (debajo del header) -->
-  <nav class="admin-menu">
+  <!-- Navbar igual que Inicio.html (misma paleta y estilo) -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
     <div class="container">
-      <ul class="mb-0">
-        <li><a th:href="@{/admin}" class="nav-link">Panel de Control</a></li>
-        <li><a th:href="@{/admin/AdminUsuarios}" class="nav-link">Gestión Usuarios</a></li>
-        <li><a th:href="@{/admin/estadisticas}" class="nav-link">Estadísticas</a></li>
-        <li><a th:href="@{/admin/AdminSolicitudes}" class="nav-link">Solicitudes</a></li>
-        <li><a th:href="@{/admin/AdminArtistas}" class="nav-link">Administrar Artistas</a></li>
-        <li><a th:href="@{/admin/AdminCanciones}" class="nav-link">Control Canciones</a></li>
-      </ul>
+      <a class="navbar-brand d-flex align-items-center" th:href="@{/admin}">
+        <img th:src="@{/TunedHive.png}" alt="TunedHive" width="44" height="44" class="d-inline-block align-text-top me-2 navbar-logo" />
+        <span class="h6 mb-0">Tuned Hive</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" th:href="@{/admin}"><i class="fas fa-tachometer-alt me-1"></i>Panel</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/admin/AdminArtistas}"><i class="fas fa-microphone me-1"></i>Artistas</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/admin/AdminCanciones}"><i class="fas fa-music me-1"></i>Canciones</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/admin/AdminUsuarios}"><i class="fas fa-users me-1"></i>Usuarios</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/admin/estadisticas}"><i class="fas fa-chart-line me-1"></i>Estadísticas</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/admin/AdminSolicitudes}"><i class="fas fa-file-invoice me-1"></i>Solicitudes</a></li>
+          <li class="nav-item"><a class="btn btn-outline-light btn-sm ms-2" th:href="@{/InicioSesion}">Cerrar Sesión</a></li>
+        </ul>
+      </div>
     </div>
   </nav>
 
   <!-- Contenido principal usando grid de Bootstrap -->
-  <main class="container-fluid mt-5" style="margin-top:9rem;">
+  <main class="container-fluid mt-5 admin-root" style="margin-top:5.5rem;">
     <div class="row gx-4">
       <aside class="col-12 col-lg-3 mb-4">
-        <div class="admin-panel-card">
+        <!-- Añadida mayor opacidad, borde y sombra para eliminar efecto translúcido -->
+        <div class="admin-panel-card bg-white text-dark border shadow-sm rounded-3" style="background-color:#fff !important; opacity:1 !important;">
           <h3>Accesos rápidos</h3>
           <p>Gestiona usuarios, revisa estadísticas y administra la plataforma.</p>
           <!-- botones rápidos ejemplo -->
@@ -59,21 +74,25 @@
       </aside>
 
       <section class="col-12 col-lg-6 mb-4 admin-hero">
-        <div class="card admin-panel-card h-100 d-flex flex-column justify-content-center">
-          <div>
-            <h1 class="mb-2">¡Has iniciado sesión como administrador!</h1>
-            <p class="subtitulo">Ahora puedes gestionar la comunidad Tuned Hive, revisar estadísticas, administrar usuarios y mantener la plataforma en funcionamiento.</p>
-          </div>
-          <div class="mt-4 text-center">
-            <a th:href="@{/admin/estadisticas}" class="btn btn-admin-cta me-2">Ver estadísticas</a>
-            <a th:href="@{/admin/AdminSolicitudes}" class="btn btn-outline-secondary">Revisar solicitudes</a>
+        <div class="admin-hive">
+          <!-- Forzamos fondo opaco y sombra en la tarjeta central -->
+          <div class="card admin-panel-card h-100 d-flex flex-column justify-content-center bg-white text-dark border shadow-sm rounded-3" style="background-color:#fff !important; opacity:1 !important;">
+            <div>
+              <h1 class="mb-2"><i class="fas fa-shield-alt me-2 text-warning"></i>¡Has iniciado sesión como administrador!</h1>
+              <p class="subtitulo">Ahora puedes gestionar la comunidad Tuned Hive, revisar estadísticas, administrar usuarios y mantener la plataforma en funcionamiento.</p>
+            </div>
+            <div class="mt-4 text-center">
+              <a th:href="@{/admin/estadisticas}" class="btn btn-admin-cta me-2"><i class="fas fa-chart-pie me-2"></i>Ver estadísticas</a>
+              <a th:href="@{/admin/AdminSolicitudes}" class="btn btn-outline-secondary"><i class="fas fa-file-signature me-2"></i>Revisar solicitudes</a>
+            </div>
           </div>
         </div>
       </section>
 
       <aside class="col-12 col-lg-3 mb-4">
-        <div class="admin-panel-card">
-          <h3>Solicitudes de Verificación</h3>
+        <!-- También ajustamos la tarjeta derecha -->
+        <div class="admin-panel-card bg-white text-dark border shadow-sm rounded-3" style="background-color:#fff !important; opacity:1 !important;">
+          <h3><i class="fas fa-user-check me-2"></i>Solicitudes de Verificación</h3>
           <p>Revisa y gestiona las solicitudes de verificación de artistas y usuarios.</p>
           <a th:href="@{/admin/AdminSolicitudes}" class="btn btn-admin-cta">Ver Solicitudes</a>
         </div>
@@ -88,6 +107,17 @@
       <small class="text-muted">20 samples incluidos en /samples</small>
     </div>
   </footer>
+
+  <!-- Limpieza mínima de backdrops residuales (segura) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      // Eliminar cualquier backdrop que pueda haber quedado
+      document.querySelectorAll('.modal-backdrop').forEach(function(el){ try{ el.remove(); }catch(e){} });
+      // Quitar clase que bloquea scroll/interacción
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+    });
+  </script>
 
   <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
