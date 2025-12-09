@@ -21,30 +21,8 @@
   </style>
 </head>
 <body>
-  <!-- Header igual a BienvenidaAdmin -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container">
-      <a class="navbar-brand d-flex align-items-center" th:href="@{/admin}">
-        <img th:src="@{/TunedHive.png}" alt="TunedHive" width="44" height="44" class="d-inline-block align-text-top me-2 navbar-logo" />
-        <span class="h6 mb-0">Tuned Hive</span>
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="mainNav">
-        <ul class="navbar-nav ms-auto align-items-lg-center">
-          <li class="nav-item"><a class="nav-link" th:href="@{/admin}"><i class="fas fa-tachometer-alt me-1"></i>Panel</a></li>
-          <li class="nav-item"><a class="nav-link" th:href="@{/admin/AdminArtistas}"><i class="fas fa-microphone me-1"></i>Artistas</a></li>
-          <li class="nav-item"><a class="nav-link" th:href="@{/admin/AdminCanciones}"><i class="fas fa-music me-1"></i>Canciones</a></li>
-          <li class="nav-item"><a class="nav-link" th:href="@{/admin/AdminUsuarios}"><i class="fas fa-users me-1"></i>Usuarios</a></li>
-          <li class="nav-item"><a class="nav-link" th:href="@{/admin/estadisticas}"><i class="fas fa-chart-line me-1"></i>Estadísticas</a></li>
-          <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{/admin/AdminSolicitudes}"><i class="fas fa-file-invoice me-1"></i>Solicitudes</a></li>
-          <li class="nav-item"><a class="btn btn-outline-light btn-sm ms-2" th:href="@{/InicioSesion}">Cerrar Sesión</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+  <!-- Header común (fragment) -->
+  <div th:replace="fragments/admin_header :: adminHeader"></div>
 
   <!-- Main: contenedor con tarjeta al estilo AdminEstadisticas para las solicitudes -->
   <main class="container-fluid mt-5 admin-root" style="margin-top:5.5rem;">

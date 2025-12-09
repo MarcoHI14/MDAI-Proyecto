@@ -3,114 +3,237 @@
 <head>
   <meta charset="UTF-8">
   <title>Gestión Usuarios | Tuned Hive</title>
-  <link rel="stylesheet" th:href="@{/estilos.css}">
-  <!-- Estilos aislados para la página AdminUsuarios -->
-  <link rel="stylesheet" th:href="@{/admin-usuarios.css}">
-  <!-- CSRF token para peticiones AJAX (si Spring Security lo proporciona) -->
+  <!-- Usar las mismas referencias y estilos que BienvenidaAdmin/AdminEstadisticas -->
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+  <link rel="stylesheet" th:href="@{/landing.css(v=8)}" />
+  <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}" />
+
   <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />
   <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+
+  <style>
+    /* Overrides admin: eliminar overlays y asegurar tarjetas opacas */
+    .hive-hex::after, .hive-hex::before { display: none !important; }
+    .admin-panel-card, .card.admin-panel-card {
+      background-color: #ffffff !important;
+      opacity: 1 !important;
+      box-shadow: 0 12px 30px rgba(20,20,40,0.08) !important;
+      border: 1px solid rgba(0,0,0,0.04) !important;
+    }
+    .admin-hive{ background: transparent !important; background-image: none !important; filter: none !important; }
+    .admin-hive::before, .admin-hive::after{ display: none !important; }
+
+    /* Ajustes mínimos para tabla y seleccion */
+    /* Selección claramente visible: fondo cálido y acento dorado a la izquierda */
+    #admin-usuarios-table tbody tr.selected td{
+      background: rgba(191,161,74,0.16) !important;
+    }
+    #admin-usuarios-table tbody tr.selected td:first-child{
+      box-shadow: inset 4px 0 0 0 #bfa14a;
+    }
+
+    .panel{ margin-bottom:1rem; padding:1rem; border-radius:10px; background:#fff; box-shadow:0 8px 20px rgba(0,0,0,0.03); }
+    .panel h3{ margin-top:0; }
+
+    /* Contenedor principal ocupa la altura disponible (resta navbar + margen) y no provoca scroll de página */
+    .admin-viewport{ height: calc(100vh - 5.5rem); padding-top: 1.25rem; }
+    .admin-viewport .row{ height:100%; }
+
+    /* Columna izquierda: card con scroll interno */
+    .usuarios-left-card{ height:100%; display:flex; flex-direction:column; }
+    .usuarios-left-card .card-body{ flex:1 1 auto; overflow:auto; padding:1rem 1rem; }
+
+    /* Barra lateral: ocupa 100% de la fila y hace scroll interno (acordeón incluido) */
+    .admin-sidebar{ height:100%; display:flex; flex-direction:column; }
+    .admin-sidebar .accordion{ flex:1 1 auto; overflow:auto; padding:0.25rem 0; }
+    .admin-sidebar .panel{ max-height:none; overflow:visible; }
+
+    /* En pantallas pequeñas (movil) desactivar sticky para evitar comportamiento extraño */
+    @media (max-width: 991.98px){
+      .admin-viewport{ height:auto; padding-top:1rem; }
+      .admin-sidebar{ position: static; height:auto; }
+      .admin-sidebar .accordion{ overflow:visible; }
+      .usuarios-left-card .card-body{ overflow:visible; max-height:none; }
+    }
+  </style>
 </head>
 <body>
-  <header style="position:fixed; top:0; left:0; right:0; width:100vw; box-sizing:border-box; display:flex; align-items:center; justify-content:space-between; background:#fffbe6cc; box-shadow:0 2px 12px #0001; padding:0.5em 2em 0.5em 1.5em; padding-right:0; border-radius:0; margin:0; z-index:100;">
-    <a th:href="@{/admin}" style="display:inline-block; line-height:0;"><img th:src="@{/TunedHive.png}" alt="Logo" class="logo-colmena" style="width:60px; height:auto; margin:0; cursor:pointer;"></a>
-    <div class="eslogan eslogan-top-right" style="pointer-events:none; position:static; margin:0; font-size:1.3em; font-weight:bold; color:#2d2d2d; letter-spacing:1px;">Gestión Usuarios</div>
-    <!-- Cambiado: usar las mismas clases/estilo del resto de páginas admin -->
-    <a class="btn-colmena info" th:href="@{/admin}" style="margin:0; position: static; text-decoration: none;">Volver</a>
-  </header>
-  <nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
-    <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
-      <li><a th:href="@{/admin}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Panel de Control</a></li>
-      <li><a th:href="@{/admin/AdminUsuarios}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Gestión Usuarios</a></li>
-      <li><a th:href="@{/admin/estadisticas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Estadísticas</a></li>
-      <li><a th:href="@{/admin/AdminSolicitudes}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Solicitudes</a></li>
-      <li><a th:href="@{/admin/AdminArtistas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Administrar Artistas</a></li>
-      <li><a th:href="@{/admin/AdminCanciones}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Control Canciones</a></li>
-    </ul>
-  </nav>
+  <!-- Navbar común (fragment) -->
+  <div th:replace="fragments/admin_header :: adminHeader"></div>
 
-  <section class="admin-usuarios">
-    <div class="admin-usuarios-layout">
-      <div class="table-wrap">
-        <table id="admin-usuarios-table" th:if="${usuarios != null and !#lists.isEmpty(usuarios)}">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Es Artista</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="u : ${usuarios}">
-              <td th:text="${u.id}">1</td>
-              <td th:text="${u.username}">usuario</td>
-              <td th:text="${u.email}">email@ejemplo</td>
-              <td th:text="${isArtistaByUserId[u.id] == true ? 'Sí' : 'No'}">No</td>
-              <td class="acciones-td">
-                <!-- Botón Editar eliminado según petición; mantenemos Eliminar -->
-                <form th:action="@{/admin/AdminUsuarios/{id}/delete(id=${u.id})}" method="post" style="display:inline-block; margin-left:0.4em;">
-                  <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                  <button type="submit" class="btn-colmena btn-eliminar" style="background:#b33; color:#fff; border:none; padding:0.3em 0.6em; border-radius:6px;">Eliminar</button>
-                </form>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- Main: grid con tabla y paneles lateral -->
+  <main class="container-fluid mt-5 admin-root" style="margin-top:5.5rem;">
+    <div class="container admin-viewport" style="max-width:1100px;">
+      <div class="row gx-4">
+        <section class="col-12 col-lg-8 mb-4">
+          <div class="admin-hive">
+            <div class="card admin-panel-card h-100 bg-white text-dark border shadow-sm rounded-3 usuarios-left-card">
+              <div class="card-body" style="background:#fffbe6;">
+                <h2 class="mb-3"><i class="fas fa-users me-2 text-warning"></i>Gestión Usuarios</h2>
 
-        <div th:if="${usuarios == null or #lists.isEmpty(usuarios)}" class="empty-msg">No hay usuarios.</div>
+                <div class="table-responsive">
+                  <table id="admin-usuarios-table" class="table table-borderless mb-0 align-middle" th:if="${usuarios != null and !#lists.isEmpty(usuarios)}">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Es Artista</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:each="u : ${usuarios}">
+                        <td th:text="${u.id}">1</td>
+                        <td th:text="${u.username}">usuario</td>
+                        <td th:text="${u.email}">email@ejemplo</td>
+                        <td th:text="${isArtistaByUserId[u.id] == true ? 'Sí' : 'No'}">No</td>
+                        <td>
+                          <form th:action="@{/admin/AdminUsuarios/{id}/delete(id=${u.id})}" method="post" style="display:inline-block; margin-left:0.4em;">
+                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash me-1"></i>Eliminar</button>
+                          </form>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div th:if="${usuarios == null or #lists.isEmpty(usuarios)}" class="p-4 rounded-3" style="background:#fffbe6;">
+                    <div class="text-center">
+                      <i class="fa-solid fa-users text-warning fs-2"></i>
+                      <p class="mt-2 text-warning fw-bold">No hay usuarios.</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="col-12 col-lg-4 admin-sidebar">
+          <div class="accordion" id="adminAccordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingUser">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUser" aria-expanded="true" aria-controls="collapseUser">
+                  <i class="fas fa-user-edit me-2"></i> Cambiar Username
+                </button>
+              </h2>
+              <div id="collapseUser" class="accordion-collapse collapse show" aria-labelledby="headingUser" data-bs-parent="#adminAccordion">
+                <div class="accordion-body">
+                  <div id="panel-username" class="panel admin-panel-card">
+                    <p class="note">Selecciona un usuario en la tabla y cambia su username.</p>
+                    <label for="cu-username" class="form-label">Nuevo username</label>
+                    <input id="cu-username" type="text" class="form-control" placeholder="Username" value="" autocomplete="off" autocapitalize="none" spellcheck="false">
+                    <button class="btn btn-primary mt-2" id="btn-cu-apply">Aplicar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingEmail">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmail" aria-expanded="false" aria-controls="collapseEmail">
+                  <i class="fas fa-envelope me-2"></i> Cambiar Email
+                </button>
+              </h2>
+              <div id="collapseEmail" class="accordion-collapse collapse" aria-labelledby="headingEmail" data-bs-parent="#adminAccordion">
+                <div class="accordion-body">
+                  <div id="panel-email" class="panel admin-panel-card">
+                    <p class="note">Selecciona un usuario y actualiza su correo.</p>
+                    <label for="cu-email" class="form-label">Nuevo email</label>
+                    <input id="cu-email" type="email" class="form-control" placeholder="usuario@ejemplo.com" value="" autocomplete="off" autocapitalize="none" spellcheck="false">
+                    <button class="btn btn-primary mt-2" id="btn-ce-apply">Aplicar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingPass">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePass" aria-expanded="false" aria-controls="collapsePass">
+                  <i class="fas fa-key me-2"></i> Cambiar Contraseña
+                </button>
+              </h2>
+              <div id="collapsePass" class="accordion-collapse collapse" aria-labelledby="headingPass" data-bs-parent="#adminAccordion">
+                <div class="accordion-body">
+                  <div id="panel-pass" class="panel admin-panel-card">
+                    <p class="note">Selecciona un usuario y define su nueva contraseña.</p>
+                    <label for="cu-pass" class="form-label">Nueva contraseña</label>
+                    <input id="cu-pass" type="password" class="form-control" placeholder="********" value="" autocomplete="new-password" autocapitalize="none" spellcheck="false">
+                    <label for="cu-pass-confirm" class="form-label mt-2">Confirmar contraseña</label>
+                    <input id="cu-pass-confirm" type="password" class="form-control" placeholder="********" value="" autocomplete="new-password" autocapitalize="none" spellcheck="false">
+                    <button class="btn btn-primary mt-2" id="btn-cp-apply">Aplicar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
-
-      <aside class="admin-usuarios-sidebar">
-        <div class="panel" id="panel-username">
-          <h3>Cambiar Username</h3>
-          <p class="note">Selecciona un usuario en la tabla y cambia su username.</p>
-          <label for="cu-username">Nuevo username</label>
-          <input id="cu-username" type="text" placeholder="nuevo_username">
-          <button class="btn-apply" id="btn-cu-apply">Aplicar</button>
-        </div>
-
-        <div class="panel" id="panel-email">
-          <h3>Cambiar Email</h3>
-          <p class="note">Selecciona un usuario y actualiza su correo.</p>
-          <label for="cu-email">Nuevo email</label>
-          <input id="cu-email" type="email" placeholder="usuario@ejemplo.com">
-          <button class="btn-apply" id="btn-ce-apply">Aplicar</button>
-        </div>
-
-        <div class="panel" id="panel-pass">
-          <h3>Cambiar Contraseña</h3>
-          <p class="note">Selecciona un usuario y define su nueva contraseña.</p>
-          <label for="cu-pass">Nueva contraseña</label>
-          <input id="cu-pass" type="password" placeholder="********">
-          <label for="cu-pass-confirm">Confirmar contraseña</label>
-          <input id="cu-pass-confirm" type="password" placeholder="********">
-          <button class="btn-apply" id="btn-cp-apply">Aplicar</button>
-        </div>
-      </aside>
     </div>
-  </section>
+  </main>
+
+  <!-- Footer igual a BienvenidaAdmin -->
+  <footer class="bg-dark text-light py-4 mt-5">
+    <div class="container text-center">
+      <p class="mb-1">© Tuned Hive 2025</p>
+      <small class="text-muted">20 samples incluidos en /samples</small>
+    </div>
+  </footer>
 
   <script>
-    // Placeholder JS: al hacer click en una fila marcamos el usuario seleccionado
     document.addEventListener('DOMContentLoaded', function(){
+      // eliminar backdrops residuales y desbloquear scroll
+      document.querySelectorAll('.modal-backdrop').forEach(function(el){ try{ el.remove(); }catch(e){} });
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+
+      // Selección de filas (mantengo la lógica original)
       const rows = document.querySelectorAll('#admin-usuarios-table tbody tr');
+
+      function clearSelection() {
+        rows.forEach(x => { x.classList.remove('selected'); x.removeAttribute('aria-selected'); });
+        // limpiar inputs
+        const inputs = ['cu-username','cu-email','cu-pass','cu-pass-confirm'];
+        inputs.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+        // limpiar dataset de botones
+        ['btn-cu-apply','btn-ce-apply','btn-cp-apply'].forEach(id => { const b = document.getElementById(id); if(b) delete b.dataset.userid; });
+      }
+
+      function applySelectionData(r) {
+        try{
+          const id = r.querySelector('td:nth-child(1)').innerText.trim();
+          const username = r.querySelector('td:nth-child(2)').innerText.trim();
+          const email = r.querySelector('td:nth-child(3)').innerText.trim();
+          document.getElementById('cu-username').value = username;
+          document.getElementById('cu-email').value = email;
+          document.getElementById('btn-cu-apply').dataset.userid = id;
+          document.getElementById('btn-ce-apply').dataset.userid = id;
+          document.getElementById('btn-cp-apply').dataset.userid = id;
+        }catch(e){ console.warn('No se pudieron leer datos de fila seleccionada', e); }
+      }
+
+      // Inicial: asegurarnos que no haya nadie seleccionado
+      clearSelection();
+
       rows.forEach(r => {
+        r.setAttribute('tabindex','0');
         r.addEventListener('click', function(){
-          rows.forEach(x=>x.classList.remove('selected'));
+          if (r.classList.contains('selected')) {
+            // toggle: si ya estaba seleccionada, deseleccionar
+            clearSelection();
+            return;
+          }
+          // seleccionar esta fila y actualizar paneles
+          clearSelection();
           r.classList.add('selected');
-          // Llenar inputs del sidebar con datos del usuario seleccionado
-          try{
-            const id = r.querySelector('td:nth-child(1)').innerText.trim();
-            const username = r.querySelector('td:nth-child(2)').innerText.trim();
-            const email = r.querySelector('td:nth-child(3)').innerText.trim();
-            document.getElementById('cu-username').value = username;
-            document.getElementById('cu-email').value = email;
-            // guardamos el id en los botones para la futura lógica
-            document.getElementById('btn-cu-apply').dataset.userid = id;
-            document.getElementById('btn-ce-apply').dataset.userid = id;
-            document.getElementById('btn-cp-apply').dataset.userid = id;
-          }catch(e){ console.warn('No se pudieron leer datos de fila seleccionada', e); }
+          r.setAttribute('aria-selected','true');
+          applySelectionData(r);
+        });
+        // keyboard support
+        r.addEventListener('keydown', function(ev){
+          if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); r.click(); }
         });
       });
 
@@ -143,12 +266,10 @@
 
       // DELETE via fetch para formularios de eliminar
       document.querySelectorAll('form').forEach(form => {
-        // Sólo interceptar los formularios que contienen un botón eliminar
-        if (form.querySelector('.btn-eliminar')) {
+        if (form.querySelector('.btn-danger')) {
           form.addEventListener('submit', function(ev){
             ev.preventDefault();
             const tr = form.closest('tr');
-            // extraer id desde la fila (columna 1)
             const id = tr.querySelector('td:nth-child(1)').innerText.trim();
             const headers = addCsrf({ 'Accept': 'application/json', 'Content-Type': 'application/json' });
             fetch(`/admin/api/users/${id}`, {
@@ -156,14 +277,13 @@
               headers: headers
             }).then(r=>r.json()).then(data=>{
               if (data && data.status === 'deleted') {
-                // eliminar fila del DOM
                 tr.remove();
-                showPanelMessage(document.querySelector('#panel-username'), 'Usuario eliminado', false);
+                showPanelMessage(document.querySelector('.panel'), 'Usuario eliminado', false);
               } else if (data && data.error) {
-                showPanelMessage(document.querySelector('#panel-username'), data.error, true);
+                showPanelMessage(document.querySelector('.panel'), data.error, true);
               }
             }).catch(err => {
-              showPanelMessage(document.querySelector('#panel-username'), 'Error eliminando usuario', true);
+              showPanelMessage(document.querySelector('.panel'), 'Error eliminando usuario', true);
               console.error('Error DELETE', err);
             });
           });
@@ -185,8 +305,6 @@
         }).then(r=>r.json()).then(data=>{
           if (data && data.status === 'ok') {
             showPanelMessage(panel, 'Username actualizado', false);
-            // actualizar tabla: buscar la fila con id
-            // alternativa: recorrer filas y comparar
             document.querySelectorAll('#admin-usuarios-table tbody tr').forEach(tr=>{
               if (tr.querySelector('td:nth-child(1)').innerText.trim() === id) {
                 tr.querySelector('td:nth-child(2)').innerText = nuevo;
@@ -241,7 +359,6 @@
         }).then(r=>r.json()).then(data=>{
           if (data && data.status === 'ok') {
             showPanelMessage(panel, 'Contraseña actualizada', false);
-            // limpiar campos
             document.getElementById('cu-pass').value = '';
             document.getElementById('cu-pass-confirm').value = '';
           } else if (data && data.error) {
@@ -252,5 +369,7 @@
 
     });
   </script>
+
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
