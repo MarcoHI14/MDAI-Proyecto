@@ -32,8 +32,9 @@
     /* Centrar y agrandar imágenes laterales */
     .admin-canciones-deco{ display:flex; align-items:center; justify-content:center; padding:1.25rem; }
     .admin-canciones-deco img{
-      max-width:320px;
-      max-height:320px;
+      /* reducir tamaño de decoraciones laterales para liberar espacio horizontal */
+      max-width:140px;
+      max-height:140px;
       width:auto;
       height:auto;
       object-fit:contain;
@@ -55,19 +56,40 @@
     .admin-table.table-sm th, .admin-table.table-sm td { padding: .25rem .4rem; }
 
     @media (max-width: 991.98px){ .admin-main-col{ padding-left:0.5rem; padding-right:0.5rem; } }
-  </style>
+
+    /* En pantallas grandes maximizamos el ancho utilizable: ocultamos decoraciones y hacemos el contenido full-width */
+    @media (min-width: 1200px) {
+      /* Mostrar decoraciones laterales en escritorio y centrar el contenido */
+      .admin-canciones-deco { display:flex !important; }
+      .admin-canciones-wrapper{ justify-content:center; padding:0; }
+      /* Contenedor central ancho pero contenido centrado (deja espacio para las imágenes laterales) */
+      .admin-canciones-content { max-width: 1250px !important; width:100%; margin: 0 auto !important; box-sizing: border-box; padding-left:2rem !important; padding-right:2rem !important; }
+      /* La tarjeta ocupa el 100% del contenedor (no full-bleed) */
+      .admin-canciones-content .card { width: 100%; max-width:100%; margin:0; padding-left:0; padding-right:0; box-sizing: border-box; border-radius: .5rem; }
+      /* Card body: ligero padding para separación interna */
+      .admin-canciones-content .card .card-body{ padding: 1rem 1rem; }
+      /* La tabla ocupa el ancho del contenedor, no del viewport */
+      #admin-canciones-table { width: 100%; max-width:100%; }
+      .admin-table th, .admin-table td { padding: .45rem .6rem; }
+      /* Restaurar gutters razonables */
+      .admin-main-col{ padding-left:2rem !important; padding-right:2rem !important; }
+      main { padding-left: 1rem !important; padding-right: 1rem !important; }
+      /* Permitir overflow-x visible para que, si una imagen sobresale, se vea (no forzar hidden) */
+      html, body { overflow-x: visible; }
+    }
+   </style>
 </head>
 <body>
   <!-- Header común (fragment) -->
   <div th:replace="fragments/admin_header :: adminHeader"></div>
 
-  <main style="margin-top: 3.5rem; padding: 0.75rem 1.25rem; max-width: 1600px; margin-left: auto; margin-right: auto;">
-    <div class="admin-canciones-wrapper" style="display:flex; gap:1.5rem; align-items:flex-start; justify-content:center;">
+  <main style="margin-top: 3.5rem; padding: 0.25rem 0.25rem; width:100%; max-width:none; margin-left: 0; margin-right: 0; box-sizing:border-box;">
+    <div class="admin-canciones-wrapper" style="display:flex; gap:1.5rem; align-items:flex-start; justify-content:flex-start; width:100%; box-sizing:border-box;">
       <div class="admin-canciones-deco left" aria-hidden="true">
         <img th:src="@{/musico1.png}" src="../static/musico1.png" alt="decoracion izquierda" loading="lazy">
       </div>
 
-      <div class="admin-canciones-content admin-main-col" style="flex:1 1 720px; max-width:1250px;">
+      <div class="admin-canciones-content admin-main-col" style="flex:1 1 720px; width:100%; max-width:none; box-sizing:border-box;">
         <div class="card admin-panel-card h-100 bg-white text-dark border shadow-sm rounded-3">
           <div class="card-body" style="background:#fffbe6;">
             <h2 class="mb-3"><i class="fas fa-music me-2 text-warning"></i>Administrar Canciones</h2>
