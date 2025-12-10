@@ -108,17 +108,20 @@
             <h2 style="text-align:center; color:#2d2d2d; margin-bottom:1.5em;" id="tituloResultados">Todos los Artistas</h2>
 
             <!-- Controles de filtro/orden (tabla de artistas) -->
-            <div style="display:flex; gap:0.6em; align-items:center; margin-bottom:0.8em;">
+            <div style="display:flex; gap:0.6em; align-items:center; margin-bottom:0.8em; flex-wrap:wrap;">
                 <label for="filterTableArtists" style="position:absolute; left:-9999px;">Filtrar artistas</label>
-                <input id="filterTableArtists" type="text" placeholder="Filtrar tabla (nombre, usuario, país)..." style="flex:1; padding:0.6em; border:1px solid #e2d3a0; border-radius:8px; background:#fffdf6;">
+                <!-- input flexible con base mínima para evitar desbordes -->
+                <input id="filterTableArtists" type="text" placeholder="Filtrar tabla (nombre, usuario)..." style="flex:1 1 180px; min-width:120px; padding:0.6em; border:1px solid #e2d3a0; border-radius:8px; background:#fffdf6;">
                 <label for="sortArtistsSelect" style="position:absolute; left:-9999px;">Ordenar artistas</label>
-                <select id="sortArtistsSelect" style="padding:0.45em 0.6em; border-radius:8px; border:1px solid #e2d3a0; background:#fffdf6;">
+                <select id="sortArtistsSelect" style="flex:0 0 auto; padding:0.45em 0.6em; border-radius:8px; border:1px solid #e2d3a0; background:#fffdf6;">
                     <option value="">Ordenar por...</option>
                     <option value="usuario">Usuario</option>
                     <option value="num">Nº Canciones</option>
                 </select>
-                <button id="applySortArtists" class="btn-colmena">Ordenar</button>
-                <button id="clearSearchArtists" class="btn-colmena" style="background:transparent; border:1px solid #e2d3a0; color:#6b3e13;">Limpiar</button>
+                <div style="display:flex; gap:0.6em; flex:0 0 auto;">
+                    <button id="applySortArtists" class="btn-colmena" style="white-space:nowrap;">Ordenar</button>
+                    <button id="clearSearchArtists" class="btn-colmena" style="background:transparent; border:1px solid #e2d3a0; color:#6b3e13; white-space:nowrap;">Limpiar</button>
+                </div>
             </div>
 
             <!-- Tabla de artistas (similar a AdminArtistas) -->
@@ -128,20 +131,14 @@
                         <tr style="background:#f7f3e6; text-align:left;">
                             <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%">ID</th>
                             <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8;">Usuario</th>
-                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8;">Biografía</th>
-                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:10%">Nº Canciones</th>
-                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:12%; text-align:center;">Acciones</th>
+                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:10%; text-align:center">Nº Canciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="a : ${artistas}" th:if="${a != null}" th:attr="data-artista-id=${a.idArtista}" class="artist-row" style="cursor:pointer;">
                             <td style="padding:0.6em 1em; vertical-align:middle;" th:text="${a.idArtista}">1</td>
                             <td style="padding:0.6em 1em; vertical-align:middle;" th:text="${a.usuario != null ? a.usuario.username : 'Usuario'}">usuario</td>
-                            <td style="padding:0.6em 1em; vertical-align:middle; max-width:420px; white-space:normal; word-wrap:break-word;" th:text="${a.biografia}">Biografía corta...</td>
                             <td style="padding:0.6em 1em; vertical-align:middle; text-align:center;" th:text="${a.canciones != null ? a.canciones.size() : 0}">0</td>
-                            <td style="padding:0.6em 1em; vertical-align:middle; text-align:right;">
-                                <!-- selección por fila: no acciones -->
-                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -210,10 +207,9 @@ document.addEventListener('DOMContentLoaded', function(){
             const q = normalize(filterInput.value.trim());
             let visible = 0;
             Array.from(tbody.rows).forEach(row => {
-                const usuario = normalize(row.cells[1].innerText);
-                const bio = normalize(row.cells[2].innerText);
-                const num = normalize(row.cells[3].innerText);
-                const hay = usuario + ' ' + bio + ' ' + num;
+                const usuario = normalize((row.cells[1] && row.cells[1].innerText) || '');
+                const num = normalize((row.cells[2] && row.cells[2].innerText) || '');
+                const hay = usuario + ' ' + num;
                 const show = !q || hay.indexOf(q) !== -1;
                 row.style.display = show ? '' : 'none';
                 if(show) visible++;
@@ -224,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function(){
             const rows = Array.from(tbody.rows);
             let comp;
             if(key === 'usuario') comp = (a,b) => a.cells[1].innerText.localeCompare(b.cells[1].innerText, undefined, {sensitivity:'base'});
-            else if(key === 'num') comp = (a,b) => (parseInt(a.cells[3].innerText)||0) - (parseInt(b.cells[3].innerText)||0);
+            else if(key === 'num') comp = (a,b) => (parseInt(a.cells[2].innerText)||0) - (parseInt(b.cells[2].innerText)||0);
             else return;
             rows.sort(comp);
             rows.forEach(r => tbody.appendChild(r));

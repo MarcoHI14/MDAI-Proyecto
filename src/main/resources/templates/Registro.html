@@ -2,56 +2,249 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Registro | Tuned Hive</title>
-  <!-- Usar Thymeleaf para resolver el CSS servido desde /estilos.css -->
-  <link rel="stylesheet" th:href="@{/estilos.css}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Bootstrap CSS desde WebJars -->
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}" />
+  <!-- Hoja de estilos específica -->
+  <link rel="stylesheet" th:href="@{/landing.css(v=8)}" />
 </head>
 <body>
-  <!-- Volver al inicio usa un botón normal que redirige a la ruta /Inicio (no nueva pestaña) -->
-  <button class="btn-colmena info info-top-left" onclick="window.location.href='/Inicio'">Volver al inicio</button>
-  <h1 style="margin-top: 80px;">Crea tu cuenta en Tuned Hive</h1>
-  <div class="subtitulo" style="max-width: 600px; margin: 0 auto 2em auto;">
-    Únete a la comunidad y empieza a compartir tu música.
-  </div>
 
-  <!-- Formulario de registro: enviar por POST a /users/register -->
-  <form th:action="@{/users/register}" method="post" style="max-width: 400px; margin: 0 auto; background: #fffbe6cc; padding: 2em 2em 1.5em 2em; border-radius: 18px; box-shadow: 0 2px 12px #0001; display: flex; flex-direction: column; gap: 1.2em;">
-    <label for="username" style="font-weight: 500; color: #3a2a13;">Nombre de usuario</label>
-    <input type="text" id="username" name="username" th:value="${username}" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
-    <div id="usernameError" style="color:#b00020;font-weight:600;margin-top:6px;font-size:0.95em;" th:if="${validationErrors != null and #lists.contains(validationErrors,'El nombre de usuario ya existe.') }" th:text="'El nombre de usuario ya existe.'"></div>
+<!-- Navbar (copiado de Inicio.html) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+      <img th:src="@{/TunedHive.png}" alt="TunedHive" width="44" height="44" class="d-inline-block align-text-top me-2 navbar-logo" />
+      <span class="h6 mb-0">Tuned Hive</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <label for="email" style="font-weight: 500; color: #3a2a13;">Correo electrónico</label>
-    <input type="email" id="email" name="email" th:value="${email}" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
-    <div id="emailError" style="color:#b00020;font-weight:600;margin-top:6px;font-size:0.95em;" th:if="${validationErrors != null and #lists.contains(validationErrors,'El correo ya está registrado.') }" th:text="'El correo ya está registrado.'"></div>
-
-    <label for="password" style="font-weight: 500; color: #3a2a13;">Contraseña</label>
-    <input type="password" id="password" name="password" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
-    <div id="passwordError" style="color:#b00020;font-weight:600;margin-top:6px;font-size:0.95em;" th:if="${validationErrors != null and #lists.contains(validationErrors,'Introduce una contraseña.') }" th:text="'Introduce una contraseña.'"></div>
-
-    <label for="password2" style="font-weight: 500; color: #3a2a13;">Repite la contraseña</label>
-    <input type="password" id="password2" name="password2" required style="padding: 0.7em; border-radius: 10px; border: 1px solid #e2a84a; font-size: 1em;">
-    <div id="password2Error" style="color:#b00020;font-weight:600;margin-top:6px;font-size:0.95em;" th:if="${validationErrors != null and #lists.contains(validationErrors,'Las contraseñas no coinciden.') }" th:text="'Las contraseñas no coinciden.'"></div>
-
-    <button type="submit" class="btn-colmena registro" style="margin-top: 0.5em;">Registrarse</button>
-  </form>
-  <div style="text-align: center; margin-top: 1.5em;">
-    ¿Ya tienes cuenta? <a th:href="@{/users/login}" style="color: #6b3e13; font-weight: bold; text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#bfa14a'" onmouseout="this.style.color='#6b3e13'">Inicia sesión</a>
-  </div>
-
-  <!-- Mostrar modal con errores (gestión en el Controller) -->
-  <div th:if="${validationErrors}" id="errorModalOverlay" style="position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:200;">
-    <div style="background:#fff;padding:1.2em;border-radius:12px;max-width:600px;width:90%;box-shadow:0 6px 30px #0008;">
-      <h3 style="margin-top:0;color:#b00020;">Se han detectado errores en el formulario</h3>
-      <ul style="margin:0.6em 0;padding-left:1.2em;color:#3a2a13;">
-        <li th:each="err : ${validationErrors}" th:text="${err}">Error</li>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" th:href="@{/BuscarCanciones}">Explorar</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/BuscarArtistas}">Artistas</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/GestorPlaylists}">Playlists</a></li>
+        <li class="nav-item ms-2"><a class="btn btn-outline-light btn-sm" th:href="@{/users/login}">Iniciar sesión</a></li>
+        <li class="nav-item ms-2"><a class="btn btn-warning btn-sm text-dark" th:href="@{/users/register}">Registrarse</a></li>
       </ul>
-      <div style="text-align:right;margin-top:1em;">
-        <button class="btn-colmena" onclick="document.getElementById('errorModalOverlay').style.display='none'">Cerrar</button>
+    </div>
+  </div>
+</nav>
+
+<main class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h1 class="h4 mb-1">Crea tu cuenta en Tuned Hive</h1>
+                <div class="subtitulo">Únete a la comunidad y empieza a compartir tu música.</div>
+              </div>
+              <div class="d-none d-md-block">
+                <a class="btn btn-sm btn-colmena info" th:href="@{/}">Volver al inicio</a>
+              </div>
+            </div>
+
+            <form th:action="@{/users/register}" method="post" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label for="username" class="form-label">Nombre de usuario</label>
+                <input type="text" id="username" name="username" th:value="${username}" required class="form-control" />
+                <div class="invalid-feedback d-block text-danger" th:if="${validationErrors != null and #lists.contains(validationErrors,'El nombre de usuario ya existe.') }">El nombre de usuario ya existe.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" id="email" name="email" th:value="${email}" required class="form-control" />
+                <div class="invalid-feedback d-block text-danger" th:if="${validationErrors != null and #lists.contains(validationErrors,'El correo ya está registrado.') }">El correo ya está registrado.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" id="password" name="password" required class="form-control" />
+                <div class="invalid-feedback d-block text-danger" th:if="${validationErrors != null and #lists.contains(validationErrors,'Introduce una contraseña.') }">Introduce una contraseña.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="password2" class="form-label">Repite la contraseña</label>
+                <input type="password" id="password2" name="password2" required class="form-control" />
+                <div class="invalid-feedback d-block text-danger" th:if="${validationErrors != null and #lists.contains(validationErrors,'Las contraseñas no coinciden.') }">Las contraseñas no coinciden.</div>
+              </div>
+
+              <div class="d-flex gap-2 justify-content-between align-items-center">
+                <div>
+                  <a class="text-muted" th:href="@{/users/login}">¿Ya tienes cuenta? <strong class="ms-1" style="color:var(--colmena-dark);">Inicia sesión</strong></a>
+                </div>
+                <div>
+                  <a class="btn btn-outline-secondary me-2" th:href="@{/}"><i class="fas fa-arrow-left me-1"></i> Volver</a>
+                  <button type="submit" class="btn btn-primary">Registrarse</button>
+                </div>
+              </div>
+            </form>
+
+            <!-- Modal Bootstrap con errores (se abre automáticamente si hay validationErrors) -->
+            <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title d-flex align-items-center" id="errorModalLabel">
+                      <i class="fas fa-exclamation-triangle me-2 text-danger"></i>
+                      Se han detectado errores en el formulario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="mb-3">Por favor, revisa los siguientes puntos antes de volver a enviar:</p>
+                    <div class="list-group">
+                      <div th:each="err : ${validationErrors}" class="list-group-item d-flex align-items-start">
+                        <span class="badge bg-danger rounded-circle me-3" style="width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;">
+                          <i class="fas fa-exclamation-triangle text-white"></i>
+                        </span>
+                        <div>
+                          <strong class="d-block text-danger" th:text="${err}">Mensaje de error</strong>
+                          <small class="text-muted">Revisa y corrige el campo indicado.</small>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mt-3 text-end">
+                      <small class="text-muted">Si necesitas ayuda, contacta con soporte.</small>
+                    </div>
+                  </div>
+                  <div class="modal-footer d-flex align-items-center">
+                    <button type="button" class="btn btn-copy-errors me-auto" id="btnCopyErrors" aria-label="Copiar errores">Copiar errores</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a class="btn btn-colmena" th:href="@{/}">Volver al inicio</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
   </div>
+</main>
 
-  <!-- No hay lógica de negocio en el HTML; validación y errores salen del Controller mediante model -->
+<!-- Footer (copiado de Inicio.html) -->
+<footer class="bg-dark text-light py-4">
+  <div class="container text-center">
+    <p class="mb-1">© Tuned Hive 2025</p>
+    <small class="text-muted">20 samples incluidos en /samples</small>
+  </div>
+</footer>
+
+<!-- Bootstrap Bundle JS -->
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<!-- Script: mostrar modal automáticamente si hay errores -->
+<script th:if="${validationErrors}" th:inline="javascript">
+  /* Injectar errores desde el servidor (Thymeleaf) y mejorar UX: marcar campos, enfocar el primero y abrir modal */
+  /* regErrors será un array de strings */
+  let regErrors = /*[[${validationErrors}]]*/ [];
+  document.addEventListener('DOMContentLoaded', function(){
+    try{
+      // Función utilitaria: limpiar cualquier backdrop y estado modal en body
+      function cleanBackdropsAndState(){
+        document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.parentNode.removeChild(el); });
+        // Quitar clase modal-open y resetear paddingRight
+        document.body.classList.remove('modal-open');
+        document.body.style.paddingRight = '';
+      }
+
+      // Cerrar cualquier modal ya abierto (por si quedó alguno abierto) para no duplicar overlays
+      document.querySelectorAll('.modal.show').forEach(function(openModal){
+        try{
+          const inst = bootstrap.Modal.getInstance(openModal);
+          if(inst){ inst.hide(); inst.dispose(); }
+        }catch(e){ /* noop */ }
+      });
+
+      // Limpieza inicial antes de mostrar
+      cleanBackdropsAndState();
+
+      // Marcar inputs relacionados según palabras clave
+      let firstInvalid = null;
+      regErrors.forEach(function(msg){
+        let lower = (''+msg).toLowerCase();
+        if(lower.indexOf('usuario') !== -1){
+          let el = document.getElementById('username'); if(el){ el.classList.add('is-invalid'); firstInvalid = firstInvalid || el; }
+        }
+        if(lower.indexOf('correo') !== -1 || lower.indexOf('email') !== -1){
+          let el = document.getElementById('email'); if(el){ el.classList.add('is-invalid'); firstInvalid = firstInvalid || el; }
+        }
+        if(lower.indexOf('contrase') !== -1){
+          // marca password y/o password2 según el texto
+          let el1 = document.getElementById('password'); if(el1){ el1.classList.add('is-invalid'); firstInvalid = firstInvalid || el1; }
+          let el2 = document.getElementById('password2'); if(el2){ el2.classList.add('is-invalid'); firstInvalid = firstInvalid || el2; }
+        }
+      });
+
+      // Mostrar el modal (limpiando cualquier backdrop sobrante antes)
+      const modalEl = document.getElementById('errorModal');
+      if(modalEl){
+        // Asegurar limpieza de backdrops justo antes
+        cleanBackdropsAndState();
+
+        // Crear instancia y mostrar
+        const myModal = new bootstrap.Modal(modalEl, { backdrop: true, keyboard: true });
+        myModal.show();
+
+        // Al mostrarse, realizar una limpieza rápida (en caso de race conditions)
+        modalEl.addEventListener('shown.bs.modal', function(){
+          // Asegurar que el backdrop y el modal tienen z-index correctos para evitar que el backdrop quede por encima
+          // Buscar el backdrop recién creado
+          const backdrops = document.querySelectorAll('.modal-backdrop');
+          backdrops.forEach(function(bd, idx){
+            // establecer z-index por debajo del modal pero alto respecto al resto
+            bd.style.zIndex = 1050 + idx; // incrementos por si hay múltiples
+            bd.style.pointerEvents = 'auto';
+          });
+          // Forzar z-index del modal de forma que quede por encima de cualquier backdrop
+          modalEl.style.zIndex = 1060;
+          cleanBackdropsAndState();
+        });
+
+        // Cuando se oculte el modal, limpiar cualquier backdrop y estado y disponer la instancia
+        modalEl.addEventListener('hidden.bs.modal', function(){
+          try{ myModal.dispose(); }catch(e){}
+          cleanBackdropsAndState();
+        });
+      }
+
+      // Enfocar el primer campo inválido si existe
+      if(firstInvalid){ try{ firstInvalid.focus(); }catch(e){} }
+
+      // Copiar errores: listener para el botón
+      const btnCopy = document.getElementById('btnCopyErrors');
+      if(btnCopy){
+        btnCopy.addEventListener('click', function(){
+          try{
+            const text = regErrors.join('\n');
+            if(navigator.clipboard && navigator.clipboard.writeText){
+              navigator.clipboard.writeText(text).then(function(){
+                const prev = btnCopy.innerHTML;
+                btnCopy.innerHTML = 'Copiado ✓';
+                setTimeout(function(){ btnCopy.innerHTML = prev; }, 2000);
+              }).catch(function(){
+                window.alert('No se pudo copiar al portapapeles.');
+              });
+            } else {
+              // Fallback: crear textarea temporal
+              const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+              try{ document.execCommand('copy'); btnCopy.innerHTML = 'Copiado ✓'; setTimeout(function(){ btnCopy.innerHTML = 'Copiar errores'; document.body.removeChild(ta); },2000); }catch(e){ window.alert('No se pudo copiar'); document.body.removeChild(ta); }
+            }
+          }catch(e){ console.error(e); }
+        });
+      }
+
+    }catch(e){ console.error('Error handling validationErrors:', e); }
+  });
+</script>
 </body>
 </html>

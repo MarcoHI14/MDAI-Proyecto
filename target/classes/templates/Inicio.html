@@ -2,56 +2,107 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tuned Hive</title>
-  <!-- Usar la ruta que Spring Boot sirve desde / y Thymeleaf para resolverla correctamente -->
-  <link rel="stylesheet" th:href="@{/estilos.css}" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Bootstrap CSS desde WebJars -->
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}" />
+  <!-- Hoja de estilos específica -->
+  <link rel="stylesheet" th:href="@{/landing.css(v=8)}" />
 </head>
 <body>
-    <button class="btn-colmena info info-top-left" onclick="window.location.href='/Información'">Más información</button>
-    <div class="eslogan eslogan-top-right">Hone-y your music!</div>
-    <div class="logo-contenedor" style="position: relative; display: inline-block;">
-      <div class="abeja-voladora" id="abeja-voladora" aria-hidden="true">
-        <!-- SVG de abeja ligera -->
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="24" cy="32" rx="10" ry="6" fill="#f6e27a" stroke="#bfa14a" stroke-width="2"/>
-          <ellipse cx="24" cy="32" rx="5" ry="3" fill="#3a2a13" opacity=".18"/>
-          <ellipse cx="18" cy="28" rx="4" ry="8" fill="#fff" fill-opacity=".7" stroke="#bfa14a" stroke-width="1.2"/>
-          <ellipse cx="30" cy="28" rx="4" ry="8" fill="#fff" fill-opacity=".7" stroke="#bfa14a" stroke-width="1.2"/>
-          <ellipse cx="24" cy="32" rx="8" ry="6" fill="#e2a84a" stroke="#bfa14a" stroke-width="2"/>
-          <ellipse cx="24" cy="32" rx="2.5" ry="6" fill="#3a2a13"/>
-          <circle cx="24" cy="22" r="5" fill="#3a2a13" stroke="#bfa14a" stroke-width="2"/>
-          <ellipse cx="22.5" cy="21" rx="1.2" ry="2" fill="#fff" fill-opacity=".7"/>
-          <ellipse cx="25.5" cy="23" rx="0.7" ry="1.1" fill="#fff" fill-opacity=".7"/>
-          <ellipse cx="20" cy="18" rx="1.5" ry="0.5" fill="#bfa14a"/>
-          <ellipse cx="28" cy="18" rx="1.5" ry="0.5" fill="#bfa14a"/>
-        </svg>
+
+<!-- Navbar (estilo SolMusic simplificado) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+      <img th:src="@{/TunedHive.png}" alt="TunedHive" width="44" height="44" class="d-inline-block align-text-top me-2 navbar-logo" />
+      <span class="h6 mb-0">Tuned Hive</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" th:href="@{/BuscarCanciones}">Explorar</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/BuscarArtistas}">Artistas</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/GestorPlaylists}">Playlists</a></li>
+        <li class="nav-item ms-2"><a class="btn btn-outline-light btn-sm" th:href="@{/users/login}">Iniciar sesión</a></li>
+        <li class="nav-item ms-2"><a class="btn btn-warning btn-sm text-dark" th:href="@{/users/register}">Registrarse</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero (inspirado en SolMusic) -->
+<header class="solmusic-hero py-6">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6 text-center text-md-start">
+        <h1 class="display-5 fw-bold">Tu colmena musical</h1>
+        <p class="lead mb-4">Descubre, comparte y escucha música de artistas independientes. Subir pistas y crear playlists nunca fue tan fácil.</p>
+        <p>
+          <a class="btn btn-primary btn-lg me-2" th:href="@{/BuscarCanciones}"><i class="fas fa-play me-2"></i>Explorar Música</a>
+          <a class="btn btn-outline-secondary btn-lg" th:href="@{/users/register}"><i class="fas fa-user-plus me-2"></i>Crear cuenta</a>
+        </p>
       </div>
-      <!-- Usar Thymeleaf para resolver la ruta de la imagen estática -->
-      <img th:src="@{/TunedHive.png}" alt="Logo TunedHive" class="logo-colmena" id="logo-colmena">
+      <div class="col-md-6 text-center mt-4 mt-md-0">
+        <div class="logo-contenedor">
+          <div class="mt-3">
+            <img th:src="@{/TunedHive.png}" alt="TunedHive" class="hero-logo" />
+            <div>
+              <a class="btn btn-secondary btn-lg mt-3 info-under-logo" th:href="@{/Información}"><i class="fas fa-info-circle me-2"></i>Más información</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="icono-musica">
-      <i class="fas fa-music"></i>
+  </div>
+</header>
+
+<!-- Sección características -->
+<section class="py-5">
+  <div class="container">
+    <div class="row text-center gy-4">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">Sube tu música</h5>
+            <p class="card-text">Los artistas pueden subir pistas y gestionar su catálogo con facilidad.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">Crea playlists</h5>
+            <p class="card-text">Organiza tus canciones favoritas y compártelas con otros usuarios.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">Descubre</h5>
+            <p class="card-text">Explora música por artistas, géneros y playlists de la comunidad.</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="botones-colmena" style="margin-bottom: 1.5em;">
-      <button class="btn-colmena login" onclick="window.location.href='/users/login'">Iniciar sesión</button>
-      <button class="btn-colmena registro" onclick="window.location.href='/users/register'">Registrarse</button>
-    </div>
-    <h1>Tuned Hive</h1>
-    <div class="subtitulo">
-      Plataforma colaborativa para amantes de la música
-    </div>
-    <script>
-    // Animación de la abeja al pulsar el logo
-    const logo = document.getElementById('logo-colmena');
-    const abeja = document.getElementById('abeja-voladora');
-    logo.addEventListener('click', () => {
-      if (abeja.classList.contains('volando')) return;
-      abeja.classList.add('volando');
-      abeja.addEventListener('animationend', () => {
-        abeja.classList.remove('volando');
-      }, { once: true });
-    });
-    </script>
+  </div>
+</section>
+
+<!-- Footer simple -->
+<footer class="bg-dark text-light py-4">
+  <div class="container text-center">
+    <p class="mb-1">© Tuned Hive 2025</p>
+    <small class="text-muted">20 samples incluidos en /samples</small>
+  </div>
+</footer>
+
+<!-- Bootstrap Bundle JS -->
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

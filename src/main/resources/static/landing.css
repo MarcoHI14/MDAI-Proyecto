@@ -1,0 +1,349 @@
+/* landing.css - estilos específicos para la página de inicio (landing)
+   Mantiene la estética "colmena" pero con un aspecto más profesional usando Bootstrap.
+*/
+:root{
+  --colmena-acento: #f6d261; /* amarillo miel */
+  --colmena-dark: #3a2a13;
+  --hero-bg: linear-gradient(180deg, #ffffff 0%, #f8f9fb 100%);
+  --hive-honey-1: #f6d261; /* amarillo miel */
+  --hive-honey-2: #f3c44a;
+  --hive-honey-3: #b8861f;
+  --hive-dark: #2f2312;
+}
+
+html,body{
+  height:100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Fondo limpio: gradiente base (sin patrón) */
+  background: var(--hero-bg);
+  color:#222;
+}
+
+/* Asegurar que no haya pseudo-elementos de textura activos */
+html::after{ content:none; }
+
+/* Footer */
+footer{ margin-top:48px; }
+footer small{ color:#6b6b6b; }
+
+/* Ajustes responsivos */
+@media(min-width:992px){
+  .hero-card{ padding:36px; }
+}
+
+/* Pequeño refinamiento visual para evitar que la landing parezca fraudulenta */
+.hero-card, .navbar, footer{ border:1px solid rgba(15,15,20,0.02); }
+
+/* Accesibilidad: foco claro */
+.btn:focus, a:focus{ outline:3px solid rgba(13,110,253,0.12); outline-offset:2px; }
+
+/* Patrón sutil de panal (SVG embebido) */
+.hive-hex{
+  position: relative;
+  overflow: visible;
+  background-color: rgba(246,210,97,0.03);
+}
+
+/* Overlay suave para que el contenido se lea bien */
+.hive-hex::after{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.86) 100%);
+  pointer-events: none;
+  border-radius: 14px;
+}
+
+/* El hero-card debe estar por encima del patrón (pero semitransparente para mostrarlo) */
+.hive-hex .hero-card{
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(180deg,#fff 0%, #fffefc 100%);
+  border-radius: 14px;
+}
+
+/* Asegurar que la UI esté por encima (sin textura de fondo) */
+.navbar,
+main,
+.hero-card,
+footer{
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero card centrada */
+.hero{
+  padding:48px 12px 64px;
+}
+.hero-card{
+  max-width:1100px;
+  margin:0 auto;
+  background: #fff; /* opaco */
+  border-radius:14px;
+  box-shadow: 0 8px 30px rgba(20,20,40,0.06);
+  padding:28px;
+  display:block;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Textura aplicada encima del fondo blanco de la tarjeta: mantener sutil (desactivada) */
+.hero-card::before{
+  content: none;
+}
+
+.hero-title{
+  color:var(--colmena-dark);
+  font-weight:600;
+  letter-spacing: -0.5px;
+}
+.hero-sub{
+  color:#5b6170;
+}
+
+/* Botones con acento colmena: mantienen Bootstrap pero con pequeño toque */
+.btn-colmena{
+  border-radius:10px;
+  padding-left:12px;
+  padding-right:12px;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+.btn-colmena.btn-hero-primary{
+  background: linear-gradient(90deg,#0d6efd 0%, #0056d6 100%);
+  border: none;
+  box-shadow: 0 6px 18px rgba(13,110,253,0.14);
+}
+.btn-colmena.btn-hero-secondary{
+  background:transparent;
+  border:1px solid #dfe6ee;
+  color:#495057;
+}
+.btn-colmena:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(60,40,10,0.09);
+}
+
+.small-links a{ color:#495057; text-decoration:none; position:relative; padding-left:18px; }
+.small-links a:hover{ text-decoration:underline; }
+.small-links a::before{
+  content:''; width:10px; height:10px; display:inline-block; position:absolute; left:0; top:50%; transform:translateY(-50%) rotate(0deg);
+  background: linear-gradient(180deg,var(--hive-honey-2),var(--hive-honey-3));
+  clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* Logo y abeja: tamaño relativo para el icono central (usar variable para relaciones proporcionales) */
+.logo-contenedor{ position: relative; display:flex; align-items:center; justify-content:center; --logo-w:120px; --info-scale:2.5; --info-gap:12px; overflow: visible; }
+/* Estilo visual: contorno con esquinas curvas para el icono central */
+.logo-contenedor .hero-logo{
+  width: var(--logo-w) !important;
+  max-width: var(--logo-w) !important;
+  height:auto !important;
+  display:block;
+  padding:8px;                    /* mantener un poco de espacio entre imagen y borde */
+  background:#ffffff;
+  border:1px solid rgba(0,0,0,0.6);
+  border-radius:12px;
+  box-shadow: 0 10px 28px rgba(20,20,40,0.08);
+  filter: none !important;
+  -webkit-filter: none !important;
+  position: relative; /* para controlar stacking frente al contenedor de info */
+  z-index: 40;        /* imagen encima del botón */
+}
+
+/* Navbar logo (más pequeño) con contorno sutil y esquinas redondeadas */
+.navbar .navbar-brand img{
+  border-radius:8px;
+  padding:2px;
+  /* Mantener la imagen tal cual; solo cambiar el contorno para que sea visible sobre fondo oscuro */
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.9);
+}
+
+/* Navbar logo: no tocar la imagen, solo el contorno blanco */
+.navbar-logo{
+  filter: none !important;
+  -webkit-filter: none !important;
+  width:44px !important;
+  height:auto !important;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.9);
+}
+
+/* Clase genérica usada en otras plantillas para versiones pequeñas del logo */
+.logo-colmena{
+  width:60px !important;
+  height:auto !important;
+  display:inline-block;
+  vertical-align:middle;
+}
+
+/* Asegurar que en modo impresión o cuando filtros no apliquen, haya sustituto accesible */
+@media print{
+  .navbar-logo, .hero-logo{ filter: none !important; -webkit-filter: none !important; }
+}
+
+.solmusic-hero{
+  background: linear-gradient(180deg, rgba(11,22,39,0.03) 0%, rgba(255,255,255,0.0) 100%);
+  padding-top:60px;
+  padding-bottom:60px;
+}
+.solmusic-hero .display-5{ font-weight:700; color:var(--colmena-dark); margin-top:12px; }
+.solmusic-hero .lead{ color:#55606a; }
+
+/* Estilo para el botón 'Más información' que aparece debajo del logo en el hero */
+.info-under-logo{
+  /* Contenedor posicionado respecto a .logo-contenedor -> sobresale a ambos lados (proporcional al logo) */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  /* espacio entre imagen y botón controlable por --info-gap */
+  top: calc(100% + var(--info-gap));
+  /* ancho proporcional al logo: usa --info-scale (p. ex. 2 = el doble, 2.5 = 2.5x) */
+  width: calc(var(--logo-w) * var(--info-scale));
+  min-width: 140px;
+  padding: 10px 16px;
+  text-align: center;
+  white-space: nowrap;     /* evitar que el texto haga wrap */
+  /* --- Nuevo: fondo gris por defecto y texto/icono en blanco --- */
+  background: #6c757d; /* gris bootstrap (secondary) */
+  border: 1px solid rgba(0,0,0,0.08);
+  color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(20,20,40,0.06);
+  z-index: 30;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+/* Hover: invertir colores (fondo blanco, texto oscuro). Sin desplazamiento. */
+.info-under-logo:hover{
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.08);
+  color: var(--colmena-dark);
+  box-shadow: 0 8px 26px rgba(191,161,74,0.06);
+}
+
+@media (max-width: 576px){
+  .logo-contenedor{ --logo-w:96px; }
+  .logo-contenedor .hero-logo{ width:96px !important; max-width:96px !important; }
+  .info-under-logo{ position: static; width:100%; margin-top:10px; transform:none; }
+}
+
+/* Estilos adicionales para modales más elegantes */
+.modal-content{
+  border-radius:14px;
+  overflow: hidden;
+}
+.modal-header{
+  background: linear-gradient(90deg, rgba(246,210,97,0.12), rgba(246,210,97,0.06));
+  border-bottom: none;
+  padding: 1rem 1.25rem;
+}
+.modal-title i{
+  font-size:1.2rem;
+  width:36px;
+  height:36px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,#f6d261,#e2a84a);
+  color:#3a2a13;
+  border-radius:50%;
+  margin-right:0.6rem;
+  box-shadow: 0 6px 18px rgba(160,120,40,0.12);
+}
+.modal-body .list-group-item{
+  border-left:4px solid rgba(191,161,74,0.18);
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
+  padding:0.9rem 1rem;
+  margin-bottom:0.45rem;
+  border-radius:8px;
+}
+.modal-footer{
+  border-top: none;
+  padding: 0.9rem 1.25rem;
+}
+.btn-copy-errors{
+  background: transparent;
+  border: 1px dashed rgba(0,0,0,0.08);
+  color: #3a2a13;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+}
+.btn-copy-errors:hover{ background: rgba(0,0,0,0.02); }
+
+/* Suave animación de entrada (aprovecha clase de Bootstrap) */
+.modal.fade .modal-dialog{
+  transform: translateY(-10px);
+  transition: transform 220ms cubic-bezier(.2,.8,.2,1);
+}
+.modal.show .modal-dialog{
+  transform: translateY(0);
+}
+
+/* Estilos específicos para panel de administración */
+.admin-header{
+  background: linear-gradient(90deg, rgba(246,210,97,0.08), rgba(246,210,97,0.02));
+  backdrop-filter: blur(4px);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  height:64px;
+}
+.admin-header .brand-logo{ width:60px; height:auto; }
+.admin-header .admin-title{ color:var(--colmena-dark); font-weight:700; letter-spacing:1px; }
+
+.admin-menu{
+  background: rgba(246,210,97,0.04);
+  border-top: 1px solid rgba(0,0,0,0.02);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.admin-menu ul{ display:flex; gap:2.2rem; list-style:none; margin:0; padding:0.6rem 0; justify-content:center; }
+.admin-menu .navbar-nav{ display:flex; gap:2.2rem; align-items:center; }
+.admin-menu .navbar-nav .nav-link{
+  color: var(--hive-honey-3) !important;
+  text-decoration:none !important;
+  font-weight:600;
+  transition: color 180ms ease, transform 120ms ease;
+  padding: 0.45rem 0.6rem;
+}
+.admin-menu .navbar-nav .nav-link:hover{ color: #6b3e13 !important; transform: translateY(-2px); }
+
+/* Toggler visible y estilizado (usa FontAwesome fallback) */
+.admin-menu .navbar-toggler{ border: none; }
+.admin-menu .navbar-toggler i{ font-size:1.1rem; color:var(--hive-dark); }
+.admin-menu .navbar-toggler:focus{ box-shadow: none; }
+
+/* Tarjetas laterales y contenedores */
+.admin-panel-card{
+  background: linear-gradient(180deg,#fff 0%, #fffbe6 100%);
+  border-radius:14px;
+  padding:1.25rem;
+  box-shadow: 0 12px 30px rgba(20,20,40,0.06);
+  border:1px solid rgba(0,0,0,0.03);
+}
+.admin-panel-card h3{ color:var(--hive-honey-3); margin-bottom:0.5rem; }
+.admin-panel-card p{ color:#555; }
+
+/* Botones CTA de administración */
+.btn-admin-cta{
+  background: linear-gradient(90deg,var(--hive-honey-2), var(--hive-honey-3));
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-weight:700;
+  box-shadow: 0 10px 24px rgba(191,161,74,0.12);
+}
+.btn-admin-cta:hover{ filter:brightness(0.98); transform: translateY(-2px); }
+
+/* Hero central del admin */
+.admin-hero{ padding: 1.6rem; }
+.admin-hero h1{ color:var(--colmena-dark); font-weight:800; }
+.admin-hero .subtitulo{ color:#5b6170; font-size:1rem; }
+
+/* Responsive tweaks */
+@media (max-width: 992px){
+  .admin-menu ul{ gap:1rem; font-size:1rem; }
+  .main-flex{ flex-direction:column; }
+  .main-flex aside{ max-width:100%; width:100%; padding:1rem; }
+  .main-flex main{ max-width:100%; padding:1rem; }
+}
