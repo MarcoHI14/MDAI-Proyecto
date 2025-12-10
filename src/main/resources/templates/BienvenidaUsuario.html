@@ -1,151 +1,152 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Bienvenida | Tuned Hive</title>
-  <!-- Usar Thymeleaf para resolver la hoja de estilos y la imagen -->
-  <link rel="stylesheet" th:href="@{/estilos.css}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bienvenida | Tuned Hive</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}" />
+    <link rel="stylesheet" th:href="@{/landing.css(v=8)}" />
+    <style>
+        /* Small overrides to match admin look: tarjetas opacas y sin overlays */
+        .panel-card { background-color: #fff !important; opacity: 1 !important; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 12px 30px rgba(20,20,40,0.06) !important; border-radius: .75rem; }
+        .hero-username { font-weight: 700; color: #2d2d2d; }
+        .btn-colmena { background: linear-gradient(135deg,#bfa14a,#e2a84a); color: #1f1308; border: none; }
+        .btn-colmena.info { background: linear-gradient(135deg,#f6e27a,#bfa14a); color: #1f1308; }
+        .logo-colmena { width: 56px; height: auto; }
+        body { background: #faf8f5; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body th:attr="data-success=${success},data-error=${error}">
-  <header style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; align-items: center; justify-content: space-between; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; padding: 0.5em 2em 0.5em 1.5em; border-radius: 0; margin: 0; position: fixed; top: 0; left: 0; z-index: 100;">
-      <a th:href="@{/home}" style="display: inline-block; line-height: 0;">
-          <img th:src="@{/TunedHive.png}" alt="Logo TunedHive" class="logo-colmena" style="width: 60px; height: auto; margin: 0; cursor: pointer;">
-      </a>
-    <div class="eslogan eslogan-top-right" style="pointer-events: none; position: static; margin: 0; font-size: 1.3em; font-weight: bold; color: #2d2d2d; letter-spacing: 1px;">¡Bienvenido/a a Tuned Hive!</div>
-    <div style="display:flex; gap:0.6em; align-items:center;">
-      <a th:href="@{/users/logout}" class="btn-colmena info" style="margin: 0; position: static; display:inline-block; text-decoration:none;">Cerrar Sesión</a>
-    </div>
-  </header>
-  <nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
-    <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
-      <li><a th:href="@{/Buscar}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Buscar Música</a></li>
-      <li><a th:href="@{/Playlists}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mis Playlist</a></li>
-      <li><a th:href="@{/Artistas}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Artistas</a></li>
-      <li><a th:href="@{/Micuenta}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mi Cuenta</a></li>
-    </ul>
-  </nav>
-  <div class="main-flex" style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; width: 100vw; max-width: 100vw; margin-top: 7.5em; min-height: 60vh;">
-    <!-- Lateral Izquierdo -->
-    <aside style="flex: 1 1 22%; max-width: 22%; padding: 2em 1em 0 2em; min-width: 180px;">
-      <div style="background: #fffbe6; border-radius: 16px; box-shadow: 0 2px 12px #0001; padding: 1.2em 1em; margin-bottom: 2em; text-align: center;">
-        <h3 style="color: #bfa14a; margin-top: 0;">¡Invita a tus amigos! 👫</h3>
-        <p style="color: #3a2a13; font-size: 1.08em; margin-bottom: 1.2em;">Invita a tus amigos a disfrutar de la buena música y a unirse a Tuned Hive.</p>
-        <button onclick="lanzarConfetiYInvitar()" class="btn-colmena" style="font-size: 1em; width: 100%; cursor: pointer;">¡Invitación!🎵</button>
-      </div>
-    </aside>
-    <!-- Centro -->
-    <main style="flex: 2 1 56%; max-width: 56%; padding: 2em 1em 0 1em; min-width: 260px; text-align: center;">
-      <h1 style="margin-top: 0;" th:if="${sessionUsuario != null}">¡Has iniciado sesión con éxito, <span th:text="${sessionUsuario.username}">Usuario</span>!</h1>
-      <h1 style="margin-top: 0;" th:if="${sessionUsuario == null}">¡Has iniciado sesión con éxito!</h1>
-      <div class="subtitulo" style="max-width: 600px; margin: 0 auto 2em auto;">
-        <p>Ya formas parte de la colmena musical. Explora, comparte y disfruta de la música junto a toda la comunidad Tuned Hive.</p>
-      </div>
-    </main>
-    <!-- Lateral Derecho -->
-    <aside style="flex: 1 1 22%; max-width: 22%; padding: 2em 2em 0 1em; min-width: 180px;">
-      <div style="background: #fffbe6; border-radius: 16px; box-shadow: 0 2px 12px #0001; padding: 1.2em 1em; margin-bottom: 2em; text-align: center;">
-        <h3 style="color: #6b3e13; margin-top: 0;">Solicitud de Verificación</h3>
-        <button id="solicitudBtn" class="btn-colmena info" style="font-size: 1em; width: 100%; margin-top: 0.8em;">Solicitud de Verificación</button>
-      </div>
-    </aside>
-  </div>
-  <!-- Modal: Solicitud de Verificación -->
-  <div id="solicitudModal" style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:300;">
-    <div style="background:#fff; padding:1.2em; border-radius:12px; max-width:520px; width:92%; box-shadow:0 8px 30px #0004;">
-      <h3 style="margin-top:0; color:#6b3e13;">Solicitud de Verificación</h3>
-      <form th:action="@{/solicitudes/crear}" method="post" id="solicitudForm">
-        <!-- Tipo fijo: ARTISTA -->
-        <input type="hidden" id="tipo" name="tipo" value="ARTISTA" />
-        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+<!-- Navbar similar a BienvenidaAdmin / Inicio -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+            <img th:src="@{/TunedHive.png}" alt="TunedHive" class="logo-colmena me-2" />
+            <span class="h6 mb-0">Tuned Hive</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <!-- Nombre no requerido para ARTISTA -->
-        <!-- campo eliminado intencionalmente -->
-
-        <label for="descripcion">Descripción / Motivo</label>
-        <textarea id="descripcion" name="descripcion" rows="4" style="width:100%; padding:0.5em; margin-bottom:0.6em;" required></textarea>
-
-        <div style="display:flex; justify-content:flex-end; gap:0.6em;">
-          <button type="button" class="btn-colmena" id="closeSolicitud">Cancelar</button>
-          <button type="submit" class="btn-colmena registro">Enviar Solicitud</button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item"><a class="nav-link" th:href="@{/BuscarCanciones}">Explorar</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/BuscarArtistas}">Artistas</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/Playlists}">Playlists</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/Micuenta}">Mi Cuenta</a></li>
+                <li class="nav-item ms-2">
+                    <a class="btn btn-outline-light btn-sm" th:href="@{/users/logout}">Cerrar Sesión</a>
+                </li>
+            </ul>
         </div>
-      </form>
     </div>
-  </div>
+</nav>
 
-  <script>
-function lanzarConfetiYInvitar() {
-  confetti({
-    particleCount: 120,
-    spread: 80,
-    origin: { y: 0.6 },
-    colors: ['#f6e27a', '#bfa14a', '#e2a84a', '#3a2a13', '#fffbe6']
-  });
-  setTimeout(function() {
-    window.open('https://mail.google.com/mail/?view=cm&fs=1&to=&su=%C2%A1%C3%9Anete%20a%20Tuned%20Hive!&body=Te%20invito%20a%20descubrir%20y%20compartir%20m%C3%BAsica%20en%20Tuned%20Hive.%0A%0AEntra%20en%20https://ruta/a/Inicio.html', '_blank');
-  }, 600);
-}
+<main class="container-fluid" style="margin-top:5.5rem;">
+    <div class="row gx-4">
+        <!-- Lateral Izquierdo -->
+        <aside class="col-12 col-lg-3 mb-4">
+            <div class="panel-card p-3 h-100">
+                <h5 class="mb-2">¡Invita a tus amigos!</h5>
+                <p class="mb-3 text-muted">Comparte Tuned Hive y haz crecer la colmena.</p>
+                <button onclick="lanzarConfetiYInvitar()" class="btn btn-colmena w-100">Invitar & Confeti</button>
+            </div>
+        </aside>
 
-// Modal logic for Solicitud de Verificación
-document.addEventListener('DOMContentLoaded', function(){
-  var btn = document.getElementById('solicitudBtn');
-  var modal = document.getElementById('solicitudModal');
-  var close = document.getElementById('closeSolicitud');
-  var form = document.getElementById('solicitudForm');
-  if(btn && modal) {
-    btn.addEventListener('click', function(){ modal.style.display = 'flex'; });
-  }
-  if(close && modal) {
-    close.addEventListener('click', function(){ modal.style.display = 'none'; });
-  }
-  // Simple client-side validation before submit (opcional)
-  if(form) {
-    form.addEventListener('submit', function(e){
-      var desc = document.getElementById('descripcion').value.trim();
-      if(!desc) {
-        e.preventDefault();
-        alert('Rellena la descripción antes de enviar.');
-        return false;
-      }
-      // cerrar modal al enviar (el servidor procesará la solicitud)
-      modal.style.display = 'none';
-    });
-  }
-});
-  </script>
-  <!-- Toast para mostrar mensajes flash -->
-  <div id="flashToast" style="display:none; position:fixed; right:20px; bottom:20px; min-width:220px; max-width:420px; padding:12px 16px; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:9999; font-weight:600; color:#fff;">
-  </div>
-  <script>
-document.addEventListener('DOMContentLoaded', function(){
-  var toast = document.getElementById('flashToast');
-  var success = document.body.getAttribute('data-success');
-  var error = document.body.getAttribute('data-error');
-  function showToast(message, type) {
-    if(!toast) return;
-    toast.textContent = message;
-    toast.style.display = 'block';
-    toast.style.opacity = '1';
-    if(type === 'success') {
-      toast.style.background = 'linear-gradient(135deg,#2b7a2b,#6bbf6b)';
-    } else {
-      toast.style.background = 'linear-gradient(135deg,#b33,#e06666)';
+        <!-- Centro -->
+        <section class="col-12 col-lg-6 mb-4">
+            <div class="panel-card p-4 text-center h-100 d-flex flex-column justify-content-center">
+                <div>
+                    <h1 class="mb-2 hero-username" th:if="${sessionUsuario != null}">¡Has iniciado sesión, <span th:text="${sessionUsuario.username}">Usuario</span>!</h1>
+                    <h1 class="mb-2 hero-username" th:if="${sessionUsuario == null}">¡Has iniciado sesión con éxito!</h1>
+                    <p class="text-muted mb-3">Explora, comparte y disfruta de la música junto a la comunidad Tuned Hive.</p>
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <a th:href="@{/BuscarCanciones}" class="btn btn-primary"><i class="fas fa-play me-1"></i>Explorar Música</a>
+                        <a th:href="@{/Micuenta}" class="btn btn-outline-secondary">Mi Cuenta</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lateral Derecho -->
+        <aside class="col-12 col-lg-3 mb-4">
+            <div class="panel-card p-3 h-100">
+                <h5 class="mb-2">Solicitud de Verificación</h5>
+                <p class="text-muted">Si eres artista, solicita verificación para tu perfil.</p>
+                <button id="solicitudBtn" class="btn btn-colmena info w-100">Enviar Solicitud</button>
+            </div>
+        </aside>
+    </div>
+</main>
+
+<!-- Modal Solicitud -->
+<div id="solicitudModal" class="d-none" style="position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1050;">
+    <div class="bg-white rounded p-4" style="max-width:560px; width:92%; box-shadow:0 10px 40px rgba(0,0,0,0.25);">
+        <h5>Solicitud de Verificación</h5>
+        <form th:action="@{/solicitudes/crear}" method="post" id="solicitudForm">
+            <input type="hidden" id="tipo" name="tipo" value="ARTISTA" />
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div class="mb-2">
+                <label for="descripcion" class="form-label">Descripción / Motivo</label>
+                <textarea id="descripcion" name="descripcion" rows="4" class="form-control" required></textarea>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+                <button type="button" id="closeSolicitud" class="btn btn-outline-secondary">Cancelar</button>
+                <button type="submit" class="btn btn-colmena">Enviar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast personalizado -->
+<div id="flashToast" aria-live="polite" aria-atomic="true" style="display:none; position:fixed; right:20px; bottom:20px; min-width:220px; max-width:420px; padding:12px 16px; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:1060; font-weight:700; color:#fff;"></div>
+
+<script>
+    function lanzarConfetiYInvitar() {
+      try {
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#f6e27a','#bfa14a','#e2a84a','#3a2a13','#fffbe6'] });
+      } catch(e) {}
+      setTimeout(function(){
+        window.open('https://mail.google.com/mail/?view=cm&fs=1&to=&su=%C2%A1%C3%9Anete%20a%20Tuned%20Hive!&body=Te%20invito%20a%20descubrir%20y%20compartir%20m%C3%BAsica%20en%20Tuned%20Hive.%0A%0AEntra%20en%20https://ruta/a/Inicio.html', '_blank');
+      }, 600);
     }
-    // auto hide
-    setTimeout(function(){
-      toast.style.transition = 'opacity 0.45s ease';
-      toast.style.opacity = '0';
-      setTimeout(function(){ toast.style.display = 'none'; }, 500);
-    }, 3800);
-  }
-  if(success && success.trim() !== '') {
-    showToast(success, 'success');
-  } else if(error && error.trim() !== '') {
-    showToast(error, 'error');
-  }
-});
-  </script>
 
- </body>
- </html>
+    // Modal logic
+    document.addEventListener('DOMContentLoaded', function(){
+      var btn = document.getElementById('solicitudBtn');
+      var modal = document.getElementById('solicitudModal');
+      var close = document.getElementById('closeSolicitud');
+      var form = document.getElementById('solicitudForm');
+      if(btn && modal) btn.addEventListener('click', function(){ modal.classList.remove('d-none'); modal.style.display = 'flex'; });
+      if(close && modal) close.addEventListener('click', function(){ modal.classList.add('d-none'); modal.style.display = 'none'; });
+      if(form){
+        form.addEventListener('submit', function(e){
+          var desc = document.getElementById('descripcion').value.trim();
+          if(!desc){ e.preventDefault(); alert('Rellena la descripción antes de enviar.'); return false; }
+          modal.classList.add('d-none'); modal.style.display = 'none';
+        });
+      }
+
+      // Flash toast
+      var toast = document.getElementById('flashToast');
+      var success = document.body.getAttribute('data-success');
+      var error = document.body.getAttribute('data-error');
+      function showToast(message, type){
+        if(!toast) return;
+        toast.textContent = message;
+        toast.style.display = 'block';
+        toast.style.opacity = '1';
+        toast.style.transition = 'opacity 0.45s ease';
+        toast.style.background = type === 'success' ? 'linear-gradient(135deg,#2b7a2b,#6bbf6b)' : 'linear-gradient(135deg,#b33,#e06666)';
+        setTimeout(function(){ toast.style.opacity = '0'; setTimeout(function(){ toast.style.display = 'none'; }, 500); }, 3800);
+      }
+      if(success && success.trim() !== '') showToast(success, 'success');
+      else if(error && error.trim() !== '') showToast(error, 'error');
+    });
+</script>
+
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
