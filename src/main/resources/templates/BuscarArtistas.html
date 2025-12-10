@@ -2,176 +2,133 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Buscar Artistas | Tuned Hive</title>
-    <link rel="stylesheet" th:href="@{/estilos.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}" />
+    <link rel="stylesheet" th:href="@{/landing.css(v=8)}" />
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            overflow-y: scroll;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        html::-webkit-scrollbar,
-        body::-webkit-scrollbar {
-            display: none;
-            width: 0;
-            height: 0;
-        }
-        /* simple table styles to match the site (moved here) */
-        #artists-table th, #artists-table td { padding:0.6em 0.8em; border-bottom:1px solid #eee; }
-        #artists-table tbody tr:hover { background: #fff8e6; }
-
-        /* Estilos del reproductor inferior (oculto por defecto) */
-        #bottom-player {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            transform: translateY(110%);
-            transition: transform 300ms ease;
-            background: linear-gradient(180deg,#fffbe6, #fff9e0);
-            border-top: 1px solid #e6d8a8;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
-            padding: 0.8em 1em;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            gap: 1em;
-        }
+        body { background: #faf8f5; }
+        .panel-card { background-color: #fff !important; opacity: 1 !important; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 12px 30px rgba(20,20,40,0.06) !important; border-radius: .75rem; }
+        .btn-colmena { background: linear-gradient(135deg,#bfa14a,#e2a84a); color: #1f1308; border: none; font-weight: 600; padding: 0.5em 1em; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .btn-colmena:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(191,161,74,0.3); }
+        .btn-colmena.info { background: linear-gradient(135deg,#f6e27a,#bfa14a); }
+        .logo-colmena { width: 56px; height: auto; }
+        .toggle-btn { padding: 0.6em 1.2em; border: 2px solid #bfa14a; background: white; color: #bfa14a; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .toggle-btn.active { background: #6b3e13; color: white; border-color: #6b3e13; }
+        .toggle-btn:hover { transform: translateY(-1px); }
+        .full-table { width: 100%; border-collapse: collapse; }
+        .full-table thead tr { background: #f7f3e6; }
+        .full-table th { padding: 0.75em 1em; border-bottom: 2px solid #e6d8a8; font-weight: 600; color: #2d2d2d; }
+        .full-table tbody tr { border-bottom: 1px solid #eee; transition: background 0.2s; cursor: pointer; }
+        .full-table tbody tr:hover { background: #fffef8; }
+        .full-table tbody tr.selected { background: #fff8e6; }
+        .full-table td { padding: 0.8em 1em; vertical-align: middle; }
+        #bottom-player { position: fixed; left: 0; right: 0; bottom: 0; transform: translateY(110%); transition: transform 300ms ease; background: linear-gradient(180deg,#fffbe6, #fff9e0); border-top: 2px solid #e6d8a8; box-shadow: 0 -4px 12px rgba(0,0,0,0.08); padding: 1em 1.5em; z-index: 999; display: flex; align-items: center; gap: 1.5em; }
         #bottom-player.show { transform: translateY(0); }
         #player-info { flex: 1; min-width: 0; }
-        #player-title { font-weight: 700; color: #2d2d2d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .player-controls { display:flex; align-items:center; gap:0.6em; }
-        .player-btn { background:#6b3e13; color:white; border:none; padding:0.5em 0.8em; border-radius:8px; cursor:pointer; }
-        .player-progress-container { background: rgba(0,0,0,0.06); height:10px; border-radius:8px; cursor:pointer; margin-top:0.6em; width:100%; }
-        .player-progress-bar { height:100%; background:#bfa14a; width:0%; border-radius:8px; }
-        .player-times { font-size:0.9em; color:#444; margin-left:0.6em; min-width:70px; text-align:right; }
-
-        /* Popup / toast */
-        .popup {
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%) translateY(-20px);
-            bottom: 20px;
-            min-width: 260px;
-            max-width: 90vw;
-            background: #fff;
-            color: #222;
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-            padding: 0.9em 1em;
-            display: flex;
-            align-items: center;
-            gap: 0.8em;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 220ms ease, transform 220ms ease;
-            z-index: 1200;
-        }
+        #player-title { font-weight: 700; color: #2d2d2d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 1.1em; }
+        .player-controls { display: flex; align-items: center; gap: 0.8em; }
+        .player-btn { background: #6b3e13; color: white; border: none; padding: 0.6em 1em; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .player-btn:hover { background: #52301a; }
+        .player-progress-container { background: rgba(0,0,0,0.08); height: 8px; border-radius: 8px; cursor: pointer; margin-top: 0.5em; width: 100%; }
+        .player-progress-bar { height: 100%; background: linear-gradient(90deg,#bfa14a,#e2a84a); width: 0%; border-radius: 8px; transition: width 0.1s; }
+        .player-times { font-size: 0.9em; color: #444; min-width: 80px; text-align: right; font-weight: 600; }
+        .popup { position: fixed; left: 50%; transform: translateX(-50%) translateY(-20px); bottom: 20px; min-width: 280px; max-width: 90vw; background: #fff; color: #222; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.15); padding: 1em 1.2em; display: flex; align-items: center; gap: 1em; opacity: 0; pointer-events: none; transition: opacity 220ms ease, transform 220ms ease; z-index: 1200; }
         .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-        .popup .icon { width: 36px; height: 36px; border-radius: 8px; display:flex; align-items:center; justify-content:center; color: #fff; font-weight:700; }
-        .popup.error .icon { background:#d9534f; }
-        .popup.info .icon { background:#0275d8; }
-        .popup .msg { flex:1; font-size:0.95em; }
-        .popup .close { background: transparent; border: none; color: #666; font-size: 1.1em; cursor: pointer; }
-        @media (max-width:480px){ .popup { left: 50%; bottom: 12px; } }
+        .popup .icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1.2em; }
+        .popup.error .icon { background: #d9534f; }
+        .popup.info .icon { background: #0275d8; }
+        .popup .msg { flex: 1; font-size: 0.95em; font-weight: 500; }
+        .popup .close { background: transparent; border: none; color: #666; font-size: 1.3em; cursor: pointer; line-height: 1; }
     </style>
 </head>
 <body>
-<header style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; align-items: center; justify-content: space-between; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; padding: 0.5em 2em 0.5em 1.5em; border-radius: 0; margin: 0; position: fixed; top: 0; left: 0; z-index: 100;">
-    <a th:href="@{/home}" style="display: inline-block; line-height: 0;">
-        <img th:src="@{/TunedHive.png}" alt="Logo TunedHive" class="logo-colmena" style="width: 60px; height: auto; margin: 0; cursor: pointer;">
-    </a>
-    <div class="eslogan eslogan-top-right" style="pointer-events: none; position: static; margin: 0; font-size: 1.3em; font-weight: bold; color: #2d2d2d; letter-spacing: 1px;">¡Bienvenido/a a Tuned Hive!</div>
-    <div style="display:flex; gap:0.6em; align-items:center;">
-        <button class="btn-colmena info" style="margin: 0; position: static;" th:onclick="|window.location.href='@{/Inicio}'|">Cerrar Sesión</button>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/Bienvenida}">
+            <img th:src="@{/TunedHive.png}" alt="TunedHive" class="logo-colmena me-2" />
+            <span class="h6 mb-0">Tuned Hive</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item"><a class="nav-link" th:href="@{/BuscarCanciones}">Explorar</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/BuscarArtistas}">Artistas</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/Playlists}">Playlists</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/Micuenta}">Mi Cuenta</a></li>
+                <li class="nav-item ms-2">
+                    <a class="btn btn-outline-light btn-sm" th:href="@{/users/logout}">Cerrar Sesión</a>
+                </li>
+            </ul>
+        </div>
     </div>
-</header>
-
-<nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
-    <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
-        <li><a th:href="@{/Buscar}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Buscar Música</a></li>
-        <li><a th:href="@{/Playlists}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mis Playlist</a></li>
-        <li><a th:href="@{/BuscarArtistas}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Artistas</a></li>
-        <li><a th:href="@{/Micuenta}" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mi Cuenta</a></li>
-    </ul>
 </nav>
 
-<main style="margin-top: 140px; padding: 2em; width: 100vw; box-sizing: border-box;">
-    <!-- Ajuste de columnas: reducir columna de artistas y ampliar la de canciones para que se vea completa -->
-    <div style="display: grid; grid-template-columns: 40% 60%; gap: 2em;">
+<main class="container-fluid" style="margin-top: 5.5rem; padding-bottom: 2rem;">
+    <div class="row g-4">
         <!-- Columna izquierda: Lista de artistas -->
-        <section style="background:#fffbe6cc; border-radius:16px; padding:2em; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-            <h2 style="text-align:center; color:#2d2d2d; margin-bottom:1.5em;" id="tituloResultados">Todos los Artistas</h2>
+        <div class="col-12 col-lg-5">
+            <section class="panel-card p-4">
+                <h2 class="mb-3 text-center" style="color: #2d2d2d; font-weight: 700;">Artistas</h2>
 
-            <!-- Controles de filtro/orden (tabla de artistas) -->
-            <div style="display:flex; gap:0.6em; align-items:center; margin-bottom:0.8em; flex-wrap:wrap;">
-                <label for="filterTableArtists" style="position:absolute; left:-9999px;">Filtrar artistas</label>
-                <!-- input flexible con base mínima para evitar desbordes -->
-                <input id="filterTableArtists" type="text" placeholder="Filtrar tabla (nombre, usuario)..." style="flex:1 1 180px; min-width:120px; padding:0.6em; border:1px solid #e2d3a0; border-radius:8px; background:#fffdf6;">
-                <label for="sortArtistsSelect" style="position:absolute; left:-9999px;">Ordenar artistas</label>
-                <select id="sortArtistsSelect" style="flex:0 0 auto; padding:0.45em 0.6em; border-radius:8px; border:1px solid #e2d3a0; background:#fffdf6;">
-                    <option value="">Ordenar por...</option>
-                    <option value="usuario">Usuario</option>
-                    <option value="num">Nº Canciones</option>
-                </select>
-                <div style="display:flex; gap:0.6em; flex:0 0 auto;">
-                    <button id="applySortArtists" class="btn-colmena" style="white-space:nowrap;">Ordenar</button>
-                    <button id="clearSearchArtists" class="btn-colmena" style="background:transparent; border:1px solid #e2d3a0; color:#6b3e13; white-space:nowrap;">Limpiar</button>
-                </div>
-            </div>
-
-            <!-- Tabla de artistas (similar a AdminArtistas) -->
-            <div th:if="${artistas != null and !#lists.isEmpty(artistas)}" style="overflow:auto; max-height:60vh;">
-                <table id="artists-table" style="width:100%; border-collapse:collapse; min-width:0;">
-                    <thead>
-                        <tr style="background:#f7f3e6; text-align:left;">
-                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%">ID</th>
-                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8;">Usuario</th>
-                            <th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:10%; text-align:center">Nº Canciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="a : ${artistas}" th:if="${a != null}" th:attr="data-artista-id=${a.idArtista}" class="artist-row" style="cursor:pointer;">
-                            <td style="padding:0.6em 1em; vertical-align:middle;" th:text="${a.idArtista}">1</td>
-                            <td style="padding:0.6em 1em; vertical-align:middle;" th:text="${a.usuario != null ? a.usuario.username : 'Usuario'}">usuario</td>
-                            <td style="padding:0.6em 1em; vertical-align:middle; text-align:center;" th:text="${a.canciones != null ? a.canciones.size() : 0}">0</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="noResultsArtists" th:if="${artistas == null or #lists.isEmpty(artistas)}" style="text-align:center; padding:3em; color:#999;">
-                <i class="fas fa-search" style="font-size:3em; margin-bottom:0.5em; color:#bfa14a;"></i>
-                <p style="font-size:1.2em;">No se encontraron artistas</p>
-            </div>
-
-         </section>
-
-        <!-- Columna derecha: Lista de canciones (más ancha) -->
-        <section style="display:flex; flex-direction:column; gap:1.5em; margin-right:0; padding-left:1em; padding-right:1.5em; box-sizing:border-box;">
-            <div style="background:#fffbe6; border:2px solid #bfa14a; border-radius:12px; padding:2em; text-align:center;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1em;">
-                    <h2 style="margin:0; color:#2d2d2d;" th:text="${artistaSeleccionado != null} ? ${artistaSeleccionado.nombre} : 'Canciones'">Canciones</h2>
-                    <div th:if="${artistaSeleccionado != null}" style="color:#6b3e13; font-weight:600;" th:text="${artistaSeleccionado.nacionalidad}">País</div>
-                </div>
-
-                <!-- Container dinámico para las canciones cargadas vía JS -->
-                <div id="songsContainer" style="text-align:left;">
-                    <div style="text-align:center; padding:3em; color:#999;">
-                        <i class="fas fa-music" style="font-size:3em; margin-bottom:0.5em; color:#bfa14a;"></i>
-                        <p style="font-size:1.2em;">Selecciona un artista a la izquierda para ver sus canciones</p>
+                <!-- Controles de búsqueda -->
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input type="text" id="filterTableArtists" class="form-control" placeholder="Buscar por nombre o usuario..." />
+                        <button class="btn btn-colmena" id="clearSearchArtists" title="Limpiar búsqueda">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </section>
+
+                <!-- Tabla de artistas -->
+                <div class="table-responsive" style="max-height: 65vh; overflow-y: auto;">
+                    <table class="full-table" id="artists-table">
+                        <thead>
+                        <tr>
+                            <th style="width:10%">#</th>
+                            <th>Usuario</th>
+                            <th style="width:20%; text-align:center;">Canciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="a, iterStat : ${artistas}" th:attr="data-artista-id=${a.idArtista}" class="artist-row">
+                            <td class="text-center" th:text="${iterStat.index + 1}">1</td>
+                            <td th:text="${a.usuario != null ? a.usuario.username : '—'}">Usuario</td>
+                            <td class="text-center" th:text="${a.canciones != null ? a.canciones.size() : 0}">0</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div th:if="${#lists.isEmpty(artistas)}" class="text-center py-5">
+                    <i class="fas fa-user-music" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em;"></i>
+                    <p class="text-muted" style="font-size: 1.2em;">No se encontraron artistas</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Columna derecha: Canciones del artista seleccionado -->
+        <div class="col-12 col-lg-7">
+            <section class="panel-card p-4">
+                <h3 class="mb-3 text-center" style="color: #2d2d2d; font-weight: 600;">Canciones del Artista</h3>
+
+                <div id="songsContainer">
+                    <div class="text-center py-5">
+                        <i class="fas fa-music" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em;"></i>
+                        <p class="text-muted" style="font-size: 1.2em;">Selecciona un artista para ver sus canciones</p>
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
 </main>
 
-<!-- Reproductor inferior y popup (reutilizado de BuscarCanciones) -->
+<!-- Reproductor inferior -->
 <div id="bottom-player" aria-live="polite">
     <div id="player-info">
         <div id="player-title">Título de la canción</div>
@@ -186,213 +143,181 @@
     </div>
 </div>
 
-<!-- Popup / toast -->
+<!-- Popup -->
 <div id="popup" class="popup" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="icon">!</div>
     <div class="msg" id="popup-msg">Mensaje</div>
     <button class="close" id="popup-close" aria-label="Cerrar">×</button>
 </div>
 
+<!-- Modal añadir a playlist -->
+<div id="modalAddToPlaylist" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none;">
+            <div class="modal-header" style="background: linear-gradient(135deg,#f6e27a,#bfa14a); border: none;">
+                <h5 class="modal-title" style="color: #1f1308; font-weight: 700;">Añadir a playlist</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-song-title" class="mb-3" style="font-weight: 600; color: #2d2d2d;">Canción</p>
+                <label for="select-playlists" class="form-label">Selecciona una playlist</label>
+                <select id="select-playlists" class="form-select" style="border: 2px solid #bfa14a;"></select>
+            </div>
+            <div class="modal-footer" style="border: none;">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-colmena" onclick="confirmAddToPlaylist()">Añadir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-// Mantener la funcionalidad de filtrado/orden de la tabla (existente)
-document.addEventListener('DOMContentLoaded', function(){
-    const filterInput = document.getElementById('filterTableArtists');
-    const table = document.getElementById('artists-table');
-    const tbody = table ? table.tBodies[0] : null;
-    const sortSelect = document.getElementById('sortArtistsSelect');
-    const applySortBtn = document.getElementById('applySortArtists');
-    if(tbody){
-        function normalize(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,''); }
-        function filterTable(){
-            const q = normalize(filterInput.value.trim());
-            let visible = 0;
-            Array.from(tbody.rows).forEach(row => {
-                const usuario = normalize((row.cells[1] && row.cells[1].innerText) || '');
-                const num = normalize((row.cells[2] && row.cells[2].innerText) || '');
-                const hay = usuario + ' ' + num;
-                const show = !q || hay.indexOf(q) !== -1;
-                row.style.display = show ? '' : 'none';
-                if(show) visible++;
-            });
-            document.getElementById('noResultsArtists').style.display = (visible===0) ? 'block' : 'none';
-        }
-        function sortTableBy(key){
-            const rows = Array.from(tbody.rows);
-            let comp;
-            if(key === 'usuario') comp = (a,b) => a.cells[1].innerText.localeCompare(b.cells[1].innerText, undefined, {sensitivity:'base'});
-            else if(key === 'num') comp = (a,b) => (parseInt(a.cells[2].innerText)||0) - (parseInt(b.cells[2].innerText)||0);
-            else return;
-            rows.sort(comp);
-            rows.forEach(r => tbody.appendChild(r));
-        }
-        filterInput.addEventListener('input', function(){ setTimeout(filterTable, 120); });
-        applySortBtn.addEventListener('click', function(){ const key = sortSelect.value; if(key) sortTableBy(key); });
-        document.getElementById('clearSearchArtists').addEventListener('click', function(){ filterInput.value=''; filterTable(); filterInput.focus(); });
+    let currentAudio = null;
+    let currentId = null;
+    let _candidateSongId = null;
+    let modalInstance = null;
 
-        // Attach click handlers to rows to load songs
-        Array.from(tbody.querySelectorAll('tr[data-artista-id]')).forEach(row => {
-            row.addEventListener('click', function(){
-                const id = row.getAttribute('data-artista-id');
-                if(!id) return;
-                // visual selection
-                Array.from(tbody.querySelectorAll('tr')).forEach(r=>r.style.background='');
-                row.style.background = '#fff8e6';
-                fetch('/api/artistas/' + id + '/canciones')
-                    .then(r=>r.json())
-                    .then(list => renderSongsInPanel(list))
-                    .catch(e=>{ console.error(e); showPopup('No se pudieron cargar las canciones del artista.','error',5000); });
-            });
-        });
-    }
+    document.addEventListener('DOMContentLoaded', function(){
+        const filterInput = document.getElementById('filterTableArtists');
+        const clearBtn = document.getElementById('clearSearchArtists');
+        const tbody = document.querySelector('#artists-table tbody');
 
-    // Render songs into right panel
-    function renderSongsInPanel(list){
+        // Funcionalidad de búsqueda
+        if(filterInput && tbody){
+            filterInput.addEventListener('input', function(){
+                const query = filterInput.value.toLowerCase().trim();
+                Array.from(tbody.querySelectorAll('tr.artist-row')).forEach(row => {
+                    const username = row.cells[1].textContent.toLowerCase();
+                    row.style.display = username.includes(query) ? '' : 'none';
+                });
+            });
+
+            clearBtn.addEventListener('click', function(){
+                filterInput.value = '';
+                Array.from(tbody.querySelectorAll('tr.artist-row')).forEach(row => {
+                    row.style.display = '';
+                });
+                filterInput.focus();
+            });
+
+            // Click en filas de artistas
+            Array.from(tbody.querySelectorAll('tr.artist-row')).forEach(row => {
+                row.addEventListener('click', function(){
+                    const artistaId = row.getAttribute('data-artista-id');
+                    if(!artistaId) return;
+
+                    // Marcar fila seleccionada
+                    Array.from(tbody.querySelectorAll('tr')).forEach(r => r.classList.remove('selected'));
+                    row.classList.add('selected');
+
+                    // Cargar canciones
+                    fetch('/api/artistas/' + artistaId + '/canciones')
+                        .then(r => r.json())
+                        .then(canciones => renderSongsInPanel(canciones))
+                        .catch(e => {
+                            console.error(e);
+                            showPopup('No se pudieron cargar las canciones del artista.', 'error', 5000);
+                        });
+                });
+            });
+        }
+
+        modalInstance = new bootstrap.Modal(document.getElementById('modalAddToPlaylist'));
+    });
+
+    function renderSongsInPanel(canciones){
         const container = document.getElementById('songsContainer');
         if(!container) return;
-        if(!list || list.length===0){
-            container.innerHTML = '<div style="text-align:center; padding:3em; color:#999;">'+
-                '<i class="fas fa-music" style="font-size:3em; margin-bottom:0.5em; color:#bfa14a;"></i>'+
-                '<p style="font-size:1.2em;">No hay canciones registradas para este artista</p></div>';
+
+        if(!canciones || canciones.length === 0){
+            container.innerHTML = '<div class="text-center py-5">' +
+                '<i class="fas fa-music" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em;"></i>' +
+                '<p class="text-muted" style="font-size: 1.2em;">Este artista no tiene canciones publicadas</p></div>';
             return;
         }
-        let html = '';
-        html += '<div style="text-align:left;">';
-        html += '<div style="width:100%; overflow:auto;">';
-        html += '<table class="full-table" style="width:100%; border-collapse: collapse;">';
-        html += '<thead><tr style="background:#f7f3e6; text-align:left;">'+
-             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%">Orden</th>'+
-             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8;">Título</th>'+
-             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:12%">Género</th>'+
-             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:10%">Duración</th>'+
-             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:16%">Artista</th>'+
-             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:14%">Fecha Subida</th>'+
-             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:6%; text-align:center;">Añadir</th>'+
-             '<th style="padding:0.75em 1em; border-bottom:1px solid #e6d8a8; width:8%; text-align:center;">Reproducir</th>'+
-             '</tr></thead><tbody>';
-        list.forEach((c,i)=>{
-            // compatibilidad con la API que devuelve idCancion y objeto artista
-            const id = (c.idCancion !== undefined && c.idCancion !== null) ? c.idCancion : (c.id !== undefined && c.id !== null ? c.id : ('new'+i));
-            // archivoAudio puede venir ya con /uploads/ o solo el nombre
-            const archivo = (c.archivoAudio && c.archivoAudio.startsWith('/uploads/')) ? c.archivoAudio : (c.archivoAudio ? ('/uploads/' + c.archivoAudio) : '');
-            // título y nombre de artista: manejar objetos anidados
+
+        let html = '<div class="table-responsive"><table class="full-table"><thead><tr>' +
+            '<th style="width:6%">#</th>' +
+            '<th>Título</th>' +
+            '<th style="width:12%">Género</th>' +
+            '<th style="width:10%">Duración</th>' +
+            '<th style="width:14%">Fecha Subida</th>' +
+            '<th style="width:10%; text-align:center;">Reproducir</th>' +
+            '<th style="width:8%; text-align:center;">Añadir</th>' +
+            '</tr></thead><tbody>';
+
+        canciones.forEach((c, i) => {
+            const id = c.idCancion || c.id || ('tmp'+i);
+            const archivo = (c.archivoAudio && c.archivoAudio.startsWith('/uploads/'))
+                ? c.archivoAudio
+                : (c.archivoAudio ? ('/uploads/' + c.archivoAudio) : '');
             const titulo = c.titulo || c.nombre || '';
             let artistaName = '';
-            try{
-                if(c.artista){
+            try {
+                if(c.artista) {
                     if(typeof c.artista === 'string') artistaName = c.artista;
                     else if(c.artista.usuario && c.artista.usuario.username) artistaName = c.artista.usuario.username;
                     else if(c.artista.nombre) artistaName = c.artista.nombre;
-                } else if(c.artistaNombre) artistaName = c.artistaNombre;
-            }catch(e){ artistaName = '' }
-            html += '<tr style="border-bottom:1px solid #eee;">';
-            html += '<td style="padding:0.8em 1em; vertical-align: middle; text-align:center;">'+(i+1)+'</td>';
-            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(titulo || '')+'</td>';
-            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.genero||'')+'</td>';
-            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.duracion||c.duracionStr||'—')+'</td>';
-            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+artistaName+'</td>';
-            html += '<td style="padding:0.8em 1em; vertical-align: middle;">'+(c.fechaSubida||c.fecha ||'—')+'</td>';
-            // columna añadir a playlist (muestra antes de reproducir para más visibilidad)
-            html += '<td style="padding:0.6em 0.8em; vertical-align: middle; text-align:center;">';
-            html += '<button type="button" class="btn-colmena add-to-playlist" data-cancionid="'+id+'" style="background:#bfa14a; padding:0.45em 0.55em;" title="Añadir a playlist"><i class="fas fa-plus"></i></button>';
-            html += '</td>';
-            html += '<td style="padding:0.6em 0.8em; vertical-align: middle; text-align:center;">';
+                }
+            } catch(e) { artistaName = ''; }
+
+            html += '<tr>';
+            html += '<td class="text-center">'+(i+1)+'</td>';
+            html += '<td>'+titulo+'</td>';
+            html += '<td>'+(c.genero||'—')+'</td>';
+            html += '<td>'+(c.duracion||c.duracionStr||'—')+'</td>';
+            html += '<td>'+(c.fechaSubida||c.fecha||'—')+'</td>';
+            html += '<td class="text-center">';
             html += '<audio class="song-audio" id="audio-'+id+'" src="'+archivo+'" preload="metadata" style="display:none;" data-title="'+(titulo + (artistaName ? ' - ' + artistaName : ''))+'"></audio>';
-            html += '<button type="button" class="btn-colmena btn-play-row" id="btn-play-'+id+'" data-audioid="audio-'+id+'" data-src="'+archivo+'"><i class="fas fa-play"></i></button>';
-             html += '</td>';
-         });
-        html += '</tbody></table></div></div>';
+            html += '<button type="button" class="btn btn-colmena btn-sm" id="btn-play-'+id+'" data-audioid="audio-'+id+'" data-src="'+archivo+'" onclick="togglePlay('+id+')"><i class="fas fa-play"></i></button>';
+            html += '</td>';
+            html += '<td class="text-center">';
+            html += '<button type="button" class="btn btn-colmena info btn-sm" data-cancionid="'+id+'" onclick="openAddToPlaylistModal(this)"><i class="fas fa-plus"></i></button>';
+            html += '</td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table></div>';
         container.innerHTML = html;
+    }
 
-        // attach play handlers
-        container.querySelectorAll('button[id^="btn-play-"]').forEach(b=>{
-            b.addEventListener('click', function(e){
-                e.stopPropagation();
-                const aid = b.getAttribute('data-audioid');
-                const el = document.getElementById(aid);
-                if(!el) return;
-                // pause others
-                document.querySelectorAll('audio.song-audio').forEach(a=>{ if(a!==el){ try{ a.pause(); a.currentTime=0; }catch(e){} }});
-                showPlayerFor(aid.replace('audio-',''));
-            });
+    function formatTime(sec) {
+        if (!isFinite(sec)) return '00:00';
+        const s = Math.floor(sec % 60).toString().padStart(2,'0');
+        const m = Math.floor(sec / 60).toString().padStart(2,'0');
+        return m + ':' + s;
+    }
+
+    function togglePlay(id) {
+        const audio = document.getElementById('audio-' + id);
+        const btn = document.getElementById('btn-play-' + id);
+        if (!audio || !btn) return;
+
+        // Pausar otros audios
+        document.querySelectorAll('audio.song-audio').forEach(a => {
+            if (a !== audio) {
+                try { a.pause(); a.currentTime = 0; } catch(e){}
+                const otherId = a.id.replace('audio-','');
+                const otherBtn = document.getElementById('btn-play-' + otherId);
+                if (otherBtn) otherBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
         });
-        // attach add-to-playlist handlers
-        container.querySelectorAll('button.add-to-playlist').forEach(b => {
-            b.addEventListener('click', function(e){
-                e.stopPropagation();
-                openAddToPlaylistModal(this);
-            });
-        });
+
+        if (audio.paused) {
+            showPlayerFor(id);
+        } else {
+            audio.pause();
+            btn.innerHTML = '<i class="fas fa-play"></i>';
+            const playerToggle = document.getElementById('player-toggle');
+            if (playerToggle) playerToggle.innerHTML = '<i class="fas fa-play"></i>';
+        }
     }
 
-    // Modal para añadir a playlist (inserción en DOM estática) y funciones
-    // Insertar el modal HTML justo después del popup si no existe
-    (function ensureAddModal(){
-        if(document.getElementById('modalAddToPlaylist')) return;
-        const html = '\n<div id="modalAddToPlaylist" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background: rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1500;">' +
-            '<div style="background:white; padding:1.2em; border-radius:8px; width: 90%; max-width:420px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">' +
-            '<h3 style="margin-top:0; color:#6b3e13;">Añadir a playlist</h3>' +
-            '<p id="modal-song-title" style="margin:0 0 0.8em 0; color:#444; font-weight:600;">Canción</p>' +
-            '<label for="select-playlists" style="position:absolute; left:-9999px;">Selecciona una playlist</label>' +
-            '<select id="select-playlists" style="width:100%; padding:0.6em; border:1px solid #ccc; border-radius:6px; margin-bottom:0.8em;"></select>' +
-            '<div style="display:flex; gap:0.5em; justify-content:flex-end;">' +
-            '<button id="cancelAddBtn" class="btn-colmena" style="background:#e0e0e0; color:#444;">Cancelar</button>' +
-            '<button id="confirmAddBtn" class="btn-colmena" style="background:#6b3e13; color:white;">Añadir</button>' +
-            '</div></div></div>\n';
-        document.body.insertAdjacentHTML('beforeend', html);
-        // attach listeners to the newly created modal buttons
-        const attach = function(){
-            const cancel = document.getElementById('cancelAddBtn');
-            const confirm = document.getElementById('confirmAddBtn');
-            if(cancel) cancel.addEventListener('click', function(e){ e.preventDefault(); closeAddModal(); });
-            if(confirm) confirm.addEventListener('click', function(e){ e.preventDefault(); confirmAddToPlaylist(); });
-        };
-        // small timeout to ensure elements are in DOM
-        setTimeout(attach, 0);
-    })();
+    function showPlayerFor(id) {
+        const audio = document.getElementById('audio-' + id);
+        const btn = document.getElementById('btn-play-' + id);
+        if (!audio) return;
 
-    // candidate song id
-    let _candidateSongId = null;
-    function openAddToPlaylistModal(btn){
-        try{
-            const cancionId = btn.getAttribute('data-cancionid');
-            _candidateSongId = cancionId;
-            const row = btn.closest('tr');
-            const title = row ? (row.querySelector('td:nth-child(2)') ? row.querySelector('td:nth-child(2)').innerText.trim() : 'Canción') : 'Canción';
-            document.getElementById('modal-song-title').textContent = title;
-            const sel = document.getElementById('select-playlists');
-            sel.innerHTML = '';
-            fetch('/api/misplaylists').then(r=>r.json()).then(list=>{
-                if(!list || list.length===0){ const opt=document.createElement('option'); opt.value=''; opt.textContent='(No tienes playlists)'; sel.appendChild(opt); }
-                else{ list.forEach(p=>{ const opt=document.createElement('option'); opt.value = p.idPlaylist; opt.textContent = p.nombre; sel.appendChild(opt); }); }
-                document.getElementById('modalAddToPlaylist').style.display = 'flex';
-            }).catch(e=>{ console.error('Error cargando playlists', e); showPopup('No se pudieron cargar tus playlists.','error',4000); });
-        }catch(e){ console.error(e); }
-    }
-
-    function closeAddModal(){ document.getElementById('modalAddToPlaylist').style.display = 'none'; _candidateSongId = null; }
-
-    function confirmAddToPlaylist(){
-        const sel = document.getElementById('select-playlists');
-        const pid = sel ? sel.value : '';
-        if(!pid){ showPopup('Selecciona una playlist válida','error',3000); return; }
-        const body = 'cancionId=' + encodeURIComponent(_candidateSongId || '');
-        // optimistically close
-        closeAddModal();
-        fetch('/api/playlists/' + encodeURIComponent(pid) + '/add', {
-            method: 'POST', headers: { 'Content-Type':'application/x-www-form-urlencoded' }, body: body
-        }).then(r=>r.json()).then(j=>{
-            if(j && j.ok){ showPopup('Canción añadida a la playlist','info',3000); }
-            else{ const msg = j && j.error ? j.error : 'Error añadiendo canción'; showPopup(msg,'error',4000); }
-        }).catch(e=>{ console.error('Error al añadir canción', e); showPopup('Error de comunicación','error',4000); });
-    }
-
-    // -- Reproductor y utilidades (simplificadas de BuscarCanciones) --
-    function formatTime(sec){ if(!isFinite(sec)) return '00:00'; const s=Math.floor(sec%60).toString().padStart(2,'0'); const m=Math.floor(sec/60).toString().padStart(2,'0'); return m+':'+s; }
-    let currentAudio = null, currentId = null;
-    function showPlayerFor(id){
-        const audio = document.getElementById('audio-'+id);
-        const btn = document.getElementById('btn-play-'+id);
-        if(!audio) return;
         const player = document.getElementById('bottom-player');
         const titleEl = document.getElementById('player-title');
         const progressBar = document.getElementById('player-progress-bar');
@@ -401,27 +326,180 @@ document.addEventListener('DOMContentLoaded', function(){
         const durationEl = document.getElementById('player-duration');
         const playerToggle = document.getElementById('player-toggle');
         const playerClose = document.getElementById('player-close');
-        currentAudio = audio; currentId = id;
-        try{ const btnSrc = btn ? btn.getAttribute('data-src') : null; if(btnSrc && audio.src !== btnSrc) audio.src = btnSrc; }catch(e){}
-        const title = audio.getAttribute('data-title') || 'Título'; titleEl.textContent = title;
-        document.querySelectorAll('button[id^="btn-play-"]').forEach(b=>{ if(b!==btn) b.innerHTML = '<i class="fas fa-play"></i>'; }); if(btn) btn.innerHTML = '<i class="fas fa-pause"></i>';
+
+        currentAudio = audio;
+        currentId = id;
+
+        const btnSrc = btn ? btn.getAttribute('data-src') : null;
+        if (btnSrc && audio.src !== btnSrc) audio.src = btnSrc;
+
+        const title = audio.getAttribute('data-title') || 'Título';
+        titleEl.textContent = title;
+
+        document.querySelectorAll('button[id^="btn-play-"]').forEach(b => {
+            if(b !== btn) b.innerHTML = '<i class="fas fa-play"></i>';
+        });
+        if (btn) btn.innerHTML = '<i class="fas fa-pause"></i>';
+
         player.classList.add('show');
-        audio.onerror = function(){ showPopup('No se pudo cargar la pista.','error',6000); if(btn) btn.innerHTML='<i class="fas fa-play"></i>'; player.classList.remove('show'); };
-        audio.onloadedmetadata = function(){ durationEl.textContent = formatTime(audio.duration); };
-        audio.ontimeupdate = function(){ const pct = audio.duration ? (audio.currentTime/audio.duration)*100 : 0; progressBar.style.width = pct + '%'; currentEl.textContent = formatTime(audio.currentTime); };
-        audio.onended = function(){ progressBar.style.width='0%'; currentEl.textContent='00:00'; if(btn) btn.innerHTML='<i class="fas fa-play"></i>'; playerToggle.innerHTML='<i class="fas fa-play"></i>'; };
-        try{ audio.load(); }catch(e){}
-        audio.play().then(()=>{ playerToggle.innerHTML = '<i class="fas fa-pause"></i>'; }).catch(err=>{ showPopup('No se pudo iniciar la reproducción.','error',5000); if(btn) btn.innerHTML='<i class="fas fa-play"></i>'; });
-        playerToggle.onclick = function(){ if(!currentAudio) return; if(currentAudio.paused) { currentAudio.play().catch(()=>{}); playerToggle.innerHTML='<i class="fas fa-pause"></i>'; const rb=document.getElementById('btn-play-'+currentId); if(rb) rb.innerHTML='<i class="fas fa-pause"></i>'; } else { currentAudio.pause(); playerToggle.innerHTML='<i class="fas fa-play"></i>'; const rb=document.getElementById('btn-play-'+currentId); if(rb) rb.innerHTML='<i class="fas fa-play"></i>'; } };
-        playerClose.onclick = function(){ if(currentAudio){ try{ currentAudio.pause(); currentAudio.currentTime=0; }catch(e){} } player.classList.remove('show'); progressBar.style.width='0%'; currentEl.textContent='00:00'; durationEl.textContent='00:00'; if(btn) btn.innerHTML='<i class="fas fa-play"></i>'; currentAudio=null; currentId=null; };
-        progressContainer.onclick = function(e){ if(!audio.duration) return; const rect=progressContainer.getBoundingClientRect(); const x = e.clientX-rect.left; const pct = Math.max(0, Math.min(1, x/rect.width)); audio.currentTime = pct * audio.duration; };
+
+        audio.onerror = function(){
+            showPopup('No se pudo cargar la pista.', 'error', 6000);
+            if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
+            player.classList.remove('show');
+        };
+
+        audio.onloadedmetadata = function(){
+            durationEl.textContent = formatTime(audio.duration);
+        };
+
+        audio.ontimeupdate = function(){
+            const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+            progressBar.style.width = pct + '%';
+            currentEl.textContent = formatTime(audio.currentTime);
+        };
+
+        audio.onended = function(){
+            progressBar.style.width = '0%';
+            currentEl.textContent = '00:00';
+            if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
+            playerToggle.innerHTML = '<i class="fas fa-play"></i>';
+        };
+
+        audio.load();
+        audio.play().then(() => {
+            playerToggle.innerHTML = '<i class="fas fa-pause"></i>';
+        }).catch(err => {
+            showPopup('No se pudo iniciar la reproducción.', 'error', 5000);
+            if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
+        });
+
+        playerToggle.onclick = function(){
+            if (!currentAudio) return;
+            if (currentAudio.paused) {
+                currentAudio.play();
+                playerToggle.innerHTML = '<i class="fas fa-pause"></i>';
+                const rowBtn = document.getElementById('btn-play-' + currentId);
+                if (rowBtn) rowBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                currentAudio.pause();
+                playerToggle.innerHTML = '<i class="fas fa-play"></i>';
+                const rowBtn = document.getElementById('btn-play-' + currentId);
+                if (rowBtn) rowBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        };
+
+        playerClose.onclick = function(){
+            if (currentAudio) {
+                try { currentAudio.pause(); currentAudio.currentTime = 0; } catch(e){}
+            }
+            player.classList.remove('show');
+            progressBar.style.width = '0%';
+            currentEl.textContent = '00:00';
+            durationEl.textContent = '00:00';
+            if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
+            currentAudio = null;
+            currentId = null;
+        };
+
+        progressContainer.onclick = function(e){
+            if (!audio.duration) return;
+            const rect = progressContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const pct = Math.max(0, Math.min(1, x / rect.width));
+            audio.currentTime = pct * audio.duration;
+        };
     }
-    function showPopup(message, type='error', timeout=4500){ try{ const p=document.getElementById('popup'); const msg=document.getElementById('popup-msg'); msg.textContent = message||''; p.classList.remove('error','info'); p.classList.add(type||'error'); p.querySelector('.icon').textContent = type==='info' ? 'i' : '!'; p.classList.add('show'); if(p._hideTimeout) clearTimeout(p._hideTimeout); p._hideTimeout = setTimeout(()=>{ hidePopup(); }, timeout); }catch(e){} }
-    function hidePopup(){ try{ const p=document.getElementById('popup'); if(!p) return; p.classList.remove('show'); if(p._hideTimeout){ clearTimeout(p._hideTimeout); p._hideTimeout=null; } }catch(e){} }
-    document.addEventListener('click', function(e){ if(e.target && e.target.id === 'popup-close') hidePopup(); });
-    // ocultar player inicialmente
-    const existingPlayer = document.getElementById('bottom-player'); if(existingPlayer) existingPlayer.classList.remove('show');
-});
+
+    function openAddToPlaylistModal(btn) {
+        const cancionId = btn.getAttribute('data-cancionid');
+        _candidateSongId = cancionId;
+        const row = btn.closest('tr');
+        const title = row ? row.querySelector('td:nth-child(2)').innerText.trim() : 'Canción';
+        document.getElementById('modal-song-title').textContent = title;
+
+        fetch('/api/misplaylists')
+            .then(r => r.json())
+            .then(list => {
+                const sel = document.getElementById('select-playlists');
+                sel.innerHTML = '';
+                if (!list || list.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = '(No tienes playlists)';
+                    sel.appendChild(opt);
+                } else {
+                    list.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.idPlaylist;
+                        opt.textContent = p.nombre;
+                        sel.appendChild(opt);
+                    });
+                }
+                modalInstance.show();
+            })
+            .catch(e => {
+                console.error('Error cargando playlists', e);
+                showPopup('No se pudieron cargar tus playlists.', 'error', 4000);
+            });
+    }
+
+    function confirmAddToPlaylist() {
+        const sel = document.getElementById('select-playlists');
+        const pid = sel.value;
+        if (!pid) {
+            showPopup('Selecciona una playlist válida', 'error', 3000);
+            return;
+        }
+
+        fetch('/api/playlists/' + encodeURIComponent(pid) + '/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'cancionId=' + encodeURIComponent(_candidateSongId)
+        })
+        .then(r => r.json())
+        .then(j => {
+            if (j && j.ok) {
+                showPopup('Canción añadida a la playlist', 'info', 3000);
+                modalInstance.hide();
+            } else {
+                const msg = j && j.error ? j.error : 'Error añadiendo canción';
+                showPopup(msg, 'error', 4000);
+            }
+        })
+        .catch(e => {
+            console.error('Error al añadir canción', e);
+            showPopup('Error de comunicación', 'error', 4000);
+        });
+    }
+
+    function showPopup(message, type = 'error', timeout = 4500) {
+        const p = document.getElementById('popup');
+        const msg = document.getElementById('popup-msg');
+        msg.textContent = message || '';
+        p.classList.remove('error', 'info');
+        p.classList.add(type || 'error');
+        p.querySelector('.icon').textContent = type === 'info' ? 'i' : '!';
+        p.classList.add('show');
+        if (p._hideTimeout) clearTimeout(p._hideTimeout);
+        p._hideTimeout = setTimeout(() => { hidePopup(); }, timeout);
+    }
+
+    function hidePopup() {
+        const p = document.getElementById('popup');
+        if (!p) return;
+        p.classList.remove('show');
+        if (p._hideTimeout) {
+            clearTimeout(p._hideTimeout);
+            p._hideTimeout = null;
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'popup-close') hidePopup();
+    });
 </script>
+
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
