@@ -68,7 +68,7 @@
     </div>
 </nav>
 
-<main class="container-fluid" style="margin-top: 5.5rem; padding-bottom: 2rem;">
+<main class="container-fluid" style="margin-top: var(--navbar-height); padding-bottom: 2rem;">
     <div class="row g-4">
         <!-- Columna izquierda: Lista de artistas -->
         <div class="col-12 col-lg-5">
@@ -465,7 +465,7 @@
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'cancionId=' + encodeURIComponent(_candidateSongId)
         })
-        .then r => r.json())
+        .then(r => r.json())
         .then(j => {
             if (j && j.ok) {
                 showPopup('Canción añadida a la playlist', 'info', 3000);
@@ -509,5 +509,6 @@
 </script>
 
 <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 </html>
