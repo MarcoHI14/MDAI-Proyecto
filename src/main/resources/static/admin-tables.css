@@ -91,8 +91,8 @@
 .admin-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .admin-truncate[title] { cursor: help; }
 
-/* Specific ID hook (optional) */
-#admin-canciones-table.admin-table { /* additional tweaks if needed */ }
+/* Specific optional hooks: aplicar ajustes si se usa la clase admin-table en table-header o table-body */
+.table-header.admin-table, .table-body.admin-table { /* additional tweaks if needed */ }
 
 /* Toast notification (namespaced for AdminCanciones to avoid conflicts) */
 #admin-canciones-toast-container {

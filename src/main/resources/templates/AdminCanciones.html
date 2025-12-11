@@ -48,8 +48,17 @@
     .admin-main-col{ padding-left:2rem; padding-right:2rem; }
     /* Card body compacto */
     .admin-panel-card .card-body{ padding:0.75rem; }
+    /* Mostrar hasta 4 filas en la tabla y desplazar el resto (scroll interno en tbody) */
+    :root { --admin-row-height: 52px; }
+    /* Forzar layout fijo para mantener alineación entre thead y tbody cuando tbody sea scrollable */
+    #admin-canciones-table { width:100%; table-layout: fixed; border-collapse: collapse; }
+    #admin-canciones-table thead { display: table; width: 100%; table-layout: fixed; }
+    #admin-canciones-table tbody { display: block; max-height: calc(var(--admin-row-height) * 4); overflow-y: auto; width: 100%; }
+    #admin-canciones-table tbody tr { display: table; width: 100%; table-layout: fixed; height: var(--admin-row-height); }
+    /* Asegurar que el encabezado tenga fondo sólido al hacer scroll interno */
+    #admin-canciones-table thead th { position: sticky; top: 0; background: #fffbe6; z-index: 3; }
     /* Limitar la altura de la tabla y hacer scrolling interno si hace falta (menor espacio para obligar scroll interno) */
-    .table-responsive{ max-height: calc(100vh - 8rem); overflow:auto; }
+    .table-responsive{ overflow-x: auto; }
 
     /* Compactar filas de las tablas admin (menos padding) */
     .admin-table th, .admin-table td { padding: .35rem .5rem; }
@@ -69,7 +78,7 @@
       /* Card body: ligero padding para separación interna */
       .admin-canciones-content .card .card-body{ padding: 1rem 1rem; }
       /* La tabla ocupa el ancho del contenedor, no del viewport */
-      #admin-canciones-table { width: 100%; max-width:100%; }
+      .table-header, .table-body { width: 100%; max-width:100%; }
       .admin-table th, .admin-table td { padding: .45rem .6rem; }
       /* Restaurar gutters razonables */
       .admin-main-col{ padding-left:2rem !important; padding-right:2rem !important; }
@@ -155,6 +164,14 @@
       </div>
     </div>
   </main>
+
+  <!-- Footer (igual que AdminEstadisticas) -->
+  <footer class="bg-dark text-light py-4 mt-5">
+    <div class="container text-center">
+      <p class="mb-1">© Tuned Hive 2025</p>
+      <small class="text-muted">20 samples incluidos en /samples</small>
+    </div>
+  </footer>
 
   <!-- Toast container (namespaced) -->
   <div id="admin-canciones-toast-container" aria-live="polite" style="position:fixed; bottom:1rem; right:1rem; top:auto; left:auto;"></div>
@@ -274,13 +291,13 @@
       btnFiltrar.addEventListener('click', function(){
         const q = document.getElementById('filtro-titulo').value.trim().toLowerCase();
         let visible = 0;
-        document.querySelectorAll('#admin-canciones-table tbody tr').forEach(tr => {
-          const titleEl = tr.querySelector('td:nth-child(2)');
-          const title = titleEl ? titleEl.innerText.trim().toLowerCase() : '';
-          const show = q === '' ? true : title.includes(q);
-          tr.style.display = show ? '' : 'none';
-          if (show) visible++;
-        });
+        document.querySelectorAll('#admin-canciones-tbody tr').forEach(tr => {
+           const titleEl = tr.querySelector('td:nth-child(2)');
+           const title = titleEl ? titleEl.innerText.trim().toLowerCase() : '';
+           const show = q === '' ? true : title.includes(q);
+           tr.style.display = show ? '' : 'none';
+           if (show) visible++;
+         });
         showToast('info', 'Resultados filtrados: ' + visible);
       });
     }
