@@ -21,11 +21,23 @@ html,body{
   padding-top: var(--navbar-height); /* espacio para el navbar fijo */
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
 /* Asegurar que no haya pseudo-elementos de textura activos */
 html::after{ content:none; }
 
 /* Footer */
-footer{ margin-top:48px; }
+footer {
+  flex-shrink: 0;
+}
 footer small{ color:#6b6b6b; }
 
 /* Ajustes responsivos */
