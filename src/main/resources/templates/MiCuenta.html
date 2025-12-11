@@ -2,272 +2,303 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mi Cuenta | Tuned Hive</title>
-    <link rel="stylesheet" th:href="@{/estilos.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}" />
+    <link rel="stylesheet" th:href="@{/landing.css(v=8)}" />
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            overflow-y: scroll;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        html::-webkit-scrollbar,
-        body::-webkit-scrollbar {
-            display: none;
-            width: 0;
-            height: 0;
-        }
+        body { background: #faf8f5; }
+        .panel-card { background-color: #fff !important; opacity: 1 !important; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 12px 30px rgba(20,20,40,0.06) !important; border-radius: .75rem; }
+        .btn-colmena { background: linear-gradient(135deg,#bfa14a,#e2a84a); color: #1f1308; border: none; font-weight: 600; padding: 0.5em 1em; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .btn-colmena:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(191,161,74,0.3); color: #1f1308; }
+        .btn-colmena.info { background: linear-gradient(135deg,#f6e27a,#bfa14a); }
+        .logo-colmena { width: 56px; height: auto; }
+        .info-card { background: #fffef8; border: 1px solid #e6d8a8; border-radius: 10px; padding: 1.5em; margin-bottom: 1em; transition: all 0.2s; }
+        .info-card:hover { box-shadow: 0 4px 12px rgba(191,161,74,0.15); }
+        .info-label { font-size: 0.85em; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3em; display: flex; align-items: center; gap: 0.5em; }
+        .info-value { color: #2d2d2d; font-weight: 700; font-size: 1.1em; }
+        .avatar-circle { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg,#bfa14a,#e2a84a); display: flex; align-items: center; justify-content: center; color: white; font-size: 3em; margin: 0 auto 2em; box-shadow: 0 6px 20px rgba(191,161,74,0.3); }
+        .action-card { background: #fff; border: 2px solid #e6d8a8; border-radius: 12px; padding: 1.5em; text-align: center; transition: all 0.3s; cursor: pointer; height: 100%; }
+        .action-card:hover { border-color: #bfa14a; box-shadow: 0 8px 20px rgba(191,161,74,0.2); transform: translateY(-3px); }
+        .action-icon { font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; }
+        .action-title { font-weight: 700; color: #2d2d2d; margin-bottom: 0.3em; font-size: 1.2em; }
+        .action-desc { color: #666; font-size: 0.9em; }
+        .badge-verification { display: inline-flex; align-items: center; gap: 0.4em; padding: 0.4em 0.8em; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .badge-pendiente { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .badge-aprobada { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .badge-rechazada { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .popup { position: fixed; left: 50%; transform: translateX(-50%) translateY(-20px); bottom: 20px; min-width: 280px; max-width: 90vw; background: #fff; color: #222; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.15); padding: 1em 1.2em; display: flex; align-items: center; gap: 1em; opacity: 0; pointer-events: none; transition: opacity 220ms ease, transform 220ms ease; z-index: 1200; }
+        .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+        .popup .icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1.2em; }
+        .popup.error .icon { background: #d9534f; }
+        .popup.info .icon { background: #0275d8; }
+        .popup.success .icon { background: #5cb85c; }
+        .popup .msg { flex: 1; font-size: 0.95em; font-weight: 500; }
+        .popup .close { background: transparent; border: none; color: #666; font-size: 1.3em; cursor: pointer; line-height: 1; }
     </style>
 </head>
 <body>
-<header style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; align-items: center; justify-content: space-between; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; padding: 0.5em 2em 0.5em 1.5em; border-radius: 0; margin: 0; position: fixed; top: 0; left: 0; z-index: 100;">
-    <a th:href="@{/home}" style="display: inline-block; line-height: 0;">
-        <img th:src="@{/TunedHive.png}" alt="Logo TunedHive" class="logo-colmena" style="width: 60px; height: auto; margin: 0; cursor: pointer;">
-    </a>
-    <div class="eslogan eslogan-top-right" style="pointer-events: none; position: static; margin: 0; font-size: 1.3em; font-weight: bold; color: #2d2d2d; letter-spacing: 1px;">¡Bienvenido/a a Tuned Hive!</div>
-    <div style="display:flex; gap:0.6em; align-items:center;">
-        <button class="btn-colmena info" style="margin: 0; position: static;" th:onclick="|window.location.href='@{/Inicio}'|">Cerrar Sesión</button>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/Bienvenida}">
+            <img th:src="@{/TunedHive.png}" alt="TunedHive" class="logo-colmena me-2" />
+            <span class="h6 mb-0">Tuned Hive</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item"><a class="nav-link" th:href="@{/BuscarCanciones}">Explorar</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/BuscarArtistas}">Artistas</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/Playlists}">Playlists</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/Micuenta}">Mi Cuenta</a></li>
+                <li class="nav-item ms-2">
+                    <a class="btn btn-outline-light btn-sm" th:href="@{/users/logout}">Cerrar Sesión</a>
+                </li>
+            </ul>
+        </div>
     </div>
-</header>
-
-<nav class="menu-bar" style="width: 100vw; min-width: 100vw; max-width: 100vw; display: flex; justify-content: center; background: #fffbe6cc; box-shadow: 0 2px 12px #0001; margin: 0; border-radius: 0; position: fixed; top: 64px; left: 0; z-index: 99;">
-    <ul style="display: flex; gap: 2.5em; list-style: none; margin: 0; padding: 0.8em 0; font-size: 1.15em; font-weight: 600;">
-        <li><a th:href="@{/Buscar}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Buscar Música</a></li>
-        <li><a th:href="@{/Playlists}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mis Playlist</a></li>
-        <li><a th:href="@{/Artistas}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Artistas</a></li>
-        <li><a th:href="@{/Micuenta}" href="#" style="color: #bfa14a; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#6b3e13'" onmouseout="this.style.color='#bfa14a'">Mi Cuenta</a></li>
-    </ul>
 </nav>
 
-<main style="margin-top: 140px; padding: 2em; width: 100vw; box-sizing: border-box;">
-    <div style="display: grid; grid-template-columns: 70% 30%; gap: 2em;">
+<main class="container" style="margin-top: 5.5rem; padding-bottom: 3rem;">
+    <section class="panel-card p-4 mb-4">
+        <h2 class="mb-4 text-center" style="color: #2d2d2d; font-weight: 700;">
+            <i class="fas fa-user-circle" style="color: #bfa14a;"></i> Mi Información
+        </h2>
 
-        <!-- Columna Izquierda: Información del Usuario -->
-        <section style="background: #fffbe6cc; border-radius: 16px; padding: 2em; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
-            <h2 style="color: #2d2d2d; margin-bottom: 1.5em; text-align: center;">
-                <i class="fas fa-user-circle"></i> Mi Información
-            </h2>
+        <div class="avatar-circle">
+            <i class="fas fa-user"></i>
+        </div>
 
-            <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em;">
-                <!-- Avatar -->
-                <div style="text-align: center; margin-bottom: 2em;">
-                    <div style="width: 120px; height: 120px; margin: 0 auto; background: linear-gradient(135deg, #bfa14a, #6b3e13); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 4px solid #fffbe6; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                        <i class="fas fa-user" style="font-size: 4em; color: #fffbe6;"></i>
-                    </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="info-card">
+                    <div class="info-label"><i class="fas fa-user"></i> Nombre de Usuario</div>
+                    <div class="info-value" th:text="${usuario.username}">Username</div>
                 </div>
-
-                <!-- Información del usuario -->
-                <div style="display: flex; flex-direction: column; gap: 1.5em;">
-                    <div style="display: flex; align-items: center; gap: 1em; padding: 1em; background: rgba(191, 161, 74, 0.1); border-radius: 8px;">
-                        <i class="fas fa-user" style="font-size: 1.5em; color: #6b3e13; width: 30px; text-align: center;"></i>
-                        <div style="flex: 1;">
-                            <div style="color: #999; font-size: 0.85em; margin-bottom: 0.3em;">Nombre de Usuario</div>
-                            <div style="color: #2d2d2d; font-size: 1.1em; font-weight: 600;" th:text="${usuario.username}">Usuario123</div>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; align-items: center; gap: 1em; padding: 1em; background: rgba(191, 161, 74, 0.1); border-radius: 8px;">
-                        <i class="fas fa-envelope" style="font-size: 1.5em; color: #6b3e13; width: 30px; text-align: center;"></i>
-                        <div style="flex: 1;">
-                            <div style="color: #999; font-size: 0.85em; margin-bottom: 0.3em;">Correo Electrónico</div>
-                            <div style="color: #2d2d2d; font-size: 1.1em; font-weight: 600;" th:text="${usuario.email}">usuario@email.com</div>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; align-items: center; gap: 1em; padding: 1em; background: rgba(191, 161, 74, 0.1); border-radius: 8px;">
-                        <i class="fas fa-user-tag" style="font-size: 1.5em; color: #6b3e13; width: 30px; text-align: center;"></i>
-                        <div style="flex: 1;">
-                            <div style="color: #999; font-size: 0.85em; margin-bottom: 0.3em;">Tipo de Usuario</div>
-                            <div style="color: #2d2d2d; font-size: 1.1em; font-weight: 600;" th:text="${tipoUsuario}">Oyente</div>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; align-items: center; gap: 1em; padding: 1em; background: rgba(191, 161, 74, 0.1); border-radius: 8px;">
-                        <i class="fas fa-certificate" style="font-size: 1.5em; color: #6b3e13; width: 30px; text-align: center;"></i>
-                        <div style="flex: 1;">
-                            <div style="color: #999; font-size: 0.85em; margin-bottom: 0.3em;">Estado de Verificación</div>
-                            <div style="color: #2d2d2d; font-size: 1.1em; font-weight: 600;">
-                                <!-- Si no hay solicitud asociada (null o cadena vacía) mostramos "No Solicitado" en gris neutral -->
-                                <span th:if="${estadoVerificacion == null or estadoVerificacion == ''}" style="color: #777 !important; display: inline-flex; align-items: center; gap: 0.5rem;">
-                                    <!-- SVG: minus-circle gris -->
-                                    <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                        <circle cx="12" cy="12" r="10" fill="#777" />
-                                        <rect x="7" y="11" width="10" height="2" fill="#fff" />
-                                    </svg>
-                                    No Solicitado
-                                </span>
-
-                                <!-- Pendiente: interrogación gris -->
-                                <span th:if="${estadoVerificacion != null and #strings.equalsIgnoreCase(estadoVerificacion, 'pendiente')}" style="color: #777 !important; display: inline-flex; align-items: center; gap: 0.5rem;">
-                                    <!-- SVG: question-circle gris -->
-                                    <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                        <circle cx="12" cy="12" r="10" fill="#777" />
-                                        <text x="12" y="15" text-anchor="middle" font-size="12" fill="#fff" font-family="Arial, Helvetica, sans-serif">?</text>
-                                    </svg>
-                                    Pendiente
-                                </span>
-
-                                <!-- Aprobada / Aceptada: verde con check -->
-                                <span th:if="${estadoVerificacion != null and (#strings.equalsIgnoreCase(estadoVerificacion,'aprobada') or #strings.equalsIgnoreCase(estadoVerificacion,'aceptada'))}" style="color: #2b7a2b !important; display: inline-flex; align-items: center; gap: 0.5rem;">
-                                    <!-- SVG: check-circle verde -->
-                                    <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                        <circle cx="12" cy="12" r="10" fill="#2b7a2b" />
-                                        <path d="M8.5 12.5l2 2 5-5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    Aceptada
-                                </span>
-
-                                <!-- Rechazada: rojo con símbolo de prohibido -->
-                                <span th:if="${estadoVerificacion != null and #strings.equalsIgnoreCase(estadoVerificacion,'rechazada')}" style="color: #b33 !important; display: inline-flex; align-items: center; gap: 0.5rem;">
-                                    <!-- SVG: ban rojo -->
-                                    <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                        <circle cx="12" cy="12" r="10" fill="#b33" />
-                                        <line x1="6" y1="18" x2="18" y2="6" stroke="#fff" stroke-width="2" stroke-linecap="round" />
-                                    </svg>
-                                    Rechazada
-                                </span>
-
-                                <!-- Fallback por si viene otro valor -->
-                                <span th:if="${estadoVerificacion != null and not (#strings.equalsIgnoreCase(estadoVerificacion,'pendiente') or #strings.equalsIgnoreCase(estadoVerificacion,'aprobada') or #strings.equalsIgnoreCase(estadoVerificacion,'aceptada') or #strings.equalsIgnoreCase(estadoVerificacion,'rechazada'))}" style="color: #777 !important; display: inline-flex; align-items: center; gap: 0.5rem;">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                        <circle cx="12" cy="12" r="10" fill="#777" />
-                                        <text x="12" y="15" text-anchor="middle" font-size="12" fill="#fff" font-family="Arial, Helvetica, sans-serif">?</text>
-                                    </svg>
-                                    <span th:text="${estadoVerificacion}">Desconocido</span>
-                                </span>
-                            </div>
-                        </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-card">
+                    <div class="info-label"><i class="fas fa-envelope"></i> Correo Electrónico</div>
+                    <div class="info-value" th:text="${usuario.email}">correo@ejemplo.com</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-card">
+                    <div class="info-label"><i class="fas fa-user-tag"></i> Tipo de Usuario</div>
+                    <div class="info-value" th:text="${tipoUsuario}">Oyente</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-card">
+                    <div class="info-label"><i class="fas fa-certificate"></i> Estado de Verificación</div>
+                    <div class="info-value">
+                        <span th:if="${estadoVerificacion == 'PENDIENTE'}" class="badge-verification badge-pendiente">
+                            <i class="fas fa-clock"></i> Pendiente
+                        </span>
+                        <span th:if="${estadoVerificacion == 'APROBADA'}" class="badge-verification badge-aprobada">
+                            <i class="fas fa-check-circle"></i> Aprobada
+                        </span>
+                        <span th:if="${estadoVerificacion == 'RECHAZADA'}" class="badge-verification badge-rechazada">
+                            <i class="fas fa-times-circle"></i> Rechazada
+                        </span>
+                        <span th:if="${estadoVerificacion == 'Sin verificar'}" class="badge-verification badge-pendiente">
+                            <i class="fas fa-info-circle"></i> Sin verificar
+                        </span>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Columna Derecha: Acciones -->
-        <section style="display: flex; flex-direction: column; gap: 1.5em; margin-right: 1em;">
+    <section class="panel-card p-4">
+        <h3 class="mb-4 text-center" style="color: #2d2d2d; font-weight: 700;">
+            <i class="fas fa-cog" style="color: #bfa14a;"></i> Gestión de Cuenta
+        </h3>
 
-            <!-- Cambiar Username -->
-            <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
-                 onclick="abrirModal('modal-username')"
-                 onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
-                 onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
-                <i class="fas fa-user-edit" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
-                <h3 style="color: #6b3e13; margin-bottom: 0.5em; transition: color 0.2s;">Cambiar Username</h3>
-                <p style="color: #999; font-size: 0.9em; transition: color 0.2s;">Modificar nombre de usuario</p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="action-card" onclick="openModal('modalUsername')">
+                    <div class="action-icon"><i class="fas fa-user-edit"></i></div>
+                    <div class="action-title">Cambiar Username</div>
+                    <div class="action-desc">Modificar nombre de usuario</div>
+                </div>
             </div>
-
-            <!-- Cambiar Contraseña -->
-            <div style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
-                 onclick="abrirModal('modal-password')"
-                 onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
-                 onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
-                <i class="fas fa-key" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
-                <h3 style="color: #6b3e13; margin-bottom: 0.5em; transition: color 0.2s;">Cambiar Contraseña</h3>
-                <p style="color: #999; font-size: 0.9em; transition: color 0.2s;">Actualizar contraseña</p>
+            <div class="col-md-4">
+                <div class="action-card" onclick="openModal('modalPassword')">
+                    <div class="action-icon"><i class="fas fa-key"></i></div>
+                    <div class="action-title">Cambiar Contraseña</div>
+                    <div class="action-desc">Actualizar contraseña</div>
+                </div>
             </div>
-
-            <!-- Solicitud de Verificación -->
-            <div th:if="${estadoVerificacion != 'Aprobada'}"
-                 style="background: #fffbe6; border: 2px solid #bfa14a; border-radius: 12px; padding: 2em; text-align: center; cursor: pointer; transition: all 0.2s;"
-                 onclick="abrirModal('modal-verificacion')"
-                 onmouseover="this.style.background='#6b3e13'; this.querySelector('i').style.color='white'; this.querySelector('h3').style.color='white'; this.querySelector('p').style.color='#fffbe6'"
-                 onmouseout="this.style.background='#fffbe6'; this.querySelector('i').style.color='#bfa14a'; this.querySelector('h3').style.color='#6b3e13'; this.querySelector('p').style.color='#999'">
-                <i class="fas fa-certificate" style="font-size: 3em; color: #bfa14a; margin-bottom: 0.5em; transition: color 0.2s;"></i>
-                <h3 style="color: #6b3e13; margin-bottom: 0.5em; transition: color 0.2s;">Solicitud de Verificación</h3>
-                <p style="color: #999; font-size: 0.9em; transition: color 0.2s;">Verificar cuenta como artista</p>
+            <div class="col-md-4">
+                <div class="action-card" onclick="openModal('modalVerificacion')">
+                    <div class="action-icon"><i class="fas fa-certificate"></i></div>
+                    <div class="action-title">Solicitud de Verificación</div>
+                    <div class="action-desc">Verificar cuenta como artista</div>
+                </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 </main>
 
-<!-- Modal: Cambiar Username -->
-<div id="modal-username" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-    <div style="background: #fffbe6; border: 3px solid #bfa14a; border-radius: 16px; padding: 2em; width: 400px; max-width: 90vw;">
-        <h2 style="color: #2d2d2d; margin-bottom: 1em; text-align: center;">
-            <i class="fas fa-user-edit"></i> Cambiar Username
-        </h2>
-        <form th:action="@{/Micuenta/cambiarUsername}" method="post" style="display: flex; flex-direction: column; gap: 1em;">
-            <input type="text" name="nuevoUsername" placeholder="Nuevo nombre de usuario" required
-                   style="padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; background: #f5f5f5;">
-            <div style="display: flex; gap: 0.5em;">
-                <button type="submit" class="btn-colmena" style="flex: 1;">Guardar</button>
-                <button type="button" class="btn-colmena" style="flex: 1; background: #999;" onclick="cerrarModal('modal-username')">Cancelar</button>
+<!-- Modal Cambiar Username -->
+<div id="modalUsername" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none;">
+            <div class="modal-header" style="background: linear-gradient(135deg,#f6e27a,#bfa14a); border: none;">
+                <h5 class="modal-title" style="color: #1f1308; font-weight: 700;">
+                    <i class="fas fa-user-edit"></i> Cambiar Username
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-        </form>
+            <form th:action="@{/Micuenta/cambiarUsername}" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nuevoUsername" class="form-label">Nuevo Username</label>
+                        <input type="text" class="form-control" id="nuevoUsername" name="nuevoUsername" required style="border: 2px solid #bfa14a;" />
+                    </div>
+                </div>
+                <div class="modal-footer" style="border: none;">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-colmena">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<!-- Modal: Cambiar Contraseña -->
-<div id="modal-password" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-    <div style="background: #fffbe6; border: 3px solid #bfa14a; border-radius: 16px; padding: 2em; width: 400px; max-width: 90vw;">
-        <h2 style="color: #2d2d2d; margin-bottom: 1em; text-align: center;">
-            <i class="fas fa-key"></i> Cambiar Contraseña
-        </h2>
-        <form th:action="@{/Micuenta/cambiarPassword}" method="post" style="display: flex; flex-direction: column; gap: 1em;">
-            <input type="password" name="passwordActual" placeholder="Contraseña actual" required
-                   style="padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; background: #f5f5f5;">
-            <input type="password" name="nuevaPassword" placeholder="Nueva contraseña" required
-                   style="padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; background: #f5f5f5;">
-            <input type="password" name="confirmarPassword" placeholder="Confirmar contraseña" required
-                   style="padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; background: #f5f5f5;">
-            <div style="display: flex; gap: 0.5em;">
-                <button type="submit" class="btn-colmena" style="flex: 1;">Guardar</button>
-                <button type="button" class="btn-colmena" style="flex: 1; background: #999;" onclick="cerrarModal('modal-password')">Cancelar</button>
+<!-- Modal Cambiar Contraseña -->
+<div id="modalPassword" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none;">
+            <div class="modal-header" style="background: linear-gradient(135deg,#f6e27a,#bfa14a); border: none;">
+                <h5 class="modal-title" style="color: #1f1308; font-weight: 700;">
+                    <i class="fas fa-key"></i> Cambiar Contraseña
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-        </form>
+            <form th:action="@{/Micuenta/cambiarPassword}" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="passwordActual" class="form-label">Contraseña Actual</label>
+                        <input type="password" class="form-control" id="passwordActual" name="passwordActual" required style="border: 2px solid #bfa14a;" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="nuevaPassword" class="form-label">Nueva Contraseña</label>
+                        <input type="password" class="form-control" id="nuevaPassword" name="nuevaPassword" required style="border: 2px solid #bfa14a;" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmarPassword" class="form-label">Confirmar Nueva Contraseña</label>
+                        <input type="password" class="form-control" id="confirmarPassword" name="confirmarPassword" required style="border: 2px solid #bfa14a;" />
+                    </div>
+                </div>
+                <div class="modal-footer" style="border: none;">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-colmena">Cambiar Contraseña</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<!-- Modal: Solicitud de Verificación (SIMPLIFICADO) -->
-<div id="modal-verificacion" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-    <div style="background: #fffbe6; border: 3px solid #bfa14a; border-radius: 16px; padding: 2em; width: 450px; max-width: 90vw;">
-        <h2 style="color: #2d2d2d; margin-bottom: 1em; text-align: center;">
-            <i class="fas fa-certificate"></i> Solicitud de Verificación
-        </h2>
-        <form th:action="@{/solicitudes/crear}" method="post" style="display: flex; flex-direction: column; gap: 1em;">
-            <!-- Tipo fijo: ARTISTA -->
-            <input type="hidden" name="tipo" value="ARTISTA" />
-            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-
-            <label for="descripcion" style="color: #6b3e13; font-weight: 600;">Descripción / Motivo:</label>
-            <textarea id="descripcion" name="descripcion" rows="4" placeholder="Describe tu solicitud de verificación como artista..." required
-                      style="padding: 0.8em; border: 2px solid #bfa14a; border-radius: 8px; background: #f5f5f5; resize: vertical;"></textarea>
-
-            <div style="display: flex; gap: 0.5em;">
-                <button type="submit" class="btn-colmena" style="flex: 1;">Enviar Solicitud</button>
-                <button type="button" class="btn-colmena" style="flex: 1; background: #999;" onclick="cerrarModal('modal-verificacion')">Cancelar</button>
+<!-- Modal Solicitud Verificación -->
+<div id="modalVerificacion" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none;">
+            <div class="modal-header" style="background: linear-gradient(135deg,#f6e27a,#bfa14a); border: none;">
+                <h5 class="modal-title" style="color: #1f1308; font-weight: 700;">
+                    <i class="fas fa-certificate"></i> Solicitud de Verificación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-        </form>
+            <form th:action="@{/Micuenta/solicitarVerificacion}" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nombreArtistico" class="form-label">Nombre Artístico</label>
+                        <input type="text" class="form-control" id="nombreArtistico" name="nombreArtistico" required style="border: 2px solid #bfa14a;" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="nacionalidad" class="form-label">Nacionalidad</label>
+                        <input type="text" class="form-control" id="nacionalidad" name="nacionalidad" required style="border: 2px solid #bfa14a;" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="biografia" class="form-label">Biografía</label>
+                        <textarea class="form-control" id="biografia" name="biografia" rows="4" required style="border: 2px solid #bfa14a;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border: none;">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-colmena w-100"
+                            th:disabled="${estadoVerificacion == 'PENDIENTE'}"
+                            th:classappend="${estadoVerificacion == 'PENDIENTE'} ? 'disabled' : ''">
+                        <i class="fas fa-paper-plane"></i>
+                        <span th:if="${estadoVerificacion == 'PENDIENTE'}">Solicitud Pendiente</span>
+                        <span th:unless="${estadoVerificacion == 'PENDIENTE'}">Enviar Solicitud</span>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
+</div>
+
+<!-- Popup -->
+<div id="popup" class="popup" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="icon">!</div>
+    <div class="msg" id="popup-msg">Mensaje</div>
+    <button class="close" id="popup-close" aria-label="Cerrar">×</button>
 </div>
 
 <script>
-    function abrirModal(idModal) {
-        document.getElementById(idModal).style.display = 'flex';
+    function openModal(modalId) {
+        const modal = new bootstrap.Modal(document.getElementById(modalId));
+        modal.show();
     }
 
-    function cerrarModal(idModal) {
-        document.getElementById(idModal).style.display = 'none';
+    function showPopup(message, type = 'error', timeout = 4500) {
+        const p = document.getElementById('popup');
+        const msg = document.getElementById('popup-msg');
+        msg.textContent = message || '';
+        p.classList.remove('error', 'info', 'success');
+        p.classList.add(type || 'error');
+
+        const iconMapping = { error: '!', info: 'i', success: '✓' };
+        p.querySelector('.icon').textContent = iconMapping[type] || '!';
+
+        p.classList.add('show');
+        if (p._hideTimeout) clearTimeout(p._hideTimeout);
+        p._hideTimeout = setTimeout(() => { hidePopup(); }, timeout);
     }
 
-    // Cerrar modal al hacer clic fuera del contenido
+    function hidePopup() {
+        const p = document.getElementById('popup');
+        if (!p) return;
+        p.classList.remove('show');
+        if (p._hideTimeout) {
+            clearTimeout(p._hideTimeout);
+            p._hideTimeout = null;
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'popup-close') hidePopup();
+    });
+
+    // Mostrar mensajes flash
     document.addEventListener('DOMContentLoaded', function() {
-        const modales = ['modal-username', 'modal-password', 'modal-verificacion'];
+        const mensaje = /*[[${mensaje}]]*/ null;
+        const error = /*[[${error}]]*/ null;
+        const success = /*[[${success}]]*/ null;
 
-        modales.forEach(function(idModal) {
-            const modal = document.getElementById(idModal);
-            if (modal) {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === modal) {
-                        cerrarModal(idModal);
-                    }
-                });
-            }
-        });
+        if (mensaje) showPopup(mensaje, 'info', 4000);
+        if (error) showPopup(error, 'error', 5000);
+        if (success) showPopup(success, 'success', 4000);
     });
 </script>
 
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
