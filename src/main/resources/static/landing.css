@@ -9,6 +9,7 @@
   --hive-honey-2: #f3c44a;
   --hive-honey-3: #b8861f;
   --hive-dark: #2f2312;
+  --navbar-height: 70px; /* altura del navbar fijo */
 }
 
 html,body{
@@ -17,6 +18,7 @@ html,body{
   /* Fondo limpio: gradiente base (sin patrón) */
   background: var(--hero-bg);
   color:#222;
+  padding-top: var(--navbar-height); /* espacio para el navbar fijo */
 }
 
 /* Asegurar que no haya pseudo-elementos de textura activos */
@@ -339,6 +341,16 @@ footer{
 .admin-hero{ padding: 1.6rem; }
 .admin-hero h1{ color:var(--colmena-dark); font-weight:800; }
 .admin-hero .subtitulo{ color:#5b6170; font-size:1rem; }
+
+/* Forzar comportamiento de navbars fijas */
+.navbar.fixed-top, .navbar.sticky-top {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 1030 !important;
+}
 
 /* Responsive tweaks */
 @media (max-width: 992px){
