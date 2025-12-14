@@ -35,8 +35,8 @@
     .panel{ margin-bottom:1rem; padding:1rem; border-radius:10px; background:#fff; box-shadow:0 8px 20px rgba(0,0,0,0.03); }
     .panel h3{ margin-top:0; }
 
-    /* Contenedor principal ocupa la altura disponible (resta navbar + margen) y no provoca scroll de página */
-    .admin-viewport{ height: calc(100vh - 5.5rem); padding-top: 1.25rem; }
+    /* Contenedor principal ocupa la altura disponible (resta header fijo de 64px) y no provoca scroll de página */
+    .admin-viewport{ height: calc(100vh - 64px); padding-top: 1.25rem; }
     .admin-viewport .row{ height:100%; }
 
     /* Columna izquierda: card con scroll interno */
@@ -62,7 +62,7 @@
   <div th:replace="fragments/admin_header :: adminHeader"></div>
 
   <!-- Main: grid con tabla y paneles lateral -->
-  <main class="container-fluid mt-5 admin-root" style="margin-top:5.5rem;">
+  <main class="container-fluid mt-5 admin-root" style="margin-top:0;">
     <div class="container admin-viewport" style="max-width:1100px;">
       <div class="row gx-4">
         <section class="col-12 col-lg-8 mb-4">
