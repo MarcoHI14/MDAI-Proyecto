@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Recomendador - MDAI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <style>
+        /* Ajustes ligeros para el autocomplete */
+        #suggestions { position: absolute; left:0; right:0; z-index:1050; max-height:240px; overflow:auto; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
+        .suggestion-strong { font-weight:700; }
+    </style>
+</head>
+<body class="bg-light">
+<div class="container py-4">
+    <h1 class="mb-3">Recomendador de canciones</h1>
+
+    <p class="text-muted">Añade canciones al catálogo usando el buscador y marca las que ya conoces. Pulsa "Pedir recomendaciones" para obtener sugerencias personalizadas.</p>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row g-2 mb-3">
+                <div class="col-md-6 position-relative">
+                    <input id="search" class="form-control" placeholder="Buscar por título, artista o género" autocomplete="off" aria-autocomplete="list" />
+                    <div id="suggestions" class="list-group mt-1 d-none" role="listbox" aria-label="Sugerencias"></div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button id="clear-history" class="btn btn-outline-warning">Quitar selección historial</button>
+                </div>
+            </div>
+
+            <div class="table-responsive" style="max-height:360px; overflow:auto;">
+                <table class="table table-sm table-hover align-middle" id="catalog-table">
+                    <thead class="table-light position-sticky top-0">
+                    <tr>
+                        <th style="width:40px"></th>
+                        <th style="width:80px">ID</th>
+                        <th>Título</th>
+                        <th style="width:160px">Artista / Género</th>
+                        <th>Duración</th>
+                        <th style="width:90px"></th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="mt-3 d-flex gap-2 align-items-center">
+                <label for="topN" class="form-label mb-0">Número de recomendaciones</label>
+                <input id="topN" type="number" class="form-control" style="width:90px" value="5" min="1" />
+                <div class="ms-auto">
+                    <button id="send" class="btn btn-primary">Pedir recomendaciones</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="response-area" class="card d-none">
+        <div class="card-body">
+            <h5 class="card-title">Recomendaciones</h5>
+            <div id="response-content"></div>
+        </div>
+    </div>
+
+    <div id="error-area" class="alert alert-danger d-none mt-3" role="alert"></div>
+</div>
+
+<!-- Modal añadir manualmente -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Añadir canción</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2"><label class="form-label">Título</label><input id="new-title" class="form-control"></div>
+        <div class="mb-2"><label class="form-label">Artista</label><input id="new-artist" class="form-control"></div>
+        <div class="mb-2"><label class="form-label">Género</label><input id="new-genre" class="form-control"></div>
+        <div class="mb-2"><label class="form-label">Duración</label><input id="new-desc" class="form-control" placeholder="mm:ss (opcional)"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button id="save-new" type="button" class="btn btn-primary">Añadir</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+// Versión limpia y escalable del front para recommendations.
+// - Autocomplete server-side: /api/songs/search?q=...
+// - Request recommendations: POST /api/recommend { historyIds: [...], topN }
+// - Fallback local si backend no responde (solo para demo)
+
+let catalog = []; // objetos { id, titulo, artista, genero, descripcion, selected }
+const localSource = [
+    {id:1, titulo:'Yanki', artista:'U.S. Navy Band', genero:'Militar', descripcion:'Marcha tradicional'},
+    {id:2, titulo:'Endless Love', artista:'Duo', genero:'Pop', descripcion:'Balada conocida'},
+    {id:3, titulo:'Mad Science', artista:'DJ Mix', genero:'Electronic', descripcion:'Experimental'}
+];
+
+const tbody = document.querySelector('#catalog-table tbody');
+const searchInput = document.getElementById('search');
+const suggestions = document.getElementById('suggestions');
+const sendBtn = document.getElementById('send');
+const clearHistoryBtn = document.getElementById('clear-history');
+const addModalEl = document.getElementById('addModal');
+const addModal = new bootstrap.Modal(addModalEl);
+
+function showError(msg){ const e = document.getElementById('error-area'); e.textContent = msg; e.classList.remove('d-none'); }
+function clearError(){ const e = document.getElementById('error-area'); e.textContent = ''; e.classList.add('d-none'); }
+
+// Render tabla catálogo
+function renderTable(){ tbody.innerHTML = ''; if (catalog.length === 0){ const tr = document.createElement('tr'); tr.innerHTML = '<td colspan="6" class="text-center text-muted">El catálogo está vacío. Usa el buscador para añadir canciones.</td>'; tbody.appendChild(tr); return; }
+    for (const c of catalog){ const tr = document.createElement('tr'); tr.innerHTML = `
+        <td class="text-center"><input type="checkbox" class="history-chk" data-id="${escapeHtml(String(c.id))}" ${c.selected? 'checked' : ''}></td>
+        <td>${escapeHtml(String(c.id))}</td>
+        <td>${escapeHtml(c.titulo||'')}</td>
+        <td>${escapeHtml((c.artista||'') + (c.genero? ' — ' + c.genero : ''))}</td>
+        <td>${escapeHtml(c.descripcion||'')}</td>
+        <td class="text-end"><button class="btn btn-sm btn-outline-danger remove-btn">Eliminar</button></td>
+    `; tr.querySelector('.history-chk').addEventListener('change', ev => { c.selected = ev.target.checked; }); tr.querySelector('.remove-btn').addEventListener('click', ()=>{ catalog = catalog.filter(x=>String(x.id)!==String(c.id)); renderTable(); }); tbody.appendChild(tr); }
+}
+
+function escapeHtml(s){ if (s == null) return ''; return String(s).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+
+// --- Autocomplete (server-side preferred) ---
+let debounceTimer = null; let lastQuery = ''; let highlighted = -1;
+searchInput.addEventListener('input', ()=>{
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async ()=>{
+        const q = searchInput.value.trim(); lastQuery = q; if (!q){ suggestions.classList.add('d-none'); return; }
+        try{ const data = await fetchSearch(q); renderSuggestions(data.slice(0,8)); }catch(e){ console.error(e); const data = localSource.filter(s => ((s.titulo+' '+s.artista+' '+s.genero+' '+s.descripcion).toLowerCase().includes(q.toLowerCase()))); renderSuggestions(data.slice(0,8)); }
+    }, 200);
+});
+
+async function fetchSearch(q){ const res = await fetch('/api/songs/search?q=' + encodeURIComponent(q)); if (!res.ok) throw new Error('No search'); const js = await res.json(); return Array.isArray(js)? js : [] }
+
+function renderSuggestions(list){ suggestions.innerHTML = ''; highlighted = -1; if (!list || list.length===0){ suggestions.classList.add('d-none'); return; } for (let i=0;i<list.length;i++){ const it = list[i]; const a = document.createElement('a'); a.href='#'; a.className='list-group-item list-group-item-action'; a.setAttribute('role','option'); a.innerHTML = `<div class="d-flex justify-content-between"><div><strong>${highlightText(it.titulo || it.name || '')}</strong><div class="small text-muted">${highlightText(it.artista||it.artist||'')} ${it.genero? ' — '+escapeHtml(it.genero):''}</div></div></div>`; a.addEventListener('mousedown', ev=>ev.preventDefault()); a.addEventListener('click', ev=>{ ev.preventDefault(); addSongFromSearch(it); suggestions.classList.add('d-none'); }); a.addEventListener('mouseover', ()=>{ clearHighlights(); a.classList.add('active'); highlighted = i; }); suggestions.appendChild(a); } suggestions.classList.remove('d-none'); }
+function clearHighlights(){ const els = suggestions.querySelectorAll('.list-group-item'); els.forEach(el=>el.classList.remove('active')); }
+function highlightText(s){ if (!lastQuery) return escapeHtml(s); try{ const re = new RegExp('('+escapeRegExp(lastQuery)+')','ig'); return escapeHtml(s).replace(re, '<span class="suggestion-strong">$1</span>'); }catch(e){ return escapeHtml(s); } }
+function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'); }
+
+searchInput.addEventListener('keydown', ev=>{
+    const items = suggestions.querySelectorAll('.list-group-item'); if (ev.key === 'ArrowDown'){ ev.preventDefault(); if (items.length===0) return; highlighted = Math.min(items.length-1, highlighted+1); clearHighlights(); items[highlighted].classList.add('active'); items[highlighted].scrollIntoView({block:'nearest'}); return; }
+    if (ev.key === 'ArrowUp'){ ev.preventDefault(); if (items.length===0) return; highlighted = Math.max(0, highlighted-1); clearHighlights(); items[highlighted].classList.add('active'); items[highlighted].scrollIntoView({block:'nearest'}); return; }
+    if (ev.key === 'Enter'){ ev.preventDefault(); const active = suggestions.querySelector('.list-group-item.active'); if (active) { active.click(); return; } // otherwise open add modal
+        openAddModalWith(searchInput.value.trim()); }
+    if (ev.key === 'Escape'){ suggestions.classList.add('d-none'); }
+});
+searchInput.addEventListener('blur', ()=> setTimeout(()=> suggestions.classList.add('d-none'), 150));
+
+function addSongFromSearch(item){ clearError(); const id = item.id ?? (Date.now()%1000000); const titulo = item.titulo ?? item.name ?? ('Canción '+id); const artista = item.artista ?? item.artist ?? ''; const genero = item.genero ?? item.genre ?? ''; const descripcion = item.descripcion ?? item.desc ?? ''; const existing = catalog.find(c => String(c.id) === String(id)); if (existing){ existing.selected = true; renderTable(); return; } catalog.push({ id, titulo, artista, genero, descripcion, selected:true }); renderTable(); }
+
+function openAddModalWith(q=''){ document.getElementById('new-title').value = q; document.getElementById('new-artist').value = ''; document.getElementById('new-genre').value = ''; document.getElementById('new-desc').value = ''; addModal.show(); }
+
+document.getElementById('save-new').addEventListener('click', ()=>{ const titulo = document.getElementById('new-title').value.trim(); const artista = document.getElementById('new-artist').value.trim(); const genero = document.getElementById('new-genre').value.trim(); const desc = document.getElementById('new-desc').value.trim(); if (!titulo){ showError('El título no puede estar vacío'); return; } const id = Date.now()%1000000; catalog.push({ id, titulo, artista, genero, descripcion: desc, selected:true }); addModal.hide(); renderTable(); });
+
+clearHistoryBtn.addEventListener('click', ()=>{ for (const c of catalog) c.selected = false; renderTable(); });
+
+// --- Recomendaciones: pedir al backend ---
+async function askRecommendations(){ clearError(); document.getElementById('response-area').classList.add('d-none'); try{ const historyIds = catalog.filter(c=>c.selected).map(c=>c.id); if (historyIds.length === 0) { showError('Marca al menos una canción para que el sistema conozca tus gustos.'); return; } const topN = parseInt(document.getElementById('topN').value)||5; const payload = { historyIds, topN }; const res = await fetch('/api/songs/recommend', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) }); if (!res.ok) throw new Error('No recommend'); const data = await res.json(); if (!Array.isArray(data) || data.length===0) { showError('No se devolvieron recomendaciones.'); return; } displayResults(data); }catch(e){ console.error(e); showError('No se pudieron obtener recomendaciones del servidor; mostrando recomendaciones locales.'); const local = clientRecommend(catalog, catalog.filter(c=>c.selected).map(c=>c.id), parseInt(document.getElementById('topN').value)||5); displayResults(local); } }
+
+sendBtn.addEventListener('click', askRecommendations);
+
+// Simple fallback local (heurística)
+function clientRecommend(cat, historyIds, topN){ if (!Array.isArray(cat) || cat.length===0) return []; const histSet = new Set((historyIds||[]).map(x=>String(x))); const candidates = cat.filter(c=>!histSet.has(String(c.id))); if (candidates.length===0) return []; const hist = cat.filter(c=>histSet.has(String(c.id))); const genreCounts = {}; const wordCounts = {}; const stop = new Set(['el','la','los','las','de','y','a','en','por','que','con','su','se','del']); for (const h of hist){ const g=(h.genero||'').toLowerCase(); if (g) genreCounts[g]=(genreCounts[g]||0)+1; const txt = ((h.titulo||'')+' '+(h.descripcion||'')).toLowerCase(); for (const w of txt.split(/[^\p{L}0-9]+/u)){ if (!w) continue; if (stop.has(w)) continue; wordCounts[w]=(wordCounts[w]||0)+1; } } let topGenre=null, topGenreCount=0; for (const [g,c] of Object.entries(genreCounts)) if (c>topGenreCount){ topGenre=g; topGenreCount=c; } const topWords = Object.entries(wordCounts).sort((a,b)=>b[1]-a[1]).slice(0,10).map(x=>x[0]); const scored = candidates.map(c=>{ let score=0; if (topGenre && (String(c.genero||'').toLowerCase()===topGenre)) score+=20; const txt=((c.titulo||'')+' '+(c.descripcion||'')).toLowerCase(); let common=0; for (const w of topWords) if (w && txt.includes(w)) common++; score+=common*5; score += Math.random()*0.01; return { item:c, score }; }); scored.sort((a,b)=>b.score-a.score); return scored.slice(0,topN).map(s=>({ id:s.item.id, titulo:s.item.titulo, artista:s.item.artista, genero:s.item.genero, descripcion:s.item.descripcion, explanation: 'Recomendación local' })); }
+
+function displayResults(list){ const content = document.getElementById('response-content'); document.getElementById('response-area').classList.remove('d-none'); if (!Array.isArray(list) || list.length===0){ content.innerHTML = '<div class="alert alert-info">No hay recomendaciones.</div>'; return; } let html = '<div class="list-group">'; for (const it of list){ const sim = typeof it.similarity === 'number' ? `<span class="badge bg-secondary ms-2">Sim: ${it.similarity.toFixed(3)}</span>` : ''; const expl = it.explanation || it.reason || 'Recomendado según tu historial'; html += `<div class="list-group-item"><div class="d-flex w-100 justify-content-between"><div><h5 class="mb-1">${escapeHtml(it.titulo||it.nombre||('ID:'+it.id))}</h5><div class="small text-muted">${escapeHtml(it.artista||'')} ${it.genero? ' — '+escapeHtml(it.genero):''}</div></div><div>${sim}</div></div><p class="mb-1">${escapeHtml(it.descripcion||'')}</p><div class="mt-2"><em class="text-muted">${escapeHtml(expl)}</em></div></div>`; } html += '</div>'; content.innerHTML = html; }
+
+// iniciar
+window.addEventListener('load', ()=>{ catalog = []; renderTable(); });
+</script>
+
+<!-- Footer clásico de la app -->
+<footer class="footer mt-4 py-3 bg-white border-top">
+  <div class="container d-flex justify-content-between align-items-center">
+    <div class="text-muted small">© <span id="app-year"></span> MDAI — Universidad de Extremadura</div>
+    <div class="small">
+      <a href="/about" class="link-secondary me-3">Acerca</a>
+      <a href="/contact" class="link-secondary me-3">Contacto</a>
+      <a href="/privacy" class="link-secondary">Privacidad</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Poner año dinámico en el footer
+  (function(){
+    try{
+      var el = document.getElementById('app-year'); if (el) el.textContent = new Date().getFullYear();
+    }catch(e){/* no critical */}
+  })();
+</script>
+</body>
+</html>
