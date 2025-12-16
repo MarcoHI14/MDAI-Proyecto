@@ -14,13 +14,72 @@
         .btn-colmena:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(191,161,74,0.3); }
         .btn-colmena.info { background: linear-gradient(135deg,#f6e27a,#bfa14a); }
         .logo-colmena { width: 56px; height: auto; }
-        .full-table { width: 100%; border-collapse: collapse; }
-        .full-table thead tr { background: #f7f3e6; }
-        .full-table th { padding: 0.75em 1em; border-bottom: 2px solid #e6d8a8; font-weight: 600; color: #2d2d2d; }
-        .full-table tbody tr { border-bottom: 1px solid #eee; transition: background 0.2s; cursor: pointer; }
-        .full-table tbody tr:hover { background: #fffef8; }
-        .full-table tbody tr.selected { background: #fff8e6; }
-        .full-table td { padding: 0.8em 1em; vertical-align: middle; }
+        .full-table {
+            width: 100%;
+            table-layout: fixed; /* hace que las columnas respeten las % y la tabla llene el contenedor */
+            border-collapse: collapse;
+            background: transparent;
+        }
+        .full-table thead th {
+            background: #f4ead0; /* beige claro */
+            color: #2b2b2b;
+            font-weight: 700;
+            border-bottom: 2px solid rgba(0,0,0,0.06);
+            box-shadow: inset 0 -1px 0 rgba(0,0,0,0.02);
+        }
+        .full-table th,
+        .full-table td {
+            padding: 1rem 1.25rem;
+            vertical-align: middle;
+            color: #2d2d2d;
+        }
+        .full-table th.actions-col,
+        .full-table td.actions-col {
+            width: 18%;
+            text-align: center;
+        }
+        .full-table th.name-col,
+        .full-table td.name-col {
+            width: 60%;
+        }
+        /* Columna "Canciones" con ancho fijo pequeño */
+        .full-table th.canciones-col,
+        .full-table td.canciones-col {
+            width: 10%;
+            text-align: center;
+        }
+        .full-table tbody tr {
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            background: transparent;
+        }
+        .full-table tbody tr:hover {
+            background: rgba(191,161,74,0.03);
+        }
+        .full-table tbody td:first-child {
+            color: rgba(0,0,0,0.6);
+            width: 8%;
+        }
+        /* Contenedor flex para que los botones estén en fila */
+        .actions {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            justify-content: flex-end; /* alinea a la derecha dentro de la celda */
+            white-space: nowrap; /* evita que los iconos se rompan en varias líneas */
+        }
+        /* Asegurar botones compactos y sin márgenes extra */
+        .actions .btn {
+            margin: 0;
+            padding: 0.35rem 0.55rem; /* ajusta el tamaño cómodo */
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        @media (max-width: 800px) {
+            .full-table th, .full-table td { padding: 0.65rem 0.8rem; }
+            .full-table thead th { font-size: 0.95rem; }
+            .actions { gap: 0.35rem; }
+        }
         #bottom-player { position: fixed; left: 0; right: 0; bottom: 0; transform: translateY(110%); transition: transform 300ms ease; background: linear-gradient(180deg,#fffbe6, #fff9e0); border-top: 2px solid #e6d8a8; box-shadow: 0 -4px 12px rgba(0,0,0,0.08); padding: 1em 1.5em; z-index: 999; display: flex; align-items: center; gap: 1.5em; }
         #bottom-player.show { transform: translateY(0); }
         #player-info { flex: 1; min-width: 0; }
@@ -86,6 +145,116 @@
             z-index: 2;
         }
 
+        /* Panel lateral de cola */
+        #queue-panel {
+            position: fixed;
+            right: 16px;
+            bottom: 86px; /* por encima del reproductor inferior */
+            width: 340px;
+            max-width: calc(100% - 40px);
+            height: calc(60vh);
+            min-height: 220px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 18px 40px rgba(20,20,40,0.12);
+            overflow: hidden;
+            transform: translateX(110%);
+            transition: transform 280ms ease, opacity 220ms ease;
+            z-index: 1300;
+            opacity: 0;
+            font-family: inherit;
+        }
+
+        /* abierto */
+        #queue-panel.open {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* Cabecera */
+        #queue-panel .q-header {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:0.75rem;
+            padding:0.9rem 1rem;
+            background: linear-gradient(180deg,#f8f3ea,#fff);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            font-weight:700;
+            color:#2d2d2d;
+        }
+
+        /* Contenido scrollable */
+        #queue-panel .q-body {
+            max-height: calc(100% - 56px);
+            overflow-y: auto;
+            padding: 0.6rem;
+            background: transparent;
+        }
+
+        /* Item de la cola */
+        .queue-item {
+            display:flex;
+            gap:0.65rem;
+            align-items:center;
+            padding:0.55rem;
+            border-radius:8px;
+            transition: background 160ms;
+        }
+        .queue-item:hover { background: rgba(191,161,74,0.04); }
+
+        .queue-item .thumb {
+            width:46px;
+            height:46px;
+            border-radius:6px;
+            background:linear-gradient(180deg,#efefef,#ddd);
+            flex: 0 0 46px;
+            overflow:hidden;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:#666;
+            font-size:0.85rem;
+        }
+
+        .queue-item .meta {
+            flex: 1;
+            min-width: 0;
+        }
+        .queue-item .meta .title { font-weight:700; color:#222; font-size:0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .queue-item .meta .subtitle { font-size:0.85rem; color:#666; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+        .queue-item .controls {
+            display:flex;
+            gap:0.35rem;
+            align-items:center;
+        }
+
+        /* Botones pequeños para play/remove */
+        .queue-item .controls .q-btn {
+            border: none;
+            background: transparent;
+            padding: 6px;
+            border-radius:6px;
+            cursor:pointer;
+            color:#2d2d2d;
+        }
+        .queue-item .controls .q-btn:hover { background: rgba(0,0,0,0.04); }
+
+        /* Footer pequeño para acciones rápidas */
+        #queue-panel .q-footer {
+            padding:0.6rem;
+            border-top: 1px solid rgba(0,0,0,0.04);
+            display:flex;
+            gap:0.5rem;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        /* Adaptación mobile */
+        @media (max-width: 900px) {
+            #queue-panel { width: 92%; right: 4%; bottom: 80px; height: 50vh; }
+        }
     </style>
 </head>
 <body>
@@ -155,10 +324,10 @@
                 <thead>
                 <tr>
                     <th style="width:8%">#</th>
-                    <th>Nombre</th>
+                    <th class="name-col">Nombre</th>
                     <th th:if="${mostrarAlbumes}">Artista</th>
-                    <th style="width:15%">Canciones</th>
-                    <th style="width:20%; text-align:center;">Acciones</th>
+                    <th style="width:15%; text-align:center;">Canciones</th>
+                    <th class="actions-col">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -167,16 +336,28 @@
                     <td th:text="${p.nombre}">Nombre Playlist</td>
                     <td th:if="${mostrarAlbumes}" th:text="${p.usuario != null ? p.usuario.username : '—'}">Artista</td>
                     <td class="text-center" th:text="${p.cancionPlaylists != null ? p.cancionPlaylists.size() : 0}">0</td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-colmena info btn-sm" th:attr="data-playlistid=${p.idPlaylist}" onclick="viewPlaylistDetails(this)">
-                            <i class="fas fa-eye"></i> Ver
-                        </button>
-                        <button th:if="${!mostrarAlbumes}" type="button" class="btn btn-colmena btn-sm" th:attr="data-playlistid=${p.idPlaylist}" onclick="editPlaylist(this)">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button th:if="${!mostrarAlbumes}" type="button" class="btn btn-danger btn-sm" th:attr="data-playlistid=${p.idPlaylist}" onclick="deletePlaylist(this)">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
+                    <td class="text-center actions-col">
+                        <div class="actions">
+                            <button type="button" class="btn btn-colmena info btn-sm" th:attr="data-playlistid=${p.idPlaylist}" onclick="viewPlaylistDetails(this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-colmena btn-sm" th:attr="data-playlistid=${p.idPlaylist}" th:id="'play-all-btn-' + ${p.idPlaylist}" onclick="playAllFromPlaylist(this)">
+                                <i class="fas fa-play"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-colmena btn-sm" th:attr="data-playlistid=${p.idPlaylist}" th:id="'play-all-btn-' + ${p.idPlaylist}" onclick="playAllFromPlaylistShuffle(this)">
+                                <i class="fa-solid fa-shuffle"></i>
+                            </button>
+
+                            <button th:if="${!mostrarAlbumes}" type="button" class="btn btn-colmena btn-sm" th:attr="data-playlistid=${p.idPlaylist}" onclick="editPlaylist(this)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+
+                            <button th:if="${!mostrarAlbumes}" type="button" class="btn btn-danger btn-sm" th:attr="data-playlistid=${p.idPlaylist}" onclick="deletePlaylist(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
@@ -229,11 +410,6 @@
         <div class="modal-content" style="border-radius: 12px; border: none;">
             <div class="modal-header" style="background: linear-gradient(135deg,#f6e27a,#bfa14a); border: none;">
                 <h5 class="modal-title" style="color: #1f1308; font-weight: 700;" id="detailsModalTitle">Detalles de Playlist</h5>
-
-                <!-- Solo botón "Reproducir todo" en el modal -->
-                <button id="play-all-btn" type="button" class="btn btn-colmena btn-sm" style="margin-left:auto; margin-right:8px;" onclick="playAllFromModal()">
-                    <i class="fas fa-play"></i> Reproducir todo
-                </button>
 
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -300,8 +476,35 @@
 
         <div class="player-times"><span id="player-current">00:00</span> / <span id="player-duration">00:00</span></div>
         <button id="player-close" class="player-btn" title="Cerrar" style="background:#bfa14a"><i class="fas fa-times"></i></button>
+        <button id="toggle-queue-btn" class="player-nav-btn" title="Cola" onclick="toggleQueuePanel()" aria-expanded="false" style="min-width:auto;"><i class="fas fa-list"></i></button>
     </div>
 </div>
+
+<!-- Panel de cola -->
+<div id="queue-panel" role="dialog" aria-label="Cola de reproducción" aria-hidden="true">
+    <div class="q-header">
+        <div>Cola</div>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button class="player-nav-btn" title="Borrar cola" onclick="clearQueue(); updateQueuePanel();" style="background:#f5f5f5; border:none;">
+                <i class="fas fa-trash"></i>
+            </button>
+            <button class="player-nav-btn" id="close-queue-btn" title="Cerrar" onclick="toggleQueuePanel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="q-body" id="queue-list" aria-live="polite">
+        <!-- items renderizados por JS -->
+    </div>
+    <div class="q-footer">
+        <div id="queue-count">0 pistas</div>
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn btn-colmena btn-sm" onclick="playQueueFromIndex(0)">Reproducir</button>
+            <button class="btn btn-colmena info btn-sm" onclick="shuffleCurrentQueue()">Aleatorio</button>
+        </div>
+    </div>
+</div>
+
 
 <!-- Popup -->
 <div id="popup" class="popup" role="alert" aria-live="assertive" aria-atomic="true">
@@ -328,6 +531,26 @@
     let playQueue = [];
     let queueIndex = -1;
 
+    // Exponer y mantener sincronizadas las referencias en window
+    window.playQueue = playQueue;
+    window.queueIndex = queueIndex;
+
+    function syncToWindow() {
+        try {
+            window.playQueue = playQueue;
+            window.queueIndex = queueIndex;
+        } catch (e) { /* safe */ }
+    }
+
+    function syncFromWindow() {
+        try {
+            // si alguien (la IIFE) ha mutado window.playQueue, reflejarlo localmente
+            if (Array.isArray(window.playQueue)) playQueue = window.playQueue;
+            // si window.queueIndex es number, usarlo; si no, mantener el local
+            if (typeof window.queueIndex === 'number') queueIndex = window.queueIndex;
+        } catch (e) { /* safe */ }
+    }
+
     document.addEventListener('DOMContentLoaded', function(){
         modalDetailsInstance = new bootstrap.Modal(document.getElementById('modalVerDetalles'));
         modalEditInstance = new bootstrap.Modal(document.getElementById('modalEditarPlaylist'));
@@ -342,6 +565,10 @@
         }
         playQueue = [];
         queueIndex = -1;
+
+        // sincronizar con window para que el panel detecte los cambios
+        syncToWindow();
+
         updatePrevNextButtons();
     }
 
@@ -358,34 +585,195 @@
         [nextModal, nextPlayer].forEach(b => { if (b) b.disabled = !hasNext; });
     }
 
-    function playAllFromModal() {
-        const container = document.getElementById('details-canciones-container');
-        if (!container) return;
-        const audios = Array.from(container.querySelectorAll('audio.song-audio'))
-            .filter(a => a.src && a.src.trim() !== '');
-        if (audios.length === 0) {
-            showPopup('No hay pistas reproducibles en esta playlist', 'info', 3000);
-            return;
+    /* Asegura que exista un contenedor global para audios (oculto) */
+    function ensureGlobalAudioContainer() {
+        let container = document.getElementById('global-audio-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'global-audio-container';
+            container.style.display = 'none';
+            document.body.appendChild(container);
         }
-        clearQueue();
-        playQueue = audios;
-        queueIndex = 0;
-        // asegurar que cada audio llame a playNextInQueue al terminar
-        playQueue.forEach((a, idx) => {
-            a.onended = function() {
-                // dejar que el player global reseteé tiempos, luego avanzar
-                setTimeout(playNextInQueue, 150);
-            };
-            // también manejar errores saltando pista
-            a.onerror = function() {
-                setTimeout(playNextInQueue, 150);
-            };
-        });
-        updatePrevNextButtons();
-        playCurrentQueueItem();
+        return container;
     }
 
+    /* Reproducir toda la playlist aun cuando no se haya abierto el modal.
+    Recibe el elemento botón o directamente el id (string/number). */
+    function playAllFromPlaylist(btnOrId) {
+        let playlistId = null;
+        if (typeof btnOrId === 'string' || typeof btnOrId === 'number') {
+            playlistId = btnOrId;
+        } else if (btnOrId && btnOrId.getAttribute) {
+            playlistId = btnOrId.getAttribute('data-playlistid') || btnOrId.getAttribute('data-playlist-id');
+        }
+        if (!playlistId) {
+            showPopup('ID de playlist no disponible', 'error', 3000);
+            return;
+        }
+
+        fetch('/api/playlists/' + playlistId)
+            .then(r => {
+                if (!r.ok) throw new Error('Error al obtener playlist');
+                return r.json();
+            })
+            .then(data => {
+                const canciones = data.canciones || [];
+                if (canciones.length === 0) {
+                    showPopup('No hay canciones en esta playlist', 'info', 3000);
+                    return;
+                }
+
+                const container = ensureGlobalAudioContainer();
+                container.innerHTML = ''; // limpiar audios previos
+
+                const audios = canciones.map((c, i) => {
+                    const id = (c.idCancion !== undefined && c.idCancion !== null) ? c.idCancion : ('tmp_' + i + '_' + Date.now());
+                    const archivo = (c.archivoAudio && c.archivoAudio.startsWith('/uploads/'))
+                        ? c.archivoAudio
+                        : (c.archivoAudio ? ('/uploads/' + c.archivoAudio) : '');
+                    const audio = document.createElement('audio');
+                    audio.className = 'song-audio';
+                    audio.id = 'audio-' + id;
+                    audio.src = archivo;
+                    audio.preload = 'metadata';
+                    audio.style.display = 'none';
+                    audio.setAttribute('data-title', (c.titulo || '') + (c.artista ? ' - ' + c.artista : ''));
+                    container.appendChild(audio);
+                    return audio;
+                }).filter(a => a.src && a.src.trim() !== '');
+
+                if (audios.length === 0) {
+                    showPopup('No hay pistas reproducibles en esta playlist', 'info', 3000);
+                    return;
+                }
+
+                // preparar cola
+                clearQueue();
+                playQueue = audios;
+                queueIndex = 0;
+
+                // sincronizar con window para que el panel muestre las pistas
+                syncToWindow();
+
+                playQueue.forEach((a) => {
+                    a.onended = function() { setTimeout(playNextInQueue, 150); };
+                    a.onerror = function() {
+                        showPopup('No se pudo reproducir una pista, saltando...', 'error', 3000);
+                        setTimeout(playNextInQueue, 150);
+                    };
+                });
+
+                updatePrevNextButtons();
+                playCurrentQueueItem();
+            })
+            .catch(err => {
+                console.error(err);
+                showPopup('Error al cargar canciones', 'error', 4500);
+            });
+    }
+
+    // Helper: Fisher-Yates shuffle (devuelve nueva array barajada)
+    function shuffleArray(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    // Reproducir toda la playlist en modo aleatorio.
+    // Recibe el botón o el id (string/number).
+    function playAllFromPlaylistShuffle(btnOrId) {
+        let playlistId = null;
+        if (typeof btnOrId === 'string' || typeof btnOrId === 'number') {
+            playlistId = btnOrId;
+        } else if (btnOrId && btnOrId.getAttribute) {
+            // intentamos leer atributos comunes
+            playlistId = btnOrId.getAttribute('data-playlistid') || btnOrId.getAttribute('data-playlist-id') || btnOrId.getAttribute('data-playlistId');
+        }
+        if (!playlistId) {
+            showPopup('ID de playlist no disponible', 'error', 3000);
+            return;
+        }
+
+        fetch('/api/playlists/' + playlistId)
+            .then(r => {
+                if (!r.ok) throw new Error('Error al obtener playlist');
+                return r.json();
+            })
+            .then(data => {
+                const canciones = data.canciones || [];
+                if (canciones.length === 0) {
+                    showPopup('No hay canciones en esta playlist', 'info', 3000);
+                    return;
+                }
+
+                const container = ensureGlobalAudioContainer();
+                container.innerHTML = ''; // limpiar audios previos
+
+                // crear audios y conservar referencia
+                const audios = canciones.map((c, i) => {
+                    const id = (c.idCancion !== undefined && c.idCancion !== null) ? c.idCancion : ('tmp_' + i + '_' + Date.now());
+                    const archivo = (c.archivoAudio && c.archivoAudio.startsWith('/uploads/'))
+                        ? c.archivoAudio
+                        : (c.archivoAudio ? ('/uploads/' + c.archivoAudio) : '');
+                   if (!archivo || archivo.trim() === '') return null;
+                    const audio = document.createElement('audio');
+                    audio.className = 'song-audio';
+                    audio.id = 'audio-' + id;
+                    audio.src = archivo;
+                    audio.preload = 'metadata';
+                    audio.style.display = 'none';
+                    audio.setAttribute('data-title', (c.titulo || '') + (c.artista ? ' - ' + c.artista : ''));
+                    container.appendChild(audio);
+                    return audio;
+                }).filter(a => a !== null);
+
+                if (audios.length === 0) {
+                    showPopup('No hay pistas reproducibles en esta playlist', 'info', 3000);
+                    return;
+                }
+
+                // barajar la lista de audios
+                const shuffled = shuffleArray(audios);
+
+                // preparar cola
+                clearQueue();
+                playQueue = shuffled;
+                queueIndex = 0;
+
+                // sincronizar con window
+                syncToWindow();
+
+                playQueue.forEach((a) => {
+                    a.onended = function() { setTimeout(playNextInQueue, 150); };
+                    a.onerror = function() {
+                        showPopup('No se pudo reproducir una pista, saltando...', 'error', 3000);
+                        setTimeout(playNextInQueue, 150);
+                    };
+                });
+
+                updatePrevNextButtons();
+                playCurrentQueueItem();
+
+                // (opcional) feedback visual en el botón que invocó la acción
+                if (btnOrId && btnOrId.classList) {
+                        btnOrId.classList.add('active');
+                    setTimeout(() => { try { btnOrId.classList.remove('active'); } catch(e){} }, 900);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showPopup('Error al cargar canciones', 'error', 4500);
+            });
+    }
+
+
     function playCurrentQueueItem() {
+        // si la IIFE/otro código cambió window.playQueue o window.queueIndex, sincronizar primero
+        syncFromWindow();
+
         if (!Array.isArray(playQueue) || queueIndex < 0 || queueIndex >= playQueue.length) {
             clearQueue();
             return;
@@ -421,10 +809,15 @@
             };
         }
 
+        // sincronizar índice actual a window
+        syncToWindow();
         updatePrevNextButtons();
     }
 
     function playPreviousInQueue() {
+        // asegurar sincronía con posibles cambios desde el panel
+        syncFromWindow();
+
         if (!playQueue || playQueue.length === 0) return;
         // Si estamos al principio y la pista lleva algo de tiempo, reiniciar; si no, no hacer nada o reiniciar
         if (queueIndex <= 0) {
@@ -437,10 +830,15 @@
             return;
         }
         queueIndex--;
+        // sincronizar índice con window
+        syncToWindow();
         playCurrentQueueItem();
     }
 
     function playNextInQueue() {
+        // asegurar sincronía con posibles cambios desde el panel
+        syncFromWindow();
+
         if (!playQueue || playQueue.length === 0) {
             clearQueue();
             return;
@@ -450,6 +848,8 @@
             clearQueue();
             return;
         }
+        // sincronizar índice con window
+        syncToWindow();
         playCurrentQueueItem();
     }
 
@@ -718,8 +1118,152 @@
     document.addEventListener('click', function(e) {
         if (e.target && e.target.id === 'popup-close') hidePopup();
     });
-</script>
 
+    /* ---------- Panel de cola: toggle, render y acciones ---------- */
+    (function(){
+        const panel = document.getElementById('queue-panel');
+        const listEl = document.getElementById('queue-list');
+        const toggleBtn = document.getElementById('toggle-queue-btn');
+
+        function setAriaOpen(open){
+            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (panel) panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+        }
+
+        window.toggleQueuePanel = function(show) {
+            if (!panel) return;
+            const open = typeof show === 'boolean' ? show : !panel.classList.contains('open');
+            panel.classList.toggle('open', open);
+            setAriaOpen(open);
+            if (open) {
+                window.renderQueuePanel && window.renderQueuePanel();
+                const cur = listEl && listEl.querySelector('.queue-item.current');
+                if (cur) cur.scrollIntoView({block:'center', behavior:'smooth'});
+            }
+        };
+
+        window.renderQueuePanel = function() {
+            if (!listEl) return;
+            listEl.innerHTML = '';
+            if (!window.playQueue || window.playQueue.length === 0) {
+                listEl.innerHTML = '<div style="padding:1rem; color:#666;">La cola está vacía</div>';
+                const cnt = document.getElementById('queue-count'); if (cnt) cnt.textContent = '0 pistas';
+                return;
+            }
+            const cnt = document.getElementById('queue-count'); if (cnt) cnt.textContent = window.playQueue.length + (window.playQueue.length === 1 ? ' pista' : ' pistas');
+
+            window.playQueue.forEach((audio, idx) => {
+                const title = (audio.getAttribute && audio.getAttribute('data-title')) || audio.dataset?.title || audio.title || (audio.src ? audio.src.split('/').pop() : '');
+                const parts = (title && title.split(' - ',2)) || [title, ''];
+                const t = parts[0] || 'Título';
+                const subtitle = parts[1] || '';
+
+                const item = document.createElement('div');
+                item.className = 'queue-item' + (idx === (window.queueIndex || 0) ? ' current' : '');
+                item.innerHTML = `
+                    <div class="thumb" aria-hidden="true"></div>
+                    <div class="meta">
+                        <div class="title">${escapeHtml(t)}</div>
+                        <div class="subtitle">${escapeHtml(subtitle)}</div>
+                    </div>
+                    <div class="controls" aria-hidden="true">
+                        <button class="q-btn" title="Reproducir" data-idx="${idx}"><i class="fas fa-play"></i></button>
+                        <button class="q-btn" title="Eliminar" data-remove="${idx}"><i class="fas fa-trash-alt" style="color:#c34;"></i></button>
+                    </div>
+                `;
+                const playBtn = item.querySelector('[data-idx]');
+                const remBtn = item.querySelector('[data-remove]');
+                playBtn && playBtn.addEventListener('click', function(){
+                    const i = Number(this.getAttribute('data-idx'));
+                    // asegurar coherencia local antes de reproducir
+                    if (typeof window.playQueueFromIndex === 'function') {
+                        window.playQueueFromIndex(i);
+                    }
+                });
+                remBtn && remBtn.addEventListener('click', function(e){
+                    e.stopPropagation();
+                    const i = Number(this.getAttribute('data-remove'));
+                    removeFromQueue(i);
+                });
+                listEl.appendChild(item);
+            });
+        };
+
+        function escapeHtml(s){ return String(s || '').replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;",'`':'&#96;'})[c]); }
+
+        window.playQueueFromIndex = function(i){
+            if (!window.playQueue || i < 0 || i >= window.playQueue.length) return;
+            // sincronizar tanto en window como en las variables locales
+            window.queueIndex = i;
+            queueIndex = i;
+            if (typeof playCurrentQueueItem === 'function') {
+                playCurrentQueueItem();
+                window.renderQueuePanel && window.renderQueuePanel();
+                // opcional: mantener panel abierto
+            }
+        };
+
+        function removeFromQueue(i){
+            if (!window.playQueue || i < 0 || i >= window.playQueue.length) return;
+            const wasCurrent = (i === window.queueIndex);
+            window.playQueue.splice(i,1);
+            if (i < window.queueIndex) {
+                window.queueIndex = Math.max(0, window.queueIndex - 1);
+            } else if (wasCurrent) {
+                if (!window.playQueue || window.queueIndex >= window.playQueue.length) {
+                    if (typeof clearQueue === 'function') clearQueue();
+                } else {
+                    if (typeof playCurrentQueueItem === 'function') playCurrentQueueItem();
+                }
+            }
+            // reflejar cambios a las variables locales
+            if (typeof syncFromWindow === 'function') syncFromWindow();
+            if (typeof updatePrevNextButtons === 'function') updatePrevNextButtons();
+            window.renderQueuePanel && window.renderQueuePanel();
+        }
+
+        window.shuffleCurrentQueue = function(){
+            if (!window.playQueue || window.playQueue.length < 2) return;
+            const cur = (window.queueIndex >= 0) ? window.playQueue[window.queueIndex] : null;
+            for (let i = window.playQueue.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [window.playQueue[i], window.playQueue[j]] = [window.playQueue[j], window.playQueue[i]];
+            }
+            if (cur) window.queueIndex = window.playQueue.indexOf(cur);
+            else window.queueIndex = 0;
+            // reflejar en variables locales
+            if (typeof syncFromWindow === 'function') syncFromWindow();
+            window.renderQueuePanel && window.renderQueuePanel();
+            if (typeof updatePrevNextButtons === 'function') updatePrevNextButtons();
+        };
+
+        // watcher simple para re-render si la cola cambia externamente
+        let _lastSig = '';
+        function queueSignature(){
+            if (!window.playQueue) return '';
+            try { return window.playQueue.map(a => a ? (a.id || a.src) : '').join('|') + '::' + (window.queueIndex ?? ''); } catch(e) { return ''; }
+        }
+        setInterval(() => {
+            const sig = queueSignature();
+            if (sig !== _lastSig) {
+                _lastSig = sig;
+                if (panel && panel.classList.contains('open')) window.renderQueuePanel && window.renderQueuePanel();
+                const cntEl = document.getElementById('queue-count');
+                if (cntEl) cntEl.textContent = (window.playQueue ? window.playQueue.length : 0) + ((window.playQueue && window.playQueue.length===1) ? ' pista' : ' pistas');
+                // reflejar cambios en variables locales
+                if (typeof syncFromWindow === 'function') syncFromWindow();
+            }
+        }, 450);
+
+        // Exponer función pública de actualización
+        window.updateQueuePanel = window.renderQueuePanel;
+
+        // cerrar con Escape
+        document.addEventListener('keydown', function(e){
+            if (e.key === 'Escape' && panel && panel.classList.contains('open')) window.toggleQueuePanel(false);
+        });
+    })();
+</script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
