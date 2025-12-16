@@ -31,6 +31,22 @@
         .player-progress-container { background: rgba(0,0,0,0.08); height: 8px; border-radius: 8px; cursor: pointer; margin-top: 0.5em; width: 100%; }
         .player-progress-bar { height: 100%; background: linear-gradient(90deg,#bfa14a,#e2a84a); width: 0%; border-radius: 8px; transition: width 0.1s; }
         .player-times { font-size: 0.9em; color: #444; min-width: 80px; text-align: right; font-weight: 600; }
+
+        /* Estilos para los botones de navegación añadidos al player inferior */
+        .player-nav-btn {
+            background: #bfa14a;
+            color: #1f1308;
+            border: none;
+            padding: 0.45rem 0.6rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+        }
+        .player-nav-btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
         .popup { position: fixed; left: 50%; transform: translateX(-50%) translateY(-20px); bottom: 20px; min-width: 280px; max-width: 90vw; background: #fff; color: #222; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.15); padding: 1em 1.2em; display: flex; align-items: center; gap: 1em; opacity: 0; pointer-events: none; transition: opacity 220ms ease, transform 220ms ease; z-index: 1200; }
         .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
         .popup .icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1.2em; }
@@ -52,35 +68,20 @@
             font-weight: 700;
         }
 
-        /* Forzar que el botón "Anterior" empuje al bloque de controles hacia la derecha */
-        #modal-prev-btn {
-            margin-left: auto;   /* empuja este botón y los siguientes hacia la derecha */
-            margin-right: 0;
-            padding: 0.35rem 0.6rem;
-        }
-
-        /* Anular el margin-left:inline del botón "Reproducir todo" y ajustar espaciado */
+        /* Mantener "Reproducir todo" alineado a la derecha del header */
         #play-all-btn {
-            margin-left: 0 !important; /* override del inline style */
+            margin-left: auto;
             margin-right: 0.5rem;
             padding: 0.35rem 0.6rem;
         }
 
         /* Ajustes comunes para los botones del header (tamaño y alineación) */
-        #modal-prev-btn,
-        #play-all-btn,
-        #modal-next-btn {
+        #play-all-btn {
             min-width: 40px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             margin: 0; /* eliminar márgenes Bootstrap que puedan separar */
-        }
-
-        /* Si persiste solapamiento con el btn-close, elevar el z-index solo del grupo */
-        #modal-prev-btn,
-        #play-all-btn,
-        #modal-next-btn {
             position: relative;
             z-index: 2;
         }
@@ -228,15 +229,9 @@
             <div class="modal-header" style="background: linear-gradient(135deg,#f6e27a,#bfa14a); border: none;">
                 <h5 class="modal-title" style="color: #1f1308; font-weight: 700;" id="detailsModalTitle">Detalles de Playlist</h5>
 
-                <!-- Controles añadidos: Anterior / Reproducir todo / Siguiente -->
-                <button id="modal-prev-btn" type="button" class="btn btn-colmena btn-sm me-1" onclick="playPreviousInQueue()" title="Anterior" disabled>
-                    <i class="fas fa-step-backward"></i>
-                </button>
+                <!-- Solo botón "Reproducir todo" en el modal -->
                 <button id="play-all-btn" type="button" class="btn btn-colmena btn-sm" style="margin-left:auto; margin-right:8px;" onclick="playAllFromModal()">
                     <i class="fas fa-play"></i> Reproducir todo
-                </button>
-                <button id="modal-next-btn" type="button" class="btn btn-colmena btn-sm me-2" onclick="playNextInQueue()" title="Siguiente" disabled>
-                    <i class="fas fa-step-forward"></i>
                 </button>
 
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -283,7 +278,7 @@
     </div>
 </div>
 
-<!-- Reproductor inferior -->
+<!-- Reproductor inferior (ahora con prev/next) -->
 <div id="bottom-player" aria-live="polite">
     <div id="player-info">
         <div id="player-title">Título de la canción</div>
@@ -292,7 +287,16 @@
         </div>
     </div>
     <div class="player-controls">
+        <button id="player-prev-btn" class="player-nav-btn" title="Anterior" onclick="playPreviousInQueue()" disabled>
+            <i class="fas fa-step-backward"></i>
+        </button>
+
         <button id="player-toggle" class="player-btn" aria-label="Reproducir/Pausar"><i class="fas fa-play"></i></button>
+
+        <button id="player-next-btn" class="player-nav-btn" title="Siguiente" onclick="playNextInQueue()" disabled>
+            <i class="fas fa-step-forward"></i>
+        </button>
+
         <div class="player-times"><span id="player-current">00:00</span> / <span id="player-duration">00:00</span></div>
         <button id="player-close" class="player-btn" title="Cerrar" style="background:#bfa14a"><i class="fas fa-times"></i></button>
     </div>
@@ -341,10 +345,16 @@
     }
 
     function updatePrevNextButtons() {
-        const prevBtn = document.getElementById('modal-prev-btn');
-        const nextBtn = document.getElementById('modal-next-btn');
-        if (prevBtn) prevBtn.disabled = !(playQueue && playQueue.length > 0 && queueIndex > 0);
-        if (nextBtn) nextBtn.disabled = !(playQueue && playQueue.length > 0 && queueIndex >= 0 && queueIndex < (playQueue.length - 1));
+        const prevModal = document.getElementById('modal-prev-btn'); // puede no existir
+        const nextModal = document.getElementById('modal-next-btn'); // puede no existir
+        const prevPlayer = document.getElementById('player-prev-btn');
+        const nextPlayer = document.getElementById('player-next-btn');
+
+        const hasPrev = (playQueue && playQueue.length > 0 && queueIndex > 0);
+        const hasNext = (playQueue && playQueue.length > 0 && queueIndex >= 0 && queueIndex < (playQueue.length - 1));
+
+        [prevModal, prevPlayer].forEach(b => { if (b) b.disabled = !hasPrev; });
+        [nextModal, nextPlayer].forEach(b => { if (b) b.disabled = !hasNext; });
     }
 
     function playAllFromModal() {
