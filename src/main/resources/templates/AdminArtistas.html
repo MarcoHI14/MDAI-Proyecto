@@ -115,10 +115,8 @@
                       <td style="max-width:420px; white-space:normal; word-wrap:break-word;" th:text="${a.biografia}">Biografía corta...</td>
                       <td th:text="${a.canciones != null ? a.canciones.size() : 0}">0</td>
                       <td>
-                        <form th:action="@{/admin/AdminArtistas/{id}/delete(id=${a.idArtista})}" method="post" style="display:inline-block;">
-                          <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                          <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash me-1"></i>Eliminar</button>
-                        </form>
+                        <!-- Botón que elimina usando la API DELETE: manejado por JavaScript -->
+                        <button type="button" th:attr="data-id=${a.idArtista}" class="btn btn-danger btn-sm btn-delete-artista"><i class="fas fa-trash me-1"></i>Eliminar</button>
                       </td>
                     </tr>
                   </tbody>
@@ -136,6 +134,7 @@
         </div>
       </div>
     </div>
+
   </main>
 
   <!-- Footer común -->
@@ -176,13 +175,41 @@
       const CSRF = csrfMeta ? { header: (csrfHeaderMeta ? csrfHeaderMeta.content : 'X-CSRF-TOKEN'), token: csrfMeta.content } : null;
       function addCsrf(headers) { if (CSRF && CSRF.token) headers[CSRF.header] = CSRF.token; return headers; }
 
-      // DELETE via API for each row (intercept forms)
+      // DELETE via API for buttons (new) and fallback for existing forms (compat)
+      function handleDeleteById(id, tr) {
+        const headers = addCsrf({ 'Accept':'application/json', 'Content-Type':'application/json' });
+        fetch(`/admin/api/artistas/${id}`, { method: 'DELETE', headers: headers })
+          .then(r => r.json())
+          .then(data => {
+            if (data && data.status === 'deleted') {
+              if (tr) tr.remove();
+              showToast('success', 'Artista eliminado');
+            } else {
+              showToast('error', data && data.error ? data.error : 'Error eliminando artista');
+            }
+          }).catch(err=>{ console.error(err); showToast('error', 'Error eliminando artista'); });
+      }
+
+      // New: attach listeners to delete buttons
+      document.querySelectorAll('.btn-delete-artista').forEach(btn => {
+        btn.addEventListener('click', function(ev){
+          ev.preventDefault();
+          const id = btn.getAttribute('data-id') || (()=>{ const tr = btn.closest('tr'); return tr ? (tr.querySelector('td:nth-child(1)').innerText.trim()) : null; })();
+          if (!id) { showToast('error', 'ID inválido'); return; }
+          const tr = btn.closest('tr');
+          if (!window.confirm('¿Eliminar este artista? Esta acción eliminará también sus canciones.')) return;
+          handleDeleteById(id, tr);
+        });
+      });
+
+      // DELETE via API for each row (intercept forms) - fallback
       document.querySelectorAll('form').forEach(form => {
         if (form.querySelector('.btn-danger')) {
           form.addEventListener('submit', function(ev){
             ev.preventDefault();
             const tr = form.closest('tr');
             const id = tr.querySelector('td:nth-child(1)').innerText.trim();
+            if (!window.confirm('¿Eliminar este artista? Esta acción eliminará también sus canciones.')) return;
             const headers = addCsrf({ 'Accept':'application/json', 'Content-Type':'application/json' });
             fetch(`/admin/api/artistas/${id}`, { method: 'DELETE', headers: headers })
               .then(r=>r.json()).then(data=>{

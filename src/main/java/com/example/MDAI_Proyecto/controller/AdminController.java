@@ -220,6 +220,7 @@ public class AdminController {
     @ResponseBody
     public ResponseEntity<?> apiEliminarArtista(@PathVariable("id") Long id) {
         try {
+            // Obtener la entidad mediante el servicio y delegar la eliminación
             Artista a = artistaService.findById(id);
             if (a == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Artista no encontrado"));
