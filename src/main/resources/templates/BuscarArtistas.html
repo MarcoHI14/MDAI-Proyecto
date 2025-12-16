@@ -41,6 +41,19 @@
         .popup.info .icon { background: #0275d8; }
         .popup .msg { flex: 1; font-size: 0.95em; font-weight: 500; }
         .popup .close { background: transparent; border: none; color: #666; font-size: 1.3em; cursor: pointer; line-height: 1; }
+        .player-nav-btn {
+            background: #bfa14a;
+            color: #1f1308;
+            border: none;
+            padding: 0.45rem 0.6rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+        }
+        .player-nav-btn[disabled] { opacity: 0.45; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -129,7 +142,7 @@
     </div>
 </main>
 
-<!-- Reproductor inferior -->
+<!-- Reproductor inferior (ahora con prev/next) -->
 <div id="bottom-player" aria-live="polite">
     <div id="player-info">
         <div id="player-title">Título de la canción</div>
@@ -138,7 +151,16 @@
         </div>
     </div>
     <div class="player-controls">
+        <button id="player-prev-btn" class="player-nav-btn" title="Anterior" onclick="playPreviousInQueue()" disabled>
+            <i class="fas fa-step-backward"></i>
+        </button>
+
         <button id="player-toggle" class="player-btn" aria-label="Reproducir/Pausar"><i class="fas fa-play"></i></button>
+
+        <button id="player-next-btn" class="player-nav-btn" title="Siguiente" onclick="playNextInQueue()" disabled>
+            <i class="fas fa-step-forward"></i>
+        </button>
+
         <div class="player-times"><span id="player-current">00:00</span> / <span id="player-duration">00:00</span></div>
         <button id="player-close" class="player-btn" title="Cerrar" style="background:#bfa14a"><i class="fas fa-times"></i></button>
     </div>
@@ -186,6 +208,10 @@
     let _candidateSongId = null;
     let modalInstance = null;
 
+    // Cola de reproducción (implementada igual que en GestorPlaylists)
+    let playQueue = [];
+    let queueIndex = -1;
+
     document.addEventListener('DOMContentLoaded', function(){
         const filterInput = document.getElementById('filterTableArtists');
         const clearBtn = document.getElementById('clearSearchArtists');
@@ -218,6 +244,9 @@
                     // Marcar fila seleccionada
                     Array.from(tbody.querySelectorAll('tr')).forEach(r => r.classList.remove('selected'));
                     row.classList.add('selected');
+
+                    // Limpiar cola al cambiar artista
+                    clearQueue();
 
                     // Cargar canciones
                     fetch('/api/artistas/' + artistaId + '/canciones')
@@ -288,6 +317,9 @@
 
         html += '</tbody></table></div>';
         container.innerHTML = html;
+
+        // después de renderizar, asegurar que si ya había una cola se limpie
+        clearQueue();
     }
 
     function formatTime(sec) {
@@ -297,12 +329,67 @@
         return m + ':' + s;
     }
 
-    function togglePlay(id) {
-        const audio = document.getElementById('audio-' + id);
-        const btn = document.getElementById('btn-play-' + id);
-        if (!audio || !btn) return;
+    /* ---------- Cola de reproducción ---------- */
+    function clearQueue() {
+        if (playQueue && playQueue.length) {
+            playQueue.forEach(a => {
+                try { a.onended = null; a.onerror = null; } catch(e){}
+            });
+        }
+        playQueue = [];
+        queueIndex = -1;
+        updatePrevNextButtons();
+    }
 
-        // Pausar otros audios
+    function updatePrevNextButtons() {
+        const prevPlayer = document.getElementById('player-prev-btn');
+        const nextPlayer = document.getElementById('player-next-btn');
+
+        const hasPrev = (playQueue && playQueue.length > 0 && queueIndex > 0);
+        const hasNext = (playQueue && playQueue.length > 0 && queueIndex >= 0 && queueIndex < (playQueue.length - 1));
+
+        if (prevPlayer) prevPlayer.disabled = !hasPrev;
+        if (nextPlayer) nextPlayer.disabled = !hasNext;
+    }
+
+    function buildQueueFromSongsList(startId) {
+        const container = document.getElementById('songsContainer');
+        if (!container) return false;
+
+        const audios = Array.from(container.querySelectorAll('audio.song-audio'))
+            .filter(a => a.src && a.src.trim() !== '');
+        if (audios.length === 0) return false;
+
+        playQueue = audios;
+        // encontrar índice del audio con id startId
+        const targetId = 'audio-' + startId;
+        queueIndex = playQueue.findIndex(a => a.id === targetId);
+        if (queueIndex < 0) queueIndex = 0;
+
+        // asociar onended/onerror para avanzar la cola
+        playQueue.forEach((a, idx) => {
+            a.onended = function() {
+                // breve retraso para evitar conflictos con eventos del reproductor
+                setTimeout(playNextInQueue, 150);
+            };
+            a.onerror = function() {
+                setTimeout(playNextInQueue, 150);
+            };
+        });
+
+        updatePrevNextButtons();
+        return true;
+    }
+
+    function playCurrentQueueItem() {
+        if (!Array.isArray(playQueue) || queueIndex < 0 || queueIndex >= playQueue.length) {
+            clearQueue();
+            return;
+        }
+        const audio = playQueue[queueIndex];
+        if (!audio) { playNextInQueue(); return; }
+
+        // Parar otros audios y actualizar botones
         document.querySelectorAll('audio.song-audio').forEach(a => {
             if (a !== audio) {
                 try { a.pause(); a.currentTime = 0; } catch(e){}
@@ -312,13 +399,84 @@
             }
         });
 
+        const idSuffix = audio.id.replace('audio-','');
+        // mostrar y usar reproductor inferior
+        showPlayerFor(idSuffix);
+
+        // sustituimos el onended asignado por showPlayerFor para avanzar la cola
+        if (currentAudio) {
+            currentAudio.onended = function() {
+                playNextInQueue();
+            };
+            currentAudio.onerror = function() {
+                showPopup('No se pudo reproducir una pista, saltando...', 'error', 3500);
+                playNextInQueue();
+            };
+        }
+
+        updatePrevNextButtons();
+    }
+
+    function playPreviousInQueue() {
+        if (!playQueue || playQueue.length === 0) return;
+        if (queueIndex <= 0) {
+            if (currentAudio) {
+                try {
+                    currentAudio.currentTime = 0;
+                    currentAudio.play().catch(()=>{});
+                } catch(e){}
+            }
+            return;
+        }
+        queueIndex--;
+        playCurrentQueueItem();
+    }
+
+    function playNextInQueue() {
+        if (!playQueue || playQueue.length === 0) {
+            clearQueue();
+            return;
+        }
+        queueIndex++;
+        if (!playQueue || queueIndex >= playQueue.length) {
+            clearQueue();
+            return;
+        }
+        playCurrentQueueItem();
+    }
+
+    /* ---------- Integración con reproducción individual (ahora con cola) ---------- */
+    function togglePlay(id) {
+        const audio = document.getElementById('audio-' + id);
+        const btn = document.getElementById('btn-play-' + id);
+        if (!audio || !btn) return;
+
+        // Si está pausado -> construir cola desde la lista de canciones y reproducir desde esta pista
         if (audio.paused) {
-            showPlayerFor(id);
+            // construir cola a partir de las pistas que se muestran en el panel
+            const ok = buildQueueFromSongsList(id);
+            if (ok) {
+                // reproducir la pista actual en la cola
+                playCurrentQueueItem();
+            } else {
+                // fallback: reproducir solo la pista individual
+                document.querySelectorAll('audio.song-audio').forEach(a => {
+                    if (a !== audio) {
+                        try { a.pause(); a.currentTime = 0; } catch(e){}
+                        const otherId = a.id.replace('audio-','');
+                        const otherBtn = document.getElementById('btn-play-' + otherId);
+                        if (otherBtn) otherBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    }
+                });
+                showPlayerFor(id);
+            }
         } else {
+            // si ya se estaba reproduciendo, pausar y mantener/limpiar cola
             audio.pause();
             btn.innerHTML = '<i class="fas fa-play"></i>';
             const playerToggle = document.getElementById('player-toggle');
             if (playerToggle) playerToggle.innerHTML = '<i class="fas fa-play"></i>';
+            // Mantener la cola (permite reanudar con playCurrentQueueItem), si se desea cancelar al pausar: clearQueue();
         }
     }
 
@@ -369,6 +527,7 @@
         };
 
         audio.onended = function(){
+            // si hay cola, será reemplazado por playCurrentQueueItem que pone onended->playNextInQueue
             progressBar.style.width = '0%';
             currentEl.textContent = '00:00';
             if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
@@ -409,6 +568,8 @@
             if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
             currentAudio = null;
             currentId = null;
+            // al cerrar el reproductor también cancelar la cola
+            clearQueue();
         };
 
         progressContainer.onclick = function(e){
@@ -418,6 +579,9 @@
             const pct = Math.max(0, Math.min(1, x / rect.width));
             audio.currentTime = pct * audio.duration;
         };
+
+        // actualizar estado de botones prev/next según cola
+        updatePrevNextButtons();
     }
 
     function openAddToPlaylistModal(btn) {

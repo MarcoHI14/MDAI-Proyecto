@@ -31,6 +31,22 @@
         .player-progress-container { background: rgba(0,0,0,0.08); height: 8px; border-radius: 8px; cursor: pointer; margin-top: 0.5em; width: 100%; }
         .player-progress-bar { height: 100%; background: linear-gradient(90deg,#bfa14a,#e2a84a); width: 0%; border-radius: 8px; transition: width 0.1s; }
         .player-times { font-size: 0.9em; color: #444; min-width: 80px; text-align: right; font-weight: 600; }
+
+        /* Estilos para los botones de navegación añadidos al player inferior */
+        .player-nav-btn {
+            background: #bfa14a;
+            color: #1f1308;
+            border: none;
+            padding: 0.45rem 0.6rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+        }
+        .player-nav-btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
         .popup { position: fixed; left: 50%; transform: translateX(-50%) translateY(-20px); bottom: 20px; min-width: 280px; max-width: 90vw; background: #fff; color: #222; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.15); padding: 1em 1.2em; display: flex; align-items: center; gap: 1em; opacity: 0; pointer-events: none; transition: opacity 220ms ease, transform 220ms ease; z-index: 1200; }
         .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
         .popup .icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1.2em; }
@@ -38,6 +54,38 @@
         .popup.info .icon { background: #0275d8; }
         .popup .msg { flex: 1; font-size: 0.95em; font-weight: 500; }
         .popup .close { background: transparent; border: none; color: #666; font-size: 1.3em; cursor: pointer; line-height: 1; }
+
+        /* Hacer que el header sea un contenedor flex y quitar márgenes innecesarios */
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;         /* espacio pequeño entre elementos */
+        }
+
+        /* Título sin márgenes que puedan separar controles */
+        .modal-header .modal-title {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        /* Mantener "Reproducir todo" alineado a la derecha del header */
+        #play-all-btn {
+            margin-left: auto;
+            margin-right: 0.5rem;
+            padding: 0.35rem 0.6rem;
+        }
+
+        /* Ajustes comunes para los botones del header (tamaño y alineación) */
+        #play-all-btn {
+            min-width: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0; /* eliminar márgenes Bootstrap que puedan separar */
+            position: relative;
+            z-index: 2;
+        }
+
     </style>
 </head>
 <body>
@@ -181,6 +229,12 @@
         <div class="modal-content" style="border-radius: 12px; border: none;">
             <div class="modal-header" style="background: linear-gradient(135deg,#f6e27a,#bfa14a); border: none;">
                 <h5 class="modal-title" style="color: #1f1308; font-weight: 700;" id="detailsModalTitle">Detalles de Playlist</h5>
+
+                <!-- Solo botón "Reproducir todo" en el modal -->
+                <button id="play-all-btn" type="button" class="btn btn-colmena btn-sm" style="margin-left:auto; margin-right:8px;" onclick="playAllFromModal()">
+                    <i class="fas fa-play"></i> Reproducir todo
+                </button>
+
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -225,7 +279,7 @@
     </div>
 </div>
 
-<!-- Reproductor inferior -->
+<!-- Reproductor inferior (ahora con prev/next) -->
 <div id="bottom-player" aria-live="polite">
     <div id="player-info">
         <div id="player-title">Título de la canción</div>
@@ -234,7 +288,16 @@
         </div>
     </div>
     <div class="player-controls">
+        <button id="player-prev-btn" class="player-nav-btn" title="Anterior" onclick="playPreviousInQueue()" disabled>
+            <i class="fas fa-step-backward"></i>
+        </button>
+
         <button id="player-toggle" class="player-btn" aria-label="Reproducir/Pausar"><i class="fas fa-play"></i></button>
+
+        <button id="player-next-btn" class="player-nav-btn" title="Siguiente" onclick="playNextInQueue()" disabled>
+            <i class="fas fa-step-forward"></i>
+        </button>
+
         <div class="player-times"><span id="player-current">00:00</span> / <span id="player-duration">00:00</span></div>
         <button id="player-close" class="player-btn" title="Cerrar" style="background:#bfa14a"><i class="fas fa-times"></i></button>
     </div>
@@ -261,10 +324,134 @@
     let modalDetailsInstance = null;
     let modalEditInstance = null;
 
+    // Cola de reproducción para el modal (elementos <audio>)
+    let playQueue = [];
+    let queueIndex = -1;
+
     document.addEventListener('DOMContentLoaded', function(){
         modalDetailsInstance = new bootstrap.Modal(document.getElementById('modalVerDetalles'));
         modalEditInstance = new bootstrap.Modal(document.getElementById('modalEditarPlaylist'));
     });
+
+    /* ---------- Helpers de cola ---------- */
+    function clearQueue() {
+        if (playQueue && playQueue.length) {
+            playQueue.forEach(a => {
+                try { a.onended = null; } catch(e){}
+            });
+        }
+        playQueue = [];
+        queueIndex = -1;
+        updatePrevNextButtons();
+    }
+
+    function updatePrevNextButtons() {
+        const prevModal = document.getElementById('modal-prev-btn'); // puede no existir
+        const nextModal = document.getElementById('modal-next-btn'); // puede no existir
+        const prevPlayer = document.getElementById('player-prev-btn');
+        const nextPlayer = document.getElementById('player-next-btn');
+
+        const hasPrev = (playQueue && playQueue.length > 0 && queueIndex > 0);
+        const hasNext = (playQueue && playQueue.length > 0 && queueIndex >= 0 && queueIndex < (playQueue.length - 1));
+
+        [prevModal, prevPlayer].forEach(b => { if (b) b.disabled = !hasPrev; });
+        [nextModal, nextPlayer].forEach(b => { if (b) b.disabled = !hasNext; });
+    }
+
+    function playAllFromModal() {
+        const container = document.getElementById('details-canciones-container');
+        if (!container) return;
+        const audios = Array.from(container.querySelectorAll('audio.song-audio'))
+            .filter(a => a.src && a.src.trim() !== '');
+        if (audios.length === 0) {
+            showPopup('No hay pistas reproducibles en esta playlist', 'info', 3000);
+            return;
+        }
+        clearQueue();
+        playQueue = audios;
+        queueIndex = 0;
+        // asegurar que cada audio llame a playNextInQueue al terminar
+        playQueue.forEach((a, idx) => {
+            a.onended = function() {
+                // dejar que el player global reseteé tiempos, luego avanzar
+                setTimeout(playNextInQueue, 150);
+            };
+            // también manejar errores saltando pista
+            a.onerror = function() {
+                setTimeout(playNextInQueue, 150);
+            };
+        });
+        updatePrevNextButtons();
+        playCurrentQueueItem();
+    }
+
+    function playCurrentQueueItem() {
+        if (!Array.isArray(playQueue) || queueIndex < 0 || queueIndex >= playQueue.length) {
+            clearQueue();
+            return;
+        }
+        const audio = playQueue[queueIndex];
+        if (!audio) { playNextInQueue(); return; }
+
+        // Parar otros audios y actualizar iconos
+        document.querySelectorAll('audio.song-audio').forEach(a => {
+            if (a !== audio) {
+                try { a.pause(); a.currentTime = 0; } catch(e){}
+                const otherId = a.id.replace('audio-','');
+                const otherBtn = document.getElementById('btn-play-' + otherId);
+                if (otherBtn) otherBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        });
+
+        // Mostrar y usar el reproductor inferior para este audio
+        const idSuffix = audio.id.replace('audio-','');
+        // Forzar que showPlayerFor use el audio actual y no rompa la cola:
+        // llamamos a showPlayerFor(id) y luego sobreescribimos el onended para mantener la cola.
+        showPlayerFor(idSuffix);
+
+        // sustituimos el onended asignado por showPlayerFor para avanzar la cola
+        if (currentAudio) {
+            currentAudio.onended = function() {
+                playNextInQueue();
+            };
+            // en caso de error
+            currentAudio.onerror = function() {
+                showPopup('No se pudo reproducir una pista, saltando...', 'error', 3500);
+                playNextInQueue();
+            };
+        }
+
+        updatePrevNextButtons();
+    }
+
+    function playPreviousInQueue() {
+        if (!playQueue || playQueue.length === 0) return;
+        // Si estamos al principio y la pista lleva algo de tiempo, reiniciar; si no, no hacer nada o reiniciar
+        if (queueIndex <= 0) {
+            if (currentAudio) {
+                try {
+                    currentAudio.currentTime = 0;
+                    currentAudio.play().catch(()=>{});
+                } catch(e){}
+            }
+            return;
+        }
+        queueIndex--;
+        playCurrentQueueItem();
+    }
+
+    function playNextInQueue() {
+        if (!playQueue || playQueue.length === 0) {
+            clearQueue();
+            return;
+        }
+        queueIndex++;
+        if (!playQueue || queueIndex >= playQueue.length) {
+            clearQueue();
+            return;
+        }
+        playCurrentQueueItem();
+    }
 
     function viewPlaylistDetails(btn) {
         const playlistId = btn.getAttribute('data-playlistid');
@@ -305,6 +492,8 @@
                     html += '</tbody></table></div>';
                     container.innerHTML = html;
                 }
+                // Reset cola al abrir detalles para evitar comportamientos inesperados
+                clearQueue();
                 modalDetailsInstance.show();
             })
             .catch(e => {
@@ -374,7 +563,11 @@
         return m + ':' + s;
     }
 
+    /* ---------- Integración con reproducción individual ---------- */
     function togglePlay(id) {
+        // si se inicia reproducción individual, cancelar la cola
+        clearQueue();
+
         const audio = document.getElementById('audio-' + id);
         const btn = document.getElementById('btn-play-' + id);
         if (!audio || !btn) return;
@@ -398,6 +591,7 @@
         }
     }
 
+
     function showPlayerFor(id) {
         const audio = document.getElementById('audio-' + id);
         const btn = document.getElementById('btn-play-' + id);
@@ -419,7 +613,7 @@
         titleEl.textContent = title;
 
         document.querySelectorAll('button[id^="btn-play-"]').forEach(b => {
-            if(b !== btn) b.innerHTML = '<i class="fas fa-play"></i>';
+            if (b !== btn) b.innerHTML = '<i class="fas fa-play"></i>';
         });
         if (btn) btn.innerHTML = '<i class="fas fa-pause"></i>';
 
@@ -442,6 +636,7 @@
         };
 
         audio.onended = function(){
+            // comportamiento por defecto al terminar: si no hay cola, reset; si hay cola, será reemplazado por la cola
             progressBar.style.width = '0%';
             currentEl.textContent = '00:00';
             if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
@@ -477,11 +672,13 @@
             }
             player.classList.remove('show');
             progressBar.style.width = '0%';
-            currentEl.textContent = '00:00';
-            durationEl.textContent = '00:00';
+            document.getElementById('player-current').textContent = '00:00';
+            document.getElementById('player-duration').textContent = '00:00';
             if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
             currentAudio = null;
             currentId = null;
+            // al cerrar el reproductor también cancelar la cola
+            clearQueue();
         };
 
         progressContainer.onclick = function(e){
@@ -491,6 +688,9 @@
             const pct = Math.max(0, Math.min(1, x / rect.width));
             audio.currentTime = pct * audio.duration;
         };
+
+        // actualizar estado de botones prev/next según cola
+        updatePrevNextButtons();
     }
 
     function showPopup(message, type = 'error', timeout = 4500) {
