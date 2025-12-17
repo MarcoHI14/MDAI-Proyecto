@@ -752,7 +752,13 @@ function playAllFromArtistShuffle(btnOrId) {
         }
         playQueue = [];
         queueIndex = -1;
+        syncToWindow();
         updatePrevNextButtons();
+
+        // Actualizar el panel visual
+        if (typeof window.renderQueuePanel === 'function') {
+            window.renderQueuePanel();
+        }
     }
 
     function updatePrevNextButtons() {
@@ -1153,6 +1159,10 @@ function playAllFromArtistShuffle(btnOrId) {
     }, 450);
 
     window.updateQueuePanel = window.renderQueuePanel;
+    window.removeFromQueue = removeFromQueue;
+    window.syncFromWindow = (typeof syncFromWindow === 'function') ? syncFromWindow : window.syncFromWindow;
+    window.syncToWindow = (typeof syncToWindow === 'function') ? syncToWindow : window.syncToWindow;
+    window.playQueueFromIndex = (typeof playQueueFromIndex === 'function') ? playQueueFromIndex : window.playQueueFromIndex;
 
     document.addEventListener('keydown', function(e){
         if (e.key === 'Escape' && panel && panel.classList.contains('open')) window.toggleQueuePanel(false);
