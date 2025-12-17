@@ -144,117 +144,175 @@
             position: relative;
             z-index: 2;
         }
+        /* Panel de cola */
+#queue-panel {
+    position: fixed;
+    right: 16px;
+    bottom: 86px;
+    width: 320px;
+    max-width: calc(100% - 40px);
+    height: auto;
+    max-height: 68vh;
+    min-height: 200px;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(20,20,40,0.12);
+    transform: translateY(16px) scale(0.99);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 220ms ease, opacity 180ms ease;
+    z-index: 1300;
+    font-family: inherit;
+    display: flex;
+    flex-direction: column;
+}
 
-        /* Panel lateral de cola */
-        #queue-panel {
-            position: fixed;
-            right: 16px;
-            bottom: 86px; /* por encima del reproductor inferior */
-            width: 340px;
-            max-width: calc(100% - 40px);
-            height: calc(60vh);
-            min-height: 220px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 18px 40px rgba(20,20,40,0.12);
-            overflow: hidden;
-            transform: translateX(110%);
-            transition: transform 280ms ease, opacity 220ms ease;
-            z-index: 1300;
-            opacity: 0;
-            font-family: inherit;
-        }
+/* Estado visible (se aplica al abrir la cola) */
+#queue-panel.open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
 
-        /* abierto */
-        #queue-panel.open {
-            transform: translateX(0);
-            opacity: 1;
-        }
+/* Cabecera dorada compacta */
+#queue-panel .q-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:0.6rem;
+    padding:0.55rem 0.75rem;
+    background: linear-gradient(180deg,#f6e27a,#caa84a);
+    color:#1f1308;
+    font-weight:700;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
 
-        /* Cabecera */
-        #queue-panel .q-header {
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            gap:0.75rem;
-            padding:0.9rem 1rem;
-            background: linear-gradient(180deg,#f8f3ea,#fff);
-            border-bottom: 1px solid rgba(0,0,0,0.04);
-            font-weight:700;
-            color:#2d2d2d;
-        }
+/* Botones pequeños en header */
+#queue-panel .q-header .player-nav-btn,
+#queue-panel .q-header .btn {
+    min-width: 36px;
+    height: 36px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:8px;
+    box-shadow: none;
+}
 
-        /* Contenido scrollable */
-        #queue-panel .q-body {
-            max-height: calc(100% - 56px);
-            overflow-y: auto;
-            padding: 0.6rem;
-            background: transparent;
-        }
+/* Cuerpo scrollable */
+#queue-panel .q-body {
+    overflow-y:auto;
+    padding:0.4rem;
+    background: #fff;
+}
 
-        /* Item de la cola */
-        .queue-item {
-            display:flex;
-            gap:0.65rem;
-            align-items:center;
-            padding:0.55rem;
-            border-radius:8px;
-            transition: background 160ms;
-        }
-        .queue-item:hover { background: rgba(191,161,74,0.04); }
+/* Item: layout horizontal con separador */
+.queue-item {
+    display:flex;
+    gap:0.6rem;
+    align-items:center;
+    padding:0.6rem 0.55rem;
+    border-radius:10px;
+    background: transparent;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+}
 
-        .queue-item .thumb {
-            width:46px;
-            height:46px;
-            border-radius:6px;
-            background:linear-gradient(180deg,#efefef,#ddd);
-            flex: 0 0 46px;
-            overflow:hidden;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            color:#666;
-            font-size:0.85rem;
-        }
+/* Hover y item actual */
+.queue-item:hover { background: rgba(191,161,74,0.03); }
+.queue-item.current { background: rgba(255,248,230,0.9); }
 
-        .queue-item .meta {
-            flex: 1;
-            min-width: 0;
-        }
-        .queue-item .meta .title { font-weight:700; color:#222; font-size:0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .queue-item .meta .subtitle { font-size:0.85rem; color:#666; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* Thumb cuadrada con degradado suave */
+.queue-item .thumb {
+    width:46px;
+    height:46px;
+    border-radius:8px;
+    background: linear-gradient(180deg,#f0e7c3,#e9d089);
+    flex: 0 0 46px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#8b7a45;
+    font-weight:700;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.02);
+}
 
-        .queue-item .controls {
-            display:flex;
-            gap:0.35rem;
-            align-items:center;
-        }
+/* Meta: título y subtítulo */
+.queue-item .meta { flex:1; min-width:0; }
+.queue-item .meta .title {
+    font-weight:700;
+    color:#111;
+    font-size:0.95rem;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.queue-item .meta .subtitle {
+    font-size:0.84rem;
+    color:#7a7a7a;
+    margin-top:3px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
 
-        /* Botones pequeños para play/remove */
-        .queue-item .controls .q-btn {
-            border: none;
-            background: transparent;
-            padding: 6px;
-            border-radius:6px;
-            cursor:pointer;
-            color:#2d2d2d;
-        }
-        .queue-item .controls .q-btn:hover { background: rgba(0,0,0,0.04); }
+/* Controles a la derecha (play y eliminar) */
+.queue-item .controls {
+    display:flex;
+    gap:0.4rem;
+    align-items:center;
+    margin-left:8px;
+}
+.queue-item .controls .q-btn {
+    border: none;
+    background: transparent;
+    padding:6px;
+    border-radius:8px;
+    cursor: pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+}
 
-        /* Footer pequeño para acciones rápidas */
-        #queue-panel .q-footer {
-            padding:0.6rem;
-            border-top: 1px solid rgba(0,0,0,0.04);
-            display:flex;
-            gap:0.5rem;
-            justify-content:space-between;
-            align-items:center;
-        }
+/* Play: icono oscuro en botón transparente */
+.queue-item .controls .q-btn.play i {
+    color: #111;
+    font-size: 0.95rem;
+}
 
-        /* Adaptación mobile */
-        @media (max-width: 900px) {
-            #queue-panel { width: 92%; right: 4%; bottom: 80px; height: 50vh; }
-        }
+/* Remove: icono rojo */
+.queue-item .controls .q-btn.remove i {
+    color: #c33;
+    font-size: 0.95rem;
+}
+
+/* Footer beige con contador alineado a la izquierda */
+#queue-panel .q-footer {
+    padding:0.55rem 0.7rem;
+    border-top: 1px solid rgba(0,0,0,0.04);
+    background: linear-gradient(180deg,#fffaf0,#f7f3ea);
+    font-weight:600;
+    color:#2d2d2d;
+    font-size:0.95rem;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+}
+
+/* Texto contador */
+#queue-count { color:#333; }
+
+/* Responsive: ajustar ancho en pantallas pequeñas */
+@media (max-width: 900px) {
+    #queue-panel { width: 92%; right: 4%; bottom: 80px; max-height: 60vh; transform: translateY(16px) scale(0.99); }
+    #queue-panel.open { transform: translateY(0) scale(1); }
+    .queue-item .thumb { width:40px; height:40px; }
+    .queue-item .meta .title { font-size:0.92rem; }
+}
+
+/* Utilities: esconder overflow de títulos largos dentro del layout */
+#queue-panel .q-body::-webkit-scrollbar { height:8px; width:8px; }
+#queue-panel .q-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius:8px; }
     </style>
 </head>
 <body>
