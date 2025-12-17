@@ -484,6 +484,7 @@
 <div id="queue-panel" role="dialog" aria-label="Cola de reproducción" aria-hidden="true">
     <div class="q-header">
         <div>Cola</div>
+        <button class="btn btn-colmena info btn-sm" onclick="shuffleCurrentQueue()"><i class="fa-solid fa-shuffle"></i></button>
         <div style="display:flex; gap:0.5rem; align-items:center;">
             <button class="player-nav-btn" title="Borrar cola" onclick="clearQueue(); updateQueuePanel();" style="background:#f5f5f5; border:none;">
                 <i class="fas fa-trash"></i>
@@ -499,8 +500,6 @@
     <div class="q-footer">
         <div id="queue-count">0 pistas</div>
         <div style="display:flex; gap:0.5rem;">
-            <button class="btn btn-colmena btn-sm" onclick="playQueueFromIndex(0)">Reproducir</button>
-            <button class="btn btn-colmena info btn-sm" onclick="shuffleCurrentQueue()">Aleatorio</button>
         </div>
     </div>
 </div>
@@ -1224,16 +1223,46 @@
 
         window.shuffleCurrentQueue = function(){
             if (!window.playQueue || window.playQueue.length < 2) return;
-            const cur = (window.queueIndex >= 0) ? window.playQueue[window.queueIndex] : null;
-            for (let i = window.playQueue.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [window.playQueue[i], window.playQueue[j]] = [window.playQueue[j], window.playQueue[i]];
+
+            // intentar localizar la pista actualmente en reproducción en la cola
+            const curId = (window.queueIndex != null && window.queueIndex >= 0) ? window.queueIndex : -1;
+            let currentInQueue = null;
+            if (curId >= 0 && window.playQueue[curId]) {
+                currentInQueue = window.playQueue[curId];
+            } else if (typeof currentAudio !== 'undefined' && currentAudio) {
+                // buscar por id o src si la cola no tiene el índice actual
+                currentInQueue = window.playQueue.find(a => {
+                    try { return (a && currentAudio && (a.id === currentAudio.id || a.src === currentAudio.src)); } catch(e){ return false; }
+                }) || null;
             }
-            if (cur) window.queueIndex = window.playQueue.indexOf(cur);
-            else window.queueIndex = 0;
-            // reflejar en variables locales
+
+            // crear copia excluyendo la pista actual (si existe)
+            let items = window.playQueue.slice();
+            if (currentInQueue) {
+                const idx = items.indexOf(currentInQueue);
+                if (idx >= 0) items.splice(idx, 1);
+            }
+
+            // Fisher-Yates sobre los restantes
+            for (let i = items.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [items[i], items[j]] = [items[j], items[i]];
+            }
+
+            // si había pista actual, ponerla al principio; mantenerla como índice 0
+            if (currentInQueue) {
+                items.unshift(currentInQueue);
+                window.playQueue = items;
+                window.queueIndex = 0;
+            } else {
+                // sin pista actual conocida, simplemente barajar y resetear índice a 0
+                window.playQueue = items;
+                window.queueIndex = 0;
+            }
+
+            // reflejar cambios en el código local y en el panel
             if (typeof syncFromWindow === 'function') syncFromWindow();
-            window.renderQueuePanel && window.renderQueuePanel();
+            if (typeof window.renderQueuePanel === 'function') window.renderQueuePanel();
             if (typeof updatePrevNextButtons === 'function') updatePrevNextButtons();
         };
 
