@@ -18,6 +18,17 @@
     }
     .admin-hive{ background: transparent !important; background-image: none !important; filter: none !important; }
     .admin-hive::before, .admin-hive::after{ display: none !important; }
+
+    /* Mantener separación entre botones Aceptar/Rechazar incluso si pasan a varias filas */
+    .solicitudes-actions {
+      display: flex;
+      flex-wrap: wrap; /* permite que los botones pasen a la siguiente fila */
+      gap: .5rem;      /* separación entre botones en la misma fila o en filas distintas */
+      align-items: center;
+    }
+    .solicitud-action-form { margin: 0; }
+    /* Ajuste pequeño para que los botones no queden pegados cuando uno baja de línea */
+    .solicitud-action-form .btn { display: inline-flex; align-items: center; gap: .4rem; }
   </style>
 </head>
 <body>
@@ -72,15 +83,15 @@
                       <td class="mensaje-cell" th:attr="title=${sol.mensajeVerificacion}"><span th:text="${sol.mensajeVerificacion}">Mensaje</span></td>
                       <td th:text="${sol.estado}">PENDIENTE</td>
                       <td>
-                        <div th:if="${sol.estado != null and sol.estado.equalsIgnoreCase('PENDIENTE')}">
-                          <form th:action="@{/solicitudes/aceptar}" method="post" style="display:inline-block; margin-right:0.5em;">
+                        <div th:if="${sol.estado != null and sol.estado.equalsIgnoreCase('PENDIENTE')}" class="solicitudes-actions">
+                          <form th:action="@{/solicitudes/aceptar}" method="post" class="solicitud-action-form">
                             <input type="hidden" name="id" th:value="${sol.idSolicitud}" />
                             <input type="hidden" name="estado" th:value="${selectedEstado}" />
                             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-check me-1"></i>Aceptar</button>
                           </form>
 
-                          <form th:action="@{/solicitudes/rechazar}" method="post" style="display:inline-block;">
+                          <form th:action="@{/solicitudes/rechazar}" method="post" class="solicitud-action-form">
                             <input type="hidden" name="id" th:value="${sol.idSolicitud}" />
                             <input type="hidden" name="estado" th:value="${selectedEstado}" />
                             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />

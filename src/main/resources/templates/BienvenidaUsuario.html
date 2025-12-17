@@ -7,20 +7,38 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
     <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}" />
     <link rel="stylesheet" th:href="@{/landing.css(v=8)}" />
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* Small overrides to match admin look: tarjetas opacas y sin overlays */
+        /* Copiado de BienvenidaArtista: modal y estilos principales para mantener idéntica apariencia */
+        .modal-backdrop-custom { position: fixed; inset: 0; background: rgba(6,8,12,0.46); display: none; align-items: center; justify-content: center; z-index: 1200; }
+        .modal-backdrop-custom.open { display:flex; }
+        .modal-card { background: linear-gradient(180deg,#ffffff,#fffdf7); width: min(720px,94%); border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.28); overflow: hidden; transform: translateY(18px); opacity: 0; transition: transform 220ms ease, opacity 220ms ease; }
+        .modal-backdrop-custom.open .modal-card { transform: translateY(0); opacity: 1; }
+        .modal-header-custom { display:flex; align-items:center; justify-content:space-between; padding: 14px 18px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .modal-title { margin:0; color:#6b3e13; font-size:1.1rem; font-weight:700; }
+        .modal-close { background:transparent; border:none; font-size:1.25rem; cursor:pointer; color:#6b3e13; }
+        .modal-body { padding: 16px 18px; display:block; }
+        .modal-row { display:flex; gap:12px; margin-bottom:12px; }
+        .modal-row label { display:block; font-weight:600; margin-bottom:6px; color:#3a2a13; }
+        .modal-row input[type=text], .modal-row input[type=file], .modal-row input[type=email], .modal-row select { width:100%; padding:10px 12px; border:1px solid #e3d7b2; border-radius:8px; background:#fff; }
+        .modal-footer-custom { display:flex; justify-content:flex-end; gap:10px; padding:12px 18px; border-top:1px solid rgba(0,0,0,0.04); }
+        .modal-btn { padding:10px 14px; border-radius:10px; font-weight:700; cursor:pointer; border: none; }
+        .modal-btn.cancel { background:transparent; color:#6b3e13; border:1px solid #e6d8a8; }
+        .modal-btn.primary { background: linear-gradient(135deg,#6b3e13,#bfa14a); color:white; }
+        @media (max-width:480px){ .modal-row { flex-direction:column; } .modal-card { width: 96%; } }
+
+        /* pequeños overrides para que la página luzca igual que BienvenidaArtista */
         .panel-card { background-color: #fff !important; opacity: 1 !important; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 12px 30px rgba(20,20,40,0.06) !important; border-radius: .75rem; }
         .hero-username { font-weight: 700; color: #2d2d2d; }
         .btn-colmena { background: linear-gradient(135deg,#bfa14a,#e2a84a); color: #1f1308; border: none; }
         .btn-colmena.info { background: linear-gradient(135deg,#f6e27a,#bfa14a); color: #1f1308; }
-        .logo-colmena { width: 56px; height: auto; }
         body { background: #faf8f5; }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
-<body th:attr="data-success=${success},data-error=${error}">
+<body class="d-flex flex-column min-vh-100" th:attr="data-success=${success},data-error=${error}">
 <!-- Navbar similar a BienvenidaAdmin / Inicio -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" style="position:fixed; top:0; left:0; right:0; width:100%; z-index:1030;">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" th:href="@{/home}">
             <img th:src="@{/TunedHive.png}" alt="TunedHive" class="logo-colmena me-2" />
@@ -45,11 +63,11 @@
     </div>
 </nav>
 
-<main class="container-fluid" style="margin-top:0;">
+<main class="container-fluid flex-fill" style="margin-top:5.5rem;">
     <div class="row gx-4">
         <!-- Lateral Izquierdo -->
         <aside class="col-12 col-lg-3 mb-4">
-            <div class="panel-card p-3 h-100">
+            <div class="panel-card p-3 h-100 text-center">
                 <h5 class="mb-2">¡Invita a tus amigos!</h5>
                 <p class="mb-3 text-muted">Comparte Tuned Hive y haz crecer la colmena.</p>
                 <button onclick="lanzarConfetiYInvitar()" class="btn btn-colmena w-100">Invitar & Confeti</button>
@@ -73,7 +91,7 @@
 
         <!-- Lateral Derecho -->
         <aside class="col-12 col-lg-3 mb-4">
-            <div class="panel-card p-3 h-100">
+            <div class="panel-card p-3 h-100 text-center">
                 <h5 class="mb-2">Solicitud de Verificación</h5>
                 <p class="text-muted">Si eres artista, solicita verificación para tu perfil.</p>
                 <button id="solicitudBtn" class="btn btn-colmena info w-100">Enviar Solicitud</button>
@@ -105,7 +123,7 @@
 <div id="flashToast" aria-live="polite" aria-atomic="true" style="display:none; position:fixed; right:20px; bottom:20px; min-width:220px; max-width:420px; padding:12px 16px; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:1060; font-weight:700; color:#fff;"></div>
 
 <!-- Footer (copiado de Inicio.html) -->
-<footer class="bg-dark text-light py-4">
+<footer class="mt-auto bg-dark text-light py-4">
     <div class="container text-center">
         <p class="mb-1">© Tuned Hive 2025</p>
         <small class="text-muted">20 samples incluidos en /samples</small>
