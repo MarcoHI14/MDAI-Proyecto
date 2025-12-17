@@ -8,52 +8,185 @@
     <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}" />
     <link rel="stylesheet" th:href="@{/landing.css(v=8)}" />
     <style>
-        body { background: #faf8f5; }
-        .panel-card { background-color: #fff !important; opacity: 1 !important; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 12px 30px rgba(20,20,40,0.06) !important; border-radius: .75rem; }
-        .btn-colmena { background: linear-gradient(135deg,#bfa14a,#e2a84a); color: #1f1308; border: none; font-weight: 600; padding: 0.5em 1em; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-        .btn-colmena:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(191,161,74,0.3); }
-        .btn-colmena.info { background: linear-gradient(135deg,#f6e27a,#bfa14a); }
-        .logo-colmena { width: 56px; height: auto; }
-        .toggle-btn { padding: 0.6em 1.2em; border: 2px solid #bfa14a; background: white; color: #bfa14a; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        .toggle-btn.active { background: #6b3e13; color: white; border-color: #6b3e13; }
-        .toggle-btn:hover { transform: translateY(-1px); }
-        .full-table { width: 100%; border-collapse: collapse; }
-        .full-table thead tr { background: #f7f3e6; }
-        .full-table th { padding: 0.75em 1em; border-bottom: 2px solid #e6d8a8; font-weight: 600; color: #2d2d2d; }
-        .full-table tbody tr { border-bottom: 1px solid #eee; transition: background 0.2s; cursor: pointer; }
-        .full-table tbody tr:hover { background: #fffef8; }
-        .full-table tbody tr.selected { background: #fff8e6; }
-        .full-table td { padding: 0.8em 1em; vertical-align: middle; }
-        #bottom-player { position: fixed; left: 0; right: 0; bottom: 0; transform: translateY(110%); transition: transform 300ms ease; background: linear-gradient(180deg,#fffbe6, #fff9e0); border-top: 2px solid #e6d8a8; box-shadow: 0 -4px 12px rgba(0,0,0,0.08); padding: 1em 1.5em; z-index: 999; display: flex; align-items: center; gap: 1.5em; }
-        #bottom-player.show { transform: translateY(0); }
-        #player-info { flex: 1; min-width: 0; }
-        #player-title { font-weight: 700; color: #2d2d2d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 1.1em; }
-        .player-controls { display: flex; align-items: center; gap: 0.8em; }
-        .player-btn { background: #6b3e13; color: white; border: none; padding: 0.6em 1em; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-        .player-btn:hover { background: #52301a; }
-        .player-progress-container { background: rgba(0,0,0,0.08); height: 8px; border-radius: 8px; cursor: pointer; margin-top: 0.5em; width: 100%; }
-        .player-progress-bar { height: 100%; background: linear-gradient(90deg,#bfa14a,#e2a84a); width: 0%; border-radius: 8px; transition: width 0.1s; }
-        .player-times { font-size: 0.9em; color: #444; min-width: 80px; text-align: right; font-weight: 600; }
-        .popup { position: fixed; left: 50%; transform: translateX(-50%) translateY(-20px); bottom: 20px; min-width: 280px; max-width: 90vw; background: #fff; color: #222; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.15); padding: 1em 1.2em; display: flex; align-items: center; gap: 1em; opacity: 0; pointer-events: none; transition: opacity 220ms ease, transform 220ms ease; z-index: 1200; }
-        .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-        .popup .icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1.2em; }
-        .popup.error .icon { background: #d9534f; }
-        .popup.info .icon { background: #0275d8; }
-        .popup .msg { flex: 1; font-size: 0.95em; font-weight: 500; }
-        .popup .close { background: transparent; border: none; color: #666; font-size: 1.3em; cursor: pointer; line-height: 1; }
-        .player-nav-btn {
-            background: #bfa14a;
-            color: #1f1308;
-            border: none;
-            padding: 0.45rem 0.6rem;
-            border-radius: 8px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 36px;
-        }
-        .player-nav-btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+      .actions {
+           display: flex;
+           gap: 0.45rem;
+           align-items: center;
+           justify-content: center; /* centra los botones en la celda */
+           white-space: nowrap;
+      }
+      .actions .btn {
+           margin: 0;
+           padding: 0.35rem 0.6rem;
+           display: inline-flex;
+           align-items: center;
+           justify-content: center;
+           min-width: 36px;
+           border-radius: 8px;
+      }
+      body { background: #faf8f5; }
+      .panel-card { background-color: #fff !important; opacity: 1 !important; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 12px 30px rgba(20,20,40,0.06) !important; border-radius: .75rem; }
+      .btn-colmena { background: linear-gradient(135deg,#bfa14a,#e2a84a); color: #1f1308; border: none; font-weight: 600; padding: 0.5em 1em; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+      .btn-colmena:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(191,161,74,0.3); }
+      .btn-colmena.info { background: linear-gradient(135deg,#f6e27a,#bfa14a); }
+      .logo-colmena { width: 56px; height: auto; }
+      .toggle-btn { padding: 0.6em 1.2em; border: 2px solid #bfa14a; background: white; color: #bfa14a; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+      .toggle-btn.active { background: #6b3e13; color: white; border-color: #6b3e13; }
+      .toggle-btn:hover { transform: translateY(-1px); }
+      .full-table { width: 100%; border-collapse: collapse; }
+      .full-table thead tr { background: #f7f3e6; }
+      .full-table th { padding: 0.75em 1em; border-bottom: 2px solid #e6d8a8; font-weight: 600; color: #2d2d2d; }
+      .full-table tbody tr { border-bottom: 1px solid #eee; transition: background 0.2s; cursor: pointer; }
+      .full-table tbody tr:hover { background: #fffef8; }
+      .full-table tbody tr.selected { background: #fff8e6; }
+      .full-table td { padding: 0.8em 1em; vertical-align: middle; }
+      .full-table th.actions-col,
+      .full-table td.actions-col {
+          width: 14%;
+          text-align: center;
+        vertical-align: middle;
+      }
+      #bottom-player { position: fixed; left: 0; right: 0; bottom: 0; transform: translateY(110%); transition: transform 300ms ease; background: linear-gradient(180deg,#fffbe6, #fff9e0); border-top: 2px solid #e6d8a8; box-shadow: 0 -4px 12px rgba(0,0,0,0.08); padding: 1em 1.5em; z-index: 999; display: flex; align-items: center; gap: 1.5em; }
+      #bottom-player.show { transform: translateY(0); }
+      @media (max-width: 800px) {
+          .full-table th.actions-col,
+          .full-table td.actions-col { width: 18%; }
+          .actions { gap: 0.3rem; }
+          .actions .btn { padding: 0.28rem 0.45rem; min-width: 32px; }
+      }
+      #player-info { flex: 1; min-width: 0; }
+      #player-title { font-weight: 700; color: #2d2d2d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 1.1em; }
+      .player-controls { display: flex; align-items: center; gap: 0.8em; }
+      .player-btn { background: #6b3e13; color: white; border: none; padding: 0.6em 1em; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+      .player-btn:hover { background: #52301a; }
+      .player-progress-container { background: rgba(0,0,0,0.08); height: 8px; border-radius: 8px; cursor: pointer; margin-top: 0.5em; width: 100%; }
+      .player-progress-bar { height: 100%; background: linear-gradient(90deg,#bfa14a,#e2a84a); width: 0%; border-radius: 8px; transition: width 0.1s; }
+      .player-times { font-size: 0.9em; color: #444; min-width: 80px; text-align: right; font-weight: 600; }
+      .popup { position: fixed; left: 50%; transform: translateX(-50%) translateY(-20px); bottom: 20px; min-width: 280px; max-width: 90vw; background: #fff; color: #222; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.15); padding: 1em 1.2em; display: flex; align-items: center; gap: 1em; opacity: 0; pointer-events: none; transition: opacity 220ms ease, transform 220ms ease; z-index: 1200; }
+      .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+      .popup .icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1.2em; }
+      .popup.error .icon { background: #d9534f; }
+      .popup.info .icon { background: #0275d8; }
+      .popup .msg { flex: 1; font-size: 0.95em; font-weight: 500; }
+      .popup .close { background: transparent; border: none; color: #666; font-size: 1.3em; cursor: pointer; line-height: 1; }
+      .player-nav-btn {
+          background: #bfa14a;
+          color: #1f1308;
+          border: none;
+          padding: 0.45rem 0.6rem;
+          border-radius: 8px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 36px;
+      }
+      .player-nav-btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+      /* Estilos para el panel de cola (pegar en el <style> existente) */
+      #queue-panel {
+          position: fixed;
+    right: 1rem;
+    bottom: 5.5rem; /* encima del bottom-player */
+    width: 340px;
+    max-width: calc(100vw - 2rem);
+    max-height: 72vh;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    transform: translateY(16px) scale(0.99);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 220ms ease, opacity 220ms ease;
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Estado visible */
+#queue-panel.open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Cabecera, cuerpo y pie */
+#queue-panel .q-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:0.5rem;
+    padding:0.6rem 0.8rem;
+    background: linear-gradient(135deg,#f6e27a,#bfa14a);
+    color:#1f1308;
+    font-weight:700;
+}
+#queue-panel .q-body {
+    padding:0.6rem;
+    overflow:auto;
+    flex:1 1 auto;
+    background: #fff;
+}
+#queue-panel .q-footer {
+    padding:0.5rem 0.8rem;
+    border-top: 1px solid rgba(0,0,0,0.04);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:0.5rem;
+    background: #fffaf0;
+    font-weight:600;
+    font-size:0.95rem;
+}
+
+/* Items de la cola */
+.queue-item {
+    display:flex;
+    gap:0.6rem;
+    align-items:center;
+    padding:0.45rem;
+    border-radius:8px;
+    transition: background 160ms ease;
+}
+.queue-item:hover { background: rgba(191,161,74,0.06); }
+.queue-item.current { background: #fff8e6; }
+
+.queue-item .thumb {
+    width:40px;
+    height:40px;
+    border-radius:6px;
+    background: linear-gradient(135deg,#f0e7c3,#e9d089);
+    flex: 0 0 40px;
+}
+.queue-item .meta { flex:1; min-width:0; }
+.queue-item .title { font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.queue-item .subtitle { color:#666; font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Controles dentro del item */
+.queue-item .controls { display:flex; gap:0.35rem; }
+.queue-item .q-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding:0.3rem;
+    border-radius:6px;
+    color: #333;
+}
+.queue-item .q-btn:hover { background: rgba(0,0,0,0.04); }
+
+/* Responsive: panel más ancho en pantallas pequeñas */
+@media (max-width: 720px) {
+    #queue-panel {
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, 16px) scale(0.99);
+        width: min(92vw, 520px);
+        bottom: 4.5rem;
+    }
+    #queue-panel.open { transform: translate(-50%, 0) scale(1); }
+}
+
     </style>
 </head>
 <body>
@@ -85,7 +218,7 @@
 <main class="container-fluid" style="margin-top: 0; padding-bottom: 2rem;">
     <div class="row g-4">
         <!-- Columna izquierda: Lista de artistas -->
-        <div class="col-12 col-lg-5">
+        <div class="col-12 col-lg-6">
             <section class="panel-card p-4">
                 <h2 class="mb-3 text-center" style="color: #2d2d2d; font-weight: 700;">Artistas</h2>
 
@@ -107,6 +240,7 @@
                             <th style="width:10%">#</th>
                             <th>Usuario</th>
                             <th style="width:20%; text-align:center;">Canciones</th>
+                            <th class="actions-col" style="text-align:center;">Acciones</th> <!-- moved to thead -->
                         </tr>
                         </thead>
                         <tbody>
@@ -114,6 +248,22 @@
                             <td class="text-center" th:text="${iterStat.index + 1}">1</td>
                             <td th:text="${a.usuario != null ? a.usuario.username : '—'}">Usuario</td>
                             <td class="text-center" th:text="${a.canciones != null ? a.canciones.size() : 0}">0</td>
+                            <td class="text-center actions-col">
+                                <div class="actions" role="group" aria-label="Acciones artista">
+                                    <button type="button" class="btn btn-colmena info btn-sm"
+                                            th:attr="data-artista-id=${a.idArtista}"
+                                            title="Reproducir" aria-label="Reproducir artista"
+                                            onclick="event.stopPropagation(); playAllFromArtist(this)">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-colmena btn-sm"
+                                            th:attr="data-artista-id=${a.idArtista}"
+                                            title="Reproducir aleatorio" aria-label="Shuffle artista"
+                                            onclick="event.stopPropagation(); playAllFromArtistShuffle(this)">
+                                        <i class="fa-solid fa-shuffle"></i>
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -127,7 +277,7 @@
         </div>
 
         <!-- Columna derecha: Canciones del artista seleccionado -->
-        <div class="col-12 col-lg-7">
+        <div class="col-12 col-lg-6">
             <section class="panel-card p-4">
                 <h3 class="mb-3 text-center" style="color: #2d2d2d; font-weight: 600;">Canciones del Artista</h3>
 
@@ -161,10 +311,38 @@
             <i class="fas fa-step-forward"></i>
         </button>
 
+        <button id="toggle-queue-btn" class="player-nav-btn" title="Cola" onclick="toggleQueuePanel()" aria-expanded="false" style="min-width:auto;">
+            <i class="fas fa-list"></i>
+        </button>
+
         <div class="player-times"><span id="player-current">00:00</span> / <span id="player-duration">00:00</span></div>
         <button id="player-close" class="player-btn" title="Cerrar" style="background:#bfa14a"><i class="fas fa-times"></i></button>
     </div>
 </div>
+
+<div id="queue-panel" role="dialog" aria-label="Cola de reproducción" aria-hidden="true">
+    <div class="q-header">
+        <div>Cola</div>
+        <button class="btn btn-colmena info btn-sm" onclick="shuffleCurrentQueue()"><i class="fa-solid fa-shuffle"></i></button>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button class="player-nav-btn" title="Borrar cola" onclick="clearQueue(); updateQueuePanel();" style="background:#f5f5f5; border:none;">
+                <i class="fas fa-trash"></i>
+            </button>
+            <button class="player-nav-btn" id="close-queue-btn" title="Cerrar" onclick="toggleQueuePanel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="q-body" id="queue-list" aria-live="polite">
+        <!-- items renderizados por JS -->
+    </div>
+    <div class="q-footer">
+        <div id="queue-count">0 pistas</div>
+        <div style="display:flex; gap:0.5rem;">
+        </div>
+    </div>
+</div>
+
 
 <!-- Popup -->
 <div id="popup" class="popup" role="alert" aria-live="assertive" aria-atomic="true">
@@ -329,6 +507,242 @@
         return m + ':' + s;
     }
 
+// Helpers necesarios para que los botones de "Reproducir" y "Shuffle" funcionen correctamente
+
+// Crea/retorna un contenedor oculto para los elementos <audio> globales
+function ensureGlobalAudioContainer() {
+    let container = document.getElementById('global-audio-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'global-audio-container';
+        container.style.display = 'none';
+        document.body.appendChild(container);
+    }
+    return container;
+}
+
+// Fisher-Yates shuffle (devuelve nueva lista mezclada)
+function shuffleArray(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// sincroniza el estado local hacia el objeto global window.playQueue/window.queueIndex
+function syncToWindow() {
+    try {
+        // Exponer referencias completas para que el resto del código (renderQueuePanel, setInterval, etc.)
+        // use la misma instancia de cola y el mismo índice.
+        window.playQueue = playQueue || [];
+        window.queueIndex = (typeof queueIndex !== 'undefined') ? queueIndex : -1;
+    } catch (e) {
+        console.error('syncToWindow error', e);
+    }
+}
+
+// sincroniza desde window hacia las variables locales (se invoca por el watcher/removals)
+function syncFromWindow() {
+    try {
+        // Si alguien modificó window.playQueue externamente, reflejarlo localmente
+        if (Array.isArray(window.playQueue)) {
+            playQueue = window.playQueue;
+        } else {
+            playQueue = [];
+        }
+        queueIndex = (typeof window.queueIndex === 'number') ? window.queueIndex : (playQueue.length ? 0 : -1);
+    } catch (e) {
+        console.error('syncFromWindow error', e);
+    }
+}
+
+// actualizaciones en las dos funciones para además abrir la lista de canciones y marcar la fila
+function playAllFromArtist(btnOrId) {
+    let artistId = null;
+    if (typeof btnOrId === 'string' || typeof btnOrId === 'number') {
+        artistId = btnOrId;
+    } else if (btnOrId && btnOrId.getAttribute) {
+        artistId = btnOrId.getAttribute('data-artistid')
+            || btnOrId.getAttribute('data-artist-id')
+            || btnOrId.getAttribute('data-artistaid')
+            || btnOrId.getAttribute('data-artista-id');
+    }
+    if (!artistId) {
+        showPopup('ID de artista no disponible', 'error', 3000);
+        return;
+    }
+
+    fetch('/api/artistas/' + artistId + '/canciones')
+        .then(r => {
+            if (!r.ok) throw new Error('Error al obtener canciones del artista');
+            return r.json();
+        })
+        .then(canciones => {
+            // abrir lista de canciones en el panel derecho
+            try { renderSongsInPanel(canciones); } catch(e){}
+
+            // marcar la fila del artista como seleccionada
+            try {
+                const allRows = document.querySelectorAll('tr.artist-row');
+                allRows.forEach(r => r.classList.remove('selected'));
+                const row = document.querySelector('tr.artist-row[data-artista-id="' + artistId + '"]');
+                if (row) {
+                    row.classList.add('selected');
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } catch(e){}
+
+            if (!Array.isArray(canciones) || canciones.length === 0) {
+                showPopup('El artista no tiene canciones', 'info', 3000);
+                return;
+            }
+
+            const container = ensureGlobalAudioContainer();
+            container.innerHTML = '';
+
+            const audios = canciones.map((c, i) => {
+                const id = (c.id !== undefined && c.id !== null) ? c.id : ('tmp_' + i + '_' + Date.now());
+                const archivo = (c.archivoAudio && String(c.archivoAudio).startsWith('/uploads/'))
+                    ? c.archivoAudio
+                    : (c.archivoAudio ? ('/uploads/' + c.archivoAudio) : '');
+                if (!archivo || archivo.trim() === '') return null;
+                const audio = document.createElement('audio');
+                audio.className = 'song-audio';
+                audio.id = 'audio-' + id;
+                audio.src = archivo;
+                audio.preload = 'metadata';
+                audio.style.display = 'none';
+                audio.setAttribute('data-title', (c.titulo || '') + (c.artista ? ' - ' + (typeof c.artista === 'string' ? c.artista : (c.artista.nombre || '')) : ''));
+                container.appendChild(audio);
+                return audio;
+            }).filter(a => a !== null);
+
+            if (audios.length === 0) {
+                showPopup('No hay pistas reproducibles para este artista', 'info', 3000);
+                return;
+            }
+
+            clearQueue();
+            playQueue = audios;
+            queueIndex = 0;
+            syncToWindow();
+
+            playQueue.forEach((a) => {
+                a.onended = function() { setTimeout(playNextInQueue, 150); };
+                a.onerror = function() {
+                    showPopup('No se pudo reproducir una pista, saltando...', 'error', 3000);
+                    setTimeout(playNextInQueue, 150);
+                };
+            });
+
+            updatePrevNextButtons();
+            playCurrentQueueItem();
+
+            if (btnOrId && btnOrId.classList) {
+                btnOrId.classList.add('active');
+                setTimeout(() => { try { btnOrId.classList.remove('active'); } catch(e){} }, 900);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showPopup('Error al cargar canciones del artista', 'error', 4500);
+        });
+}
+
+function playAllFromArtistShuffle(btnOrId) {
+    let artistId = null;
+    if (typeof btnOrId === 'string' || typeof btnOrId === 'number') {
+        artistId = btnOrId;
+    } else if (btnOrId && btnOrId.getAttribute) {
+        artistId = btnOrId.getAttribute('data-artistid')
+            || btnOrId.getAttribute('data-artist-id')
+            || btnOrId.getAttribute('data-artistaid')
+            || btnOrId.getAttribute('data-artista-id');
+    }
+    if (!artistId) {
+        showPopup('ID de artista no disponible', 'error', 3000);
+        return;
+    }
+
+    fetch('/api/artistas/' + artistId + '/canciones')
+        .then(r => {
+            if (!r.ok) throw new Error('Error al obtener canciones del artista');
+            return r.json();
+        })
+        .then(canciones => {
+            // abrir lista de canciones en el panel derecho
+            try { renderSongsInPanel(canciones); } catch(e){}
+
+            // marcar la fila del artista como seleccionada
+            try {
+                const allRows = document.querySelectorAll('tr.artist-row');
+                allRows.forEach(r => r.classList.remove('selected'));
+                const row = document.querySelector('tr.artist-row[data-artista-id="' + artistId + '"]');
+                if (row) {
+                    row.classList.add('selected');
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } catch(e){}
+
+            if (!Array.isArray(canciones) || canciones.length === 0) {
+                showPopup('El artista no tiene canciones', 'info', 3000);
+                return;
+            }
+
+            const container = ensureGlobalAudioContainer();
+            container.innerHTML = '';
+
+            const audios = canciones.map((c, i) => {
+                const id = (c.id !== undefined && c.id !== null) ? c.id : ('tmp_' + i + '_' + Date.now());
+                const archivo = (c.archivoAudio && String(c.archivoAudio).startsWith('/uploads/'))
+                    ? c.archivoAudio
+                    : (c.archivoAudio ? ('/uploads/' + c.archivoAudio) : '');
+                if (!archivo || archivo.trim() === '') return null;
+                const audio = document.createElement('audio');
+                audio.className = 'song-audio';
+                audio.id = 'audio-' + id;
+                audio.src = archivo;
+                audio.preload = 'metadata';
+                audio.style.display = 'none';
+                audio.setAttribute('data-title', (c.titulo || '') + (c.artista ? ' - ' + (typeof c.artista === 'string' ? c.artista : (c.artista.nombre || '')) : ''));
+                container.appendChild(audio);
+                return audio;
+            }).filter(a => a !== null);
+
+            if (audios.length === 0) {
+                showPopup('No hay pistas reproducibles para este artista', 'info', 3000);
+                return;
+            }
+
+            const shuffled = shuffleArray(audios);
+            clearQueue();
+            playQueue = shuffled;
+            queueIndex = 0;
+            syncToWindow();
+
+            playQueue.forEach((a) => {
+                a.onended = function() { setTimeout(playNextInQueue, 150); };
+                a.onerror = function() {
+                    showPopup('No se pudo reproducir una pista, saltando...', 'error', 3000);
+                    setTimeout(playNextInQueue, 150);
+                };
+            });
+
+            updatePrevNextButtons();
+            playCurrentQueueItem();
+
+            if (btnOrId && btnOrId.classList) {
+                btnOrId.classList.add('active');
+                setTimeout(() => { try { btnOrId.classList.remove('active'); } catch(e){} }, 900);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showPopup('Error al cargar canciones del artista', 'error', 4500);
+        });
+}
     /* ---------- Cola de reproducción ---------- */
     function clearQueue() {
         if (playQueue && playQueue.length) {
@@ -583,6 +997,167 @@
         // actualizar estado de botones prev/next según cola
         updatePrevNextButtons();
     }
+
+(function(){
+    const panel = document.getElementById('queue-panel');
+    const listEl = document.getElementById('queue-list');
+    const toggleBtn = document.getElementById('toggle-queue-btn');
+
+    function setAriaOpen(open){
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (panel) panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+
+    window.toggleQueuePanel = function(show) {
+        if (!panel) return;
+        const open = typeof show === 'boolean' ? show : !panel.classList.contains('open');
+        panel.classList.toggle('open', open);
+        setAriaOpen(open);
+        if (open) {
+            window.renderQueuePanel && window.renderQueuePanel();
+            const cur = listEl && listEl.querySelector('.queue-item.current');
+            if (cur) cur.scrollIntoView({block:'center', behavior:'smooth'});
+        }
+    };
+
+    window.renderQueuePanel = function() {
+        if (!listEl) return;
+        listEl.innerHTML = '';
+        if (!window.playQueue || window.playQueue.length === 0) {
+            listEl.innerHTML = '<div style="padding:1rem; color:#666;">La cola está vacía</div>';
+            const cnt = document.getElementById('queue-count'); if (cnt) cnt.textContent = '0 pistas';
+            return;
+        }
+        const cnt = document.getElementById('queue-count'); if (cnt) cnt.textContent = window.playQueue.length + (window.playQueue.length === 1 ? ' pista' : ' pistas');
+
+        window.playQueue.forEach((audio, idx) => {
+            const title = (audio.getAttribute && audio.getAttribute('data-title')) || audio.dataset?.title || audio.title || (audio.src ? audio.src.split('/').pop() : '');
+            const parts = (title && title.split(' - ',2)) || [title, ''];
+            const t = parts[0] || 'Título';
+            const subtitle = parts[1] || '';
+
+            const item = document.createElement('div');
+            item.className = 'queue-item' + (idx === (window.queueIndex || 0) ? ' current' : '');
+            item.innerHTML = `
+                <div class="thumb" aria-hidden="true"></div>
+                <div class="meta">
+                    <div class="title">${escapeHtml(t)}</div>
+                    <div class="subtitle">${escapeHtml(subtitle)}</div>
+                </div>
+                <div class="controls" aria-hidden="true">
+                    <button class="q-btn" title="Reproducir" data-idx="${idx}"><i class="fas fa-play"></i></button>
+                    <button class="q-btn" title="Eliminar" data-remove="${idx}"><i class="fas fa-trash-alt" style="color:#c34;"></i></button>
+                </div>
+            `;
+            const playBtn = item.querySelector('[data-idx]');
+            const remBtn = item.querySelector('[data-remove]');
+            playBtn && playBtn.addEventListener('click', function(){
+                const i = Number(this.getAttribute('data-idx'));
+                if (typeof window.playQueueFromIndex === 'function') {
+                    window.playQueueFromIndex(i);
+                }
+            });
+            remBtn && remBtn.addEventListener('click', function(e){
+                e.stopPropagation();
+                const i = Number(this.getAttribute('data-remove'));
+                removeFromQueue(i);
+            });
+            listEl.appendChild(item);
+        });
+    };
+
+    function escapeHtml(s){ return String(s || '').replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;",'`':'&#96;'})[c]); }
+
+    window.playQueueFromIndex = function(i){
+        if (!window.playQueue || i < 0 || i >= window.playQueue.length) return;
+        window.queueIndex = i;
+        // también reflejar en variables locales si existen
+        try { queueIndex = i; } catch(e){}
+        if (typeof playCurrentQueueItem === 'function') {
+            playCurrentQueueItem();
+            window.renderQueuePanel && window.renderQueuePanel();
+        }
+    };
+
+    function removeFromQueue(i){
+        if (!window.playQueue || i < 0 || i >= window.playQueue.length) return;
+        const wasCurrent = (i === window.queueIndex);
+        window.playQueue.splice(i,1);
+        if (i < window.queueIndex) {
+            window.queueIndex = Math.max(0, window.queueIndex - 1);
+        } else if (wasCurrent) {
+            if (!window.playQueue || window.queueIndex >= window.playQueue.length) {
+                if (typeof clearQueue === 'function') clearQueue();
+            } else {
+                if (typeof playCurrentQueueItem === 'function') playCurrentQueueItem();
+            }
+        }
+        if (typeof syncFromWindow === 'function') syncFromWindow();
+        if (typeof updatePrevNextButtons === 'function') updatePrevNextButtons();
+        window.renderQueuePanel && window.renderQueuePanel();
+    }
+
+    window.shuffleCurrentQueue = function(){
+        if (!window.playQueue || window.playQueue.length < 2) return;
+
+        const curId = (window.queueIndex != null && window.queueIndex >= 0) ? window.queueIndex : -1;
+        let currentInQueue = null;
+        if (curId >= 0 && window.playQueue[curId]) {
+            currentInQueue = window.playQueue[curId];
+        } else if (typeof currentAudio !== 'undefined' && currentAudio) {
+            currentInQueue = window.playQueue.find(a => {
+                try { return (a && currentAudio && (a.id === currentAudio.id || a.src === currentAudio.src)); } catch(e){ return false; }
+            }) || null;
+        }
+
+        let items = window.playQueue.slice();
+        if (currentInQueue) {
+            const idx = items.indexOf(currentInQueue);
+            if (idx >= 0) items.splice(idx, 1);
+        }
+
+        for (let i = items.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [items[i], items[j]] = [items[j], items[i]];
+        }
+
+        if (currentInQueue) {
+            items.unshift(currentInQueue);
+            window.playQueue = items;
+            window.queueIndex = 0;
+        } else {
+            window.playQueue = items;
+            window.queueIndex = 0;
+        }
+
+        if (typeof syncFromWindow === 'function') syncFromWindow();
+        if (typeof window.renderQueuePanel === 'function') window.renderQueuePanel();
+        if (typeof updatePrevNextButtons === 'function') updatePrevNextButtons();
+    };
+
+    // watcher simple para re-render si la cola cambia externamente
+    let _lastSig = '';
+    function queueSignature(){
+        if (!window.playQueue) return '';
+        try { return window.playQueue.map(a => a ? (a.id || a.src) : '').join('|') + '::' + (window.queueIndex ?? ''); } catch(e) { return ''; }
+    }
+    setInterval(() => {
+        const sig = queueSignature();
+        if (sig !== _lastSig) {
+            _lastSig = sig;
+            if (panel && panel.classList.contains('open')) window.renderQueuePanel && window.renderQueuePanel();
+            const cntEl = document.getElementById('queue-count');
+            if (cntEl) cntEl.textContent = (window.playQueue ? window.playQueue.length : 0) + ((window.playQueue && window.playQueue.length===1) ? ' pista' : ' pistas');
+            if (typeof syncFromWindow === 'function') syncFromWindow();
+        }
+    }, 450);
+
+    window.updateQueuePanel = window.renderQueuePanel;
+
+    document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape' && panel && panel.classList.contains('open')) window.toggleQueuePanel(false);
+    });
+})();
 
     function openAddToPlaylistModal(btn) {
         const cancionId = btn.getAttribute('data-cancionid');
