@@ -120,3 +120,137 @@ Notas importantes:
 
 ### *EJECUCIÓN DE TESTS*
 *DISCLAIMER: PARA EJECUTAR LOS TESTS Y PROBAR EL FUNCIONAMIENTO DE LA APP DEBERÁS TENER ABIERTO EL CONTENEDOR DE DOCKER CORRESPONDIENTE*
+
+### *Integración con Ollama y Embeddings*
+
+Esta sección describe cómo integrar un servicio local de Ollama para generar embeddings y usarlos en la aplicación (búsqueda semántica, recomendaciones, etc.). Se asume que la app usa MySQL por defecto; adapta los ejemplos si usas otra base de datos o un vector DB.
+
+Resumen
+- Ollama permite ejecutar modelos LLM localmente. Generar embeddings localmente evita enviar datos a servicios externos y facilita la privacidad y el control.
+- Flujo común: generar embeddings para metadatos (títulos, letras, descripciones) al subir canciones → guardar el vector en la BD (o vector DB) → al buscar, generar embedding de la consulta y recuperar por similitud (coseno).
+
+Requisitos
+- Ollama instalado y un modelo que soporte embeddings (sustituye el nombre del modelo por el que tengas disponible).
+- Puerto y host accesible desde la app (por ejemplo, localhost:11434). En este README usaremos variables de entorno para configurar la conexión.
+- La app tiene acceso a la base de datos (MySQL) para guardar metadatos y vectores, o a un Vector DB si prefieres.
+
+Instalación (opciones)
+- Instalación nativa: sigue la guía oficial de Ollama (elige la opción para tu SO). Una vez instalado, levanta el servidor local según la documentación.
+
+- Usando Docker (ejemplo genérico para PowerShell):
+
+```powershell
+# Ejemplo genérico: reemplaza <imagen_ollama> y puertos según tu imagen/versión
+docker run --rm -p 11434:11434 --name ollama <imagen_ollama>:latest
+```
+
+Nota: la imagen/flag exacta depende de la distribución de Ollama que uses. Si instalaste Ollama nativo, probablemente no necesites Docker.
+
+Endpoint local (plantilla)
+- Suponemos un endpoint HTTP local para obtener embeddings. Usa estas variables:
+  - OLLAMA_HOST (ej: localhost)
+  - OLLAMA_PORT (ej: 11434)
+  - OLLAMA_MODEL (ej: nombre_del_modelo)
+
+- URL genérica de ejemplo para embeddings:
+  - http://{OLLAMA_HOST}:{OLLAMA_PORT}/v1/embeddings
+
+Ejemplo de petición (curl / PowerShell)
+- Plantilla curl (ajusta la URL y cuerpo según tu servidor Ollama):
+
+```bash
+curl -X POST "http://localhost:11434/v1/embeddings" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"<OLLAMA_MODEL>", "input": "Texto a convertir en embedding"}'
+```
+
+- Plantilla PowerShell con Invoke-RestMethod:
+
+```powershell
+$body = @{ model = '<OLLAMA_MODEL>'; input = 'Texto a convertir en embedding' } | ConvertTo-Json
+Invoke-RestMethod -Method Post -Uri "http://localhost:11434/v1/embeddings" -ContentType 'application/json' -Body $body
+```
+
+Ejemplo en Java (HttpClient + Jackson - ilustrativo)
+- Este snippet muestra cómo enviar la petición y obtener el vector; adapta importaciones y manejo de errores a tu código:
+
+```java
+// Ejemplo mínimo (Java 11+)
+HttpClient client = HttpClient.newHttpClient();
+String url = String.format("http://%s:%s/v1/embeddings", System.getenv("OLLAMA_HOST"), System.getenv("OLLAMA_PORT"));
+ObjectMapper mapper = new ObjectMapper();
+ObjectNode body = mapper.createObjectNode();
+body.put("model", System.getenv("OLLAMA_MODEL"));
+body.put("input", "Texto a convertir en embedding");
+HttpRequest req = HttpRequest.newBuilder()
+    .uri(URI.create(url))
+    .header("Content-Type", "application/json")
+    .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
+    .build();
+HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+// Parsear la respuesta (estructura puede variar según la API de tu servidor)
+JsonNode root = mapper.readTree(resp.body());
+// Ejemplo: suponemos root.embedding o root.data[0].embedding
+JsonNode embeddingNode = root.path("data").path(0).path("embedding");
+if (embeddingNode.isArray()) {
+    List<Double> vector = new ArrayList<>();
+    embeddingNode.forEach(n -> vector.add(n.asDouble()));
+    // Guardar vector en BD o vector DB
+}
+```
+
+Almacenamiento de embeddings (esquema sugerido)
+- Esquema relacional simple (MySQL) — tabla `embedding`:
+  - id (PK)
+  - referencia_id (FK a `cancion` u otra entidad)
+  - tipo (ej: "cancion_titulo", "letra")
+  - vector (opcional: JSON o BLOB según MySQL; también puedes normalizar y guardar en tabla vectorial)
+  - created_at
+
+- Alternativa: usar una Vector DB (Milvus, Weaviate, Pinecone) y guardar allí los vectores, manteniendo referencias a filas de MySQL.
+
+Flujo recomendado
+1. Al subir una canción o actualizar metadatos -> generar embedding(s) para los campos relevantes.
+2. Guardar embedding en la tabla `embedding` o en la Vector DB (con referencia a la canción).
+3. Al realizar una búsqueda: generar embedding de la consulta, recuperar N candidatos por similitud (cálculo coseno), y después filtrar/ordenar con datos de la BD.
+
+Cálculo de similitud
+- Normalmente se usa similitud del coseno. Para dos vectores a y b:
+  - cos_sim(a,b) = (a · b) / (||a|| * ||b||)
+- En SQL se puede approximar calculando el producto punto y las normas, o delegar la operación a un vector DB para rendimiento.
+
+Variables de entorno sugeridas
+- OLLAMA_HOST=localhost
+- OLLAMA_PORT=11434
+- OLLAMA_MODEL=nombre_del_modelo
+- EMBEDDING_DIM=768 (ajusta según el modelo)
+- VECTOR_DB_URL=jdbc:mysql://localhost:3306/mdai_db (o URL a vector DB)
+
+Ejemplo de application.properties (placeholders)
+
+```
+# Ollama
+ollama.host=${OLLAMA_HOST:localhost}
+ollama.port=${OLLAMA_PORT:11434}
+ollama.model=${OLLAMA_MODEL:mi_modelo}
+
+# Embeddings
+embeddings.dim=${EMBEDDING_DIM:768}
+embeddings.service.url=http://${OLLAMA_HOST:localhost}:${OLLAMA_PORT:11434}/v1/embeddings
+```
+
+Notas de rendimiento y seguridad
+- Batch: solicita embeddings en lotes cuando proceses muchos textos para reducir latencia.
+- Caché: almacena embeddings ya generados para evitar recomputarlos.
+- Tamaño: modelos con embeddings grandes aumentan almacenamiento y coste de cálculo; ajusta EMBEDDING_DIM.
+- Privacidad: si procesas datos sensibles, preferir ejecución local y restringir acceso al servicio Ollama.
+
+Troubleshooting rápido
+- Puerto en uso: si no puedes levantar Ollama, verifica el puerto (p.ej. 11434) y que no haya conflictos.
+- Modelo no encontrado: asegúrate de que el modelo está instalado o disponible en Ollama; revisa la lista de modelos cargados en el servidor.
+- Respuesta vacía o formato distinto: inspecciona la respuesta cruda (logs) y ajusta el parsing. La estructura JSON puede variar según la versión del servidor.
+
+Recursos útiles
+- Documentación oficial de Ollama (usa la fuente oficial para comandos e imágenes)
+- Artículos sobre búsqueda vectorial y similitud coseno
+- Bibliotecas para trabajo con vectores en Java (Ej: Apache Commons Math) y clientes para Vector DBs (Milvus, Weaviate)
